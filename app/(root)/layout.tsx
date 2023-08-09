@@ -1,9 +1,11 @@
+'use server'
+
 import Navbar from '@/components/Navbar'
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='h-full'>
-      <Navbar />
+      <Navbar isApp={false} />
       <main className='md:pl-20 pt-16 h-full'>{children}</main>
     </div>
   )
