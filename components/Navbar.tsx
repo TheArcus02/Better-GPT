@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { Button } from './ui/button'
 import { ModeToggle } from './theme-toggle'
 import { usePathname, useRouter } from 'next/navigation'
+import MobileHomeSidebar from './mobile-home-sidebar'
 
 const font = Poppins({
   weight: '400',
@@ -34,7 +35,7 @@ const AppRoutes: NavRoute[] = [
   },
 ]
 
-const HomeRoutes: NavRoute[] = [
+export const HomeRoutes: NavRoute[] = [
   {
     icon: Home,
     href: '/',
@@ -76,7 +77,7 @@ const Navbar = ({ isApp }: NavbarProps) => {
   return (
     <div className='fixed w-full z-50 flex justify-between items-center py-7 px-6 border-b border-background bg-secondary'>
       <div className='flex items-center'>
-        <Menu className='block md:hidden' />
+        <MobileHomeSidebar />
         <Link href='/'>
           <h1
             className={cn(
@@ -89,7 +90,12 @@ const Navbar = ({ isApp }: NavbarProps) => {
           </h1>
         </Link>
       </div>
-      <div className='flex gap-10'>
+      <div
+        className={cn(
+          'flex gap-5 lg:gap-10',
+          isApp ? 'flex' : 'hidden md:flex',
+        )}
+      >
         {routes.map((route) => (
           <div key={route.href}>
             <div
@@ -100,8 +106,16 @@ const Navbar = ({ isApp }: NavbarProps) => {
               )}
               onClick={() => onNavigate(route.href, route.pro)}
             >
-              {route.icon && <route.icon className='h-5 w-5 mr-1' />}
-              {route.label}
+              {route.icon && (
+                <route.icon
+                  className={cn(
+                    isApp ? 'h-7 w-7 mr-1' : 'h-5 w-5 mr-1',
+                  )}
+                />
+              )}
+              <span className={cn(isApp && 'hidden md:block')}>
+                {route.label}
+              </span>
             </div>
             {/* Underline don't know if I like it  
             {pathname === route.href && 'text-accent' && (
