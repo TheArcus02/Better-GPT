@@ -2,11 +2,10 @@
 
 import { Menu } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
-import { HomeRoutes as routes } from './navbar'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-const MobileHomeSidebar = () => {
+const MobileNavSidebar = ({ routes }: { routes: NavRoute[] }) => {
   const router = useRouter()
   const pathname = usePathname()
 
@@ -52,4 +51,4 @@ const MobileHomeSidebar = () => {
   )
 }
 
-export default MobileHomeSidebar
+export default MobileNavSidebar

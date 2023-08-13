@@ -6,7 +6,7 @@ html,body,:root{
   height: 100%;
 }
  
-
+/* TODO: Change accent color for light mode */
 @layer base {
   :root {
     --background: 0 0% 100%;
