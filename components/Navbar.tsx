@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, useAuth } from '@clerk/nextjs'
 import {
   AreaChart,
   CreditCard,
@@ -85,7 +85,7 @@ export const HomeRoutes: NavRoute[] = [
 const Navbar = ({ isApp }: NavbarProps) => {
   const pathname = usePathname()
   const router = useRouter()
-  const authenticated = false
+  const { isSignedIn } = useAuth()
   const routes = isApp ? AppRoutes : HomeRoutes
 
   const onNavigate = (href: string, pro: boolean) => {
@@ -95,7 +95,7 @@ const Navbar = ({ isApp }: NavbarProps) => {
   }
 
   return (
-    <div className='fixed w-full z-50 flex justify-between items-center py-7 px-6 border-b border-background bg-secondary'>
+    <div className='fixed w-full z-50 flex justify-between items-center py-7 px-6 border-b border-muted-foreground bg-secondary'>
       <div className='flex items-center'>
         <MobileNavSidebar routes={routes} />
         <Link href='/'>
@@ -132,26 +132,40 @@ const Navbar = ({ isApp }: NavbarProps) => {
         ))}
       </div>
       <div className='flex items-center gap-x-5'>
-        {!isApp && authenticated && (
-          <Button
-            variant='default'
-            size='sm'
-            onClick={() => onNavigate('/app', true)}
-          >
-            Launch App
-            <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
-          </Button>
-        )}
+        {!isApp &&
+          (isSignedIn ? (
+            <Button
+              variant='default'
+              size='sm'
+              onClick={() => onNavigate('/app', true)}
+            >
+              Launch App
+              <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
+            </Button>
+          ) : (
+            <Button
+              variant='default'
+              size='sm'
+              onClick={() => onNavigate('/sign-up', false)}
+            >
+              Get started
+              <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
+            </Button>
+          ))}
 
         <ModeToggle />
-        {authenticated ? (
+        {isSignedIn ? (
           <UserButton />
         ) : (
-          <Button variant='outline'>Login</Button>
+          <Button
+            variant='outline'
+            onClick={() => onNavigate('/sign-in', false)}
+          >
+            Login
+          </Button>
         )}
       </div>
     </div>
   )
 }
-// TODO: check if authenticated and show login button
 export default Navbar

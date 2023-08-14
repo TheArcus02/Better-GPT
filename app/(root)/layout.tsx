@@ -4,8 +4,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='h-full'>
       <Navbar isApp={false} />
-
-      <main className='md:pl-20 pt-16 h-full'>{children}</main>
+      <main className='h-full pt-24'>{children}</main>
     </div>
   )
 }

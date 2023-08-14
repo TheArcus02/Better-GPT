@@ -1,7 +1,7 @@
 import React from 'react'
 
 const AppPage = () => {
-  return <div>page</div>
+  return <div>AppPage</div>
 }
 
 export default AppPage
