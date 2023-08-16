@@ -5,7 +5,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     <div className='h-full'>
       <Navbar isApp={true} />
 
-      <main className='h-full pt-24'>{children}</main>
+      <main className='h-full w-full pt-24'>{children}</main>
     </div>
   )
 }

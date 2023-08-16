@@ -32,3 +32,5 @@ export default function RootLayout({
     </ClerkProvider>
   )
 }
+// TODO: add contribution in the about page
+// <a href="https://storyset.com/online">Online illustrations by Storyset</a>

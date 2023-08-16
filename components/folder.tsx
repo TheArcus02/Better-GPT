@@ -5,6 +5,9 @@ import {
   FolderEdit,
   FolderX,
   MessageSquare,
+  MessageSquarePlus,
+  PencilLine,
+  XCircle,
 } from 'lucide-react'
 import {
   ContextMenu,
@@ -49,6 +52,9 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem>
+            <MessageSquarePlus className='mr-2' /> New Chat
+          </ContextMenuItem>
+          <ContextMenuItem>
             <FolderEdit className='mr-2' />
             Rename
           </ContextMenuItem>
@@ -61,11 +67,25 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
 
       {/* Chats */}
       {isOpen && (
-        <div className='pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer'>
-          <MessageSquare size={24} />
-          <h4 className=''>Chat</h4>
-          <span className='text-foreground/50'>23</span>
-        </div>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <div className='pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer'>
+              <MessageSquare size={24} />
+              <h4 className=''>Chat</h4>
+              <span className='text-foreground/50'>23</span>
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>
+              <PencilLine className='mr-2' />
+              Rename
+            </ContextMenuItem>
+            <ContextMenuItem>
+              <XCircle className='mr-2' />
+              Delete
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       )}
     </div>
   )
