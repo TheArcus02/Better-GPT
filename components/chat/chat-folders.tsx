@@ -1,11 +1,11 @@
 import { MessageSquarePlus, FolderPlus } from 'lucide-react'
-import { ScrollArea } from './ui/scroll-area'
+import { ScrollArea } from '../ui/scroll-area'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from './ui/context-menu'
+} from '../ui/context-menu'
 import ChatFolder from './folder'
 
 const ChatFolders = () => {

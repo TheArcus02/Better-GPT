@@ -5,8 +5,8 @@ import {
   MessageSquarePlus,
   PanelRightOpen,
 } from 'lucide-react'
-import { Button } from './ui/button'
 import ChatFolders from './chat-folders'
+import { Button } from '../ui/button'
 
 const ChatSidebar = () => {
   return (

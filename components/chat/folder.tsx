@@ -14,7 +14,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from './ui/context-menu'
+} from '../ui/context-menu'
 import { useState } from 'react'
 
 interface ChatFolderProps {
