@@ -3,10 +3,11 @@
 import React from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
+import ChatForm from './chat-form'
 
 const ChatClient = () => {
   return (
-    <div className='flex flex-col h-full w-full bg-secondary/50'>
+    <div className='flex flex-col h-full w-full bg-secondary/50 items-center'>
       <ChatTabs
         tabNames={[
           {
@@ -17,7 +18,10 @@ const ChatClient = () => {
           { name: 'Chat 3', active: false },
         ]}
       />
-      <ChatMessages />
+      <div className='flex flex-col h-full max-w-4xl w-full'>
+        <ChatMessages />
+        <ChatForm />
+      </div>
     </div>
   )
 }
