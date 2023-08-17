@@ -7,7 +7,7 @@ import ChatForm from './chat-form'
 
 const ChatClient = () => {
   return (
-    <div className='flex flex-col h-full w-full bg-secondary/50 items-center'>
+    <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>
       <ChatTabs
         tabNames={[
           {
