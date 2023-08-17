@@ -16,7 +16,7 @@ const ChatTabs = ({ tabNames }: { tabNames: Tab[] }) => {
         {tabNames.map((tab, index) => (
           <div
             className={cn(
-              'px-10 py-2 rounded-t-lg border-t border-l border-r text-sm font-bold text-center',
+              'px-3 md:px-10 py-2 rounded-t-lg border-t border-l border-r text-sm font-bold text-center',
               tab.active
                 ? 'border-muted-foreground/40 bg-background/10 '
                 : 'border-transparent bg-background hover:bg-background/40 cursor-pointer',
