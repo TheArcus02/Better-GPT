@@ -1,5 +1,4 @@
 'use client'
-import React from 'react'
 import { SendHorizonal } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
@@ -7,13 +6,21 @@ import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+interface ChatFormProps {
+  onSubmit: (data: ChatFormValidatorType) => void
+  isLoading: boolean
+}
+
 const ChatFormValidator = z.object({
   prompt: z.string().nonempty({ message: 'Prompt cannot be empty' }),
 })
 
-type ChatFormValidatorType = z.infer<typeof ChatFormValidator>
+export type ChatFormValidatorType = z.infer<typeof ChatFormValidator>
 
-const ChatForm = () => {
+const ChatForm: React.FC<ChatFormProps> = ({
+  onSubmit,
+  isLoading,
+}) => {
   const {
     register,
     handleSubmit,
@@ -21,10 +28,6 @@ const ChatForm = () => {
   } = useForm<ChatFormValidatorType>({
     resolver: zodResolver(ChatFormValidator),
   })
-
-  const onSubmit = (data: ChatFormValidatorType) => {
-    // TODO: Send message to server
-  }
 
   return (
     <form
@@ -36,7 +39,7 @@ const ChatForm = () => {
         className='rounded-lg bg-secondary/10'
         {...register('prompt')}
       />
-      <Button variant='ghost' type='submit'>
+      <Button variant='ghost' type='submit' disabled={isLoading}>
         <SendHorizonal className='w-6 h-6' />
       </Button>
     </form>

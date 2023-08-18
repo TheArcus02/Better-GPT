@@ -1,11 +1,40 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
-import ChatForm from './chat-form'
+import ChatForm, { ChatFormValidatorType } from './chat-form'
+import { useRouter } from 'next/navigation'
+import { useCompletion } from 'ai/react'
 
 const ChatClient = () => {
+  const router = useRouter()
+
+  const [messages, setMessages] = useState([])
+
+  // TODO: get chat id from params in server component
+  const chatId = '1'
+
+  const {
+    input,
+    isLoading,
+    handleInputChange,
+    handleSubmit,
+    setInput,
+  } = useCompletion({
+    api: `/api/chat/${chatId}`,
+    onFinish(_prompt, completion) {},
+  })
+
+  const onSubmit = (data: ChatFormValidatorType) => {
+    try {
+    } catch (error) {
+      console.log(error)
+    } finally {
+      router.refresh()
+    }
+  }
+
   return (
     <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>
       <ChatTabs
@@ -20,7 +49,7 @@ const ChatClient = () => {
       />
       <div className='flex flex-col h-full max-w-4xl w-full'>
         <ChatMessages />
-        <ChatForm />
+        <ChatForm onSubmit={onSubmit} isLoading={false} />
       </div>
     </div>
   )

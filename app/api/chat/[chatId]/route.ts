@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
@@ -26,12 +27,15 @@ export async function POST(req: Request) {
       return new NextResponse('Missing message', { status: 400 })
     }
 
-    const completion = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages,
+      stream: true,
     })
 
-    return NextResponse.json(completion.choices[0])
+    const stream = OpenAIStream(response)
+
+    return new StreamingTextResponse(stream)
   } catch (error) {
     console.log('[CHAT_ERROR]', error)
     return new NextResponse('Internal error', { status: 500 })
