@@ -1,6 +1,13 @@
 import Navbar from '@/components/navbar'
+import { auth, redirectToSignIn } from '@clerk/nextjs'
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const { userId } = auth()
+
+  if (!userId) {
+    return redirectToSignIn()
+  }
+
   return (
     <div className='h-full'>
       <Navbar isApp={true} />

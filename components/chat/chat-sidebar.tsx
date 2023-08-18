@@ -9,6 +9,7 @@ import {
 import ChatFolders from './chat-folders'
 import { Button } from '../ui/button'
 import { useState } from 'react'
+import NewChatDialog from './new-chat-dialog'
 
 const ChatSidebar = () => {
   const [isOpen, setIsOpen] = useState(true)
@@ -28,10 +29,12 @@ const ChatSidebar = () => {
       {isOpen && (
         <>
           <div className='flex gap-3 min-w-max px-4'>
-            <Button>
-              <MessageSquarePlus size={24} className='mr-2' />
-              New Chat
-            </Button>
+            <NewChatDialog>
+              <Button>
+                <MessageSquarePlus size={24} className='mr-2' />
+                New Chat
+              </Button>
+            </NewChatDialog>
             <Button variant='outline'>
               <FolderPlus size={24} />
             </Button>
