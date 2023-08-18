@@ -6,6 +6,54 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+
+model Folder {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String      @db.ObjectId
+  name           String
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  chats          Chat[]
+}
+
+model Chat {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String      @db.ObjectId
+  folderId       String?     @db.ObjectId
+  name           String
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  messages       Message[]
+  folder         Folder?     @relation(fields: [folderId], references: [id])
+
+  @@index([folderId])
+}
+
+enum Role {
+  user
+  system
+}
+
+model Message {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  role           Role
+  content        String
+  
+  userId         String
+  chatId         String      @db.ObjectId
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  chat           Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
 }
