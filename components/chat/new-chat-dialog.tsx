@@ -41,7 +41,7 @@ const NewChatDialog = ({
             </Label>
             <Input
               id='name'
-              value='New folder'
+              value='New chat'
               className='col-span-3'
             />
           </div>

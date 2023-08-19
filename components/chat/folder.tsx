@@ -16,6 +16,7 @@ import {
   ContextMenuTrigger,
 } from '../ui/context-menu'
 import { useState } from 'react'
+import ChatFile from './chat-file'
 
 interface ChatFolderProps {
   name: string
@@ -29,6 +30,11 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
 
   const handleOpen = () => {
     setIsOpen((prev) => !prev)
+  }
+
+  const handleAddNewChat = () => {
+    setIsOpen(true)
+    // TODO: add new chat with api
   }
 
   return (
@@ -51,7 +57,7 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem>
+          <ContextMenuItem onClick={handleAddNewChat}>
             <MessageSquarePlus className='mr-2' /> New Chat
           </ContextMenuItem>
           <ContextMenuItem>
@@ -66,27 +72,7 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
       </ContextMenu>
 
       {/* Chats */}
-      {isOpen && (
-        <ContextMenu>
-          <ContextMenuTrigger>
-            <div className='pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer'>
-              <MessageSquare size={24} />
-              <h4 className=''>Chat</h4>
-              <span className='text-foreground/50'>23</span>
-            </div>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem>
-              <PencilLine className='mr-2' />
-              Rename
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <XCircle className='mr-2' />
-              Delete
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
-      )}
+      {isOpen && <ChatFile name='Chat' count={23} />}
     </div>
   )
 }

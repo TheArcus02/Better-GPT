@@ -10,6 +10,7 @@ import ChatFolders from './chat-folders'
 import { Button } from '../ui/button'
 import { useState } from 'react'
 import NewChatDialog from './new-chat-dialog'
+import NewFolderDialog from './new-folder-dialog'
 
 const ChatSidebar = () => {
   const [isOpen, setIsOpen] = useState(true)
@@ -35,9 +36,11 @@ const ChatSidebar = () => {
                 New Chat
               </Button>
             </NewChatDialog>
-            <Button variant='outline'>
-              <FolderPlus size={24} />
-            </Button>
+            <NewFolderDialog>
+              <Button variant='outline'>
+                <FolderPlus size={24} />
+              </Button>
+            </NewFolderDialog>
           </div>
 
           <div className='bg-background'>
