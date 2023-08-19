@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     return new StreamingTextResponse(stream)
   } catch (error) {
-    console.log('[CHAT_ERROR]', error)
+    console.log('[CHAT_ERROR/[CHAT_ID]]', error)
     return new NextResponse('Internal error', { status: 500 })
   }
 }
