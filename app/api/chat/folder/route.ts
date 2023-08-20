@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth, currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
 
 export async function POST(req: Request) {
@@ -15,8 +15,6 @@ export async function POST(req: Request) {
     if (!name) {
       return new NextResponse('Name is required', { status: 400 })
     }
-
-    // TODO: check for subscription
 
     const chat = await prismadb.folder.create({
       data: {

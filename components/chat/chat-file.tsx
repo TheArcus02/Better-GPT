@@ -7,16 +7,20 @@ import {
 } from '../ui/context-menu'
 import { MessageSquare, PencilLine, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from '../ui/use-toast'
+import axios from 'axios'
 
 interface ChatFileProps {
+  id: string
   name: string
   count: number
 }
 
-const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
+const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
   // TODO: add new chat when user presses enter or clicks away
 
   const [isEditMode, setIsEditMode] = useState(false)
+  const [chatName, setChatName] = useState(name)
 
   const handleChangeEditMode = () => {
     setIsEditMode((prev) => !prev)
@@ -28,8 +32,33 @@ const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
 
   useEffect(() => {
     if (isEditMode) {
+      const UpdateChatName = async (newName: string) => {
+        try {
+          setChatName(newName)
+          await axios.patch(`/api/chat/${id}`, {
+            name: newName,
+          })
+          toast({
+            description: 'Chat name updated',
+            duration: 3000,
+          })
+        } catch (error) {
+          setChatName(name)
+          console.error(error)
+          toast({
+            variant: 'destructive',
+            description: 'Something went wrong',
+            duration: 3000,
+          })
+        }
+      }
+
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' || e.key === 'Enter') {
+        if (e.key === 'Escape') {
+          setIsEditMode(false)
+          setChatName(name)
+        } else if (e.key === 'Enter') {
+          UpdateChatName(chatName)
           setIsEditMode(false)
         }
       }
@@ -40,7 +69,24 @@ const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
         window.removeEventListener('keydown', handleKeyDown)
       }
     }
-  }, [isEditMode])
+  }, [isEditMode, id, name, chatName])
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/chat/${id}`)
+      toast({
+        description: 'Chat deleted',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+        duration: 3000,
+      })
+    }
+  }
 
   return (
     <ContextMenu>
@@ -57,11 +103,12 @@ const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
               type='text'
               autoFocus
               onFocus={handleFocus}
+              onChange={(e) => setChatName(e.target.value)}
               className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
-              defaultValue={name}
+              value={chatName}
             />
           ) : (
-            <h4 className=''>{name}</h4>
+            <h4 className=''>{chatName}</h4>
           )}
 
           {count !== 0 ||
@@ -75,7 +122,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
           <PencilLine className='mr-2' />
           Rename
         </ContextMenuItem>
-        <ContextMenuItem>
+        <ContextMenuItem onClick={handleDelete}>
           <XCircle className='mr-2' />
           Delete
         </ContextMenuItem>

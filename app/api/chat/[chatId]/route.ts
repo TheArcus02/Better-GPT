@@ -57,7 +57,7 @@ export async function PATCH(
     }
 
     if (!name && !folderId) {
-      return new NextResponse('Missing name', { status: 400 })
+      return new NextResponse('Missing fields', { status: 400 })
     }
 
     if (name) {

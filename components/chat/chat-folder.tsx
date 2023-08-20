@@ -85,6 +85,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
         chats.map((chat) => (
           <ChatFile
             key={chat.id}
+            id={chat.id}
             name={chat.name}
             count={chat._count.messages}
           />
