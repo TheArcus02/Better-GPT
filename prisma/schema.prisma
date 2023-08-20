@@ -13,7 +13,7 @@ datasource db {
 
 model Folder {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
+  userId         String      
   name           String
 
   createdAt      DateTime    @default(now())
@@ -24,15 +24,15 @@ model Folder {
 
 model Chat {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
-  folderId       String?     @db.ObjectId
+  userId         String      
+  folderId       String      @db.ObjectId
   name           String
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   messages       Message[]
-  folder         Folder?     @relation(fields: [folderId], references: [id])
+  folder         Folder      @relation(fields: [folderId], references: [id])
 
   @@index([folderId])
 }

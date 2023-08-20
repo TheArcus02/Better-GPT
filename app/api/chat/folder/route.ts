@@ -6,29 +6,28 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { folderId, name } = body
+    const { name } = body
 
     if (!user || !user.id || !user.firstName) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    if (!name || !folderId) {
+    if (!name) {
       return new NextResponse('Name is required', { status: 400 })
     }
 
     // TODO: check for subscription
 
-    const chat = await prismadb.chat.create({
+    const chat = await prismadb.folder.create({
       data: {
         name,
-        folderId: folderId ?? null,
         userId: user.id,
       },
     })
 
     return NextResponse.json(chat)
   } catch (error) {
-    console.log('[CHAT_ERROR]', error)
+    console.log('[CHAT_ERROR/FOLDER]', error)
     return new NextResponse('Internal error', { status: 500 })
   }
 }

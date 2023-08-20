@@ -17,15 +17,23 @@ import {
 } from '../ui/context-menu'
 import { useState } from 'react'
 import ChatFile from './chat-file'
+import { Chat } from '@prisma/client'
 
 interface ChatFolderProps {
   name: string
   chatsCount: number
-  // ...
-  // TODO: add props when models will be ready
+  chats: (Chat & {
+    _count: {
+      messages: number
+    }
+  })[]
 }
 
-const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
+const ChatFolder: React.FC<ChatFolderProps> = ({
+  name,
+  chatsCount,
+  chats,
+}) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleOpen = () => {
@@ -72,7 +80,15 @@ const ChatFolder = ({ name, chatsCount }: ChatFolderProps) => {
       </ContextMenu>
 
       {/* Chats */}
-      {isOpen && <ChatFile name='Chat' count={23} />}
+      {isOpen &&
+        chats.length &&
+        chats.map((chat) => (
+          <ChatFile
+            key={chat.id}
+            name={chat.name}
+            count={chat._count.messages}
+          />
+        ))}
     </div>
   )
 }

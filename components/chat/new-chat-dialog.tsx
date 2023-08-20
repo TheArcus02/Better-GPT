@@ -34,27 +34,33 @@ import {
   FormMessage,
 } from '../ui/form'
 
-interface NewChatFormProps {
-  onSubmit: (data: NewChatFormValidatorType) => void
-  isLoading: boolean
-}
-
 const NewChatFormValidator = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
-  folder: z.string().min(1, { message: 'Specify folder' }),
+  folder: z.string({ required_error: 'Specify folder' }),
 })
 
 export type NewChatFormValidatorType = z.infer<
   typeof NewChatFormValidator
 >
 
-const NewChatDialog = ({
-  children,
-}: {
+interface NewChatDialogProps {
+  folders: {
+    id: string
+    name: string
+  }[]
   children: React.ReactNode
+}
+
+const NewChatDialog: React.FC<NewChatDialogProps> = ({
+  children,
+  folders,
 }) => {
   const form = useForm<NewChatFormValidatorType>({
     resolver: zodResolver(NewChatFormValidator),
+    defaultValues: {
+      name: 'New Chat',
+      folder: undefined,
+    },
   })
 
   const onSubmit = (data: NewChatFormValidatorType) => {
@@ -82,7 +88,7 @@ const NewChatDialog = ({
                     <FormControl className='col-span-3'>
                       <Input {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className='col-span-4 text-center' />
                   </FormItem>
                 )}
               />
@@ -92,7 +98,7 @@ const NewChatDialog = ({
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-4 items-center gap-4'>
                     <FormLabel className='text-right'>
-                      Email
+                      Folder
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -104,14 +110,17 @@ const NewChatDialog = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value='none'>None</SelectItem>
-                        <SelectItem value='General'>
-                          General
-                        </SelectItem>
-                        <SelectItem value='Other'>Other</SelectItem>
+                        {folders.map((folder) => (
+                          <SelectItem
+                            value={folder.id}
+                            key={folder.id}
+                          >
+                            {folder.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className='col-span-4 text-center' />
                   </FormItem>
                 )}
               />

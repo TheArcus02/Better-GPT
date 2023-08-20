@@ -11,8 +11,22 @@ import { Button } from '../ui/button'
 import { useState } from 'react'
 import NewChatDialog from './new-chat-dialog'
 import NewFolderDialog from './new-folder-dialog'
+import { Chat, Folder } from '@prisma/client'
 
-const ChatSidebar = () => {
+interface ChatSidebarProps {
+  folders: ({
+    chats: ({
+      _count: {
+        messages: number
+      }
+    } & Chat)[]
+    _count: {
+      chats: number
+    }
+  } & Folder)[]
+}
+
+const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
   const [isOpen, setIsOpen] = useState(true)
 
   const handleOpen = () => {
@@ -30,7 +44,7 @@ const ChatSidebar = () => {
       {isOpen && (
         <>
           <div className='flex gap-3 min-w-max px-4'>
-            <NewChatDialog>
+            <NewChatDialog folders={folders}>
               <Button>
                 <MessageSquarePlus size={24} className='mr-2' />
                 New Chat
@@ -44,7 +58,7 @@ const ChatSidebar = () => {
           </div>
 
           <div className='bg-background'>
-            <ChatFolders />
+            <ChatFolders folders={folders} />
           </div>
         </>
       )}
