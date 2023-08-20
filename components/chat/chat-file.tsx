@@ -31,7 +31,6 @@ const ChatFile: React.FC<ChatFileProps> = ({ name, count }) => {
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape' || e.key === 'Enter') {
           setIsEditMode(false)
-          // TODO: update chat name with api
         }
       }
 

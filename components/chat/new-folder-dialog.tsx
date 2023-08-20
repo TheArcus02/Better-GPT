@@ -20,6 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form'
+import { toast } from '../ui/use-toast'
+import axios from 'axios'
 
 const NewFolderFormValidator = z.object({
   name: z
@@ -43,8 +45,22 @@ const NewFolderDialog = ({
     },
   })
 
-  const onSubmit = (data: NewFolderFormValidatorType) => {
+  const onSubmit = async (data: NewFolderFormValidatorType) => {
     console.log(data)
+    try {
+      await axios.post('/api/chat/folder', data)
+      toast({
+        description: 'Folder created successfully',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'something went wrong',
+        duration: 3000,
+      })
+    }
   }
 
   return (

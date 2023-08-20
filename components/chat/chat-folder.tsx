@@ -80,8 +80,8 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
       </ContextMenu>
 
       {/* Chats */}
-      {isOpen &&
-        chats.length &&
+      {chats.length !== 0 &&
+        isOpen &&
         chats.map((chat) => (
           <ChatFile
             key={chat.id}

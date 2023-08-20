@@ -29,6 +29,8 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form'
+import axios from 'axios'
+import { toast } from '../ui/use-toast'
 
 const NewChatFormValidator = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -59,9 +61,25 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
     },
   })
 
-  const onSubmit = (data: NewChatFormValidatorType) => {
-    console.log('type', typeof data.folder)
+  const onSubmit = async (data: NewChatFormValidatorType) => {
     console.log(data)
+    try {
+      await axios.post('/api/chat', {
+        name: data.name,
+        folderId: data.folder,
+      })
+      toast({
+        description: 'Chat created successfully',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'something went wrong',
+        duration: 3000,
+      })
+    }
   }
 
   return (

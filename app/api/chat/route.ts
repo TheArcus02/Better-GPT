@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     if (!name || !folderId) {
-      return new NextResponse('Name is required', { status: 400 })
+      return new NextResponse('Fields are required', { status: 400 })
     }
 
     // TODO: check for subscription
