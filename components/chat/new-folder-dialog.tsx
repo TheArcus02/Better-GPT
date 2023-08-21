@@ -22,6 +22,7 @@ import {
 } from '../ui/form'
 import { toast } from '../ui/use-toast'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const NewFolderFormValidator = z.object({
   name: z
@@ -38,6 +39,7 @@ const NewFolderDialog = ({
 }: {
   children: React.ReactNode
 }) => {
+  const router = useRouter()
   const form = useForm<NewFolderFormValidatorType>({
     resolver: zodResolver(NewFolderFormValidator),
     defaultValues: {
@@ -60,6 +62,8 @@ const NewFolderDialog = ({
         description: 'something went wrong',
         duration: 3000,
       })
+    } finally {
+      router.refresh()
     }
   }
 

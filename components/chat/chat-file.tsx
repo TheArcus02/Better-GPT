@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -9,6 +9,7 @@ import { MessageSquare, PencilLine, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from '../ui/use-toast'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 interface ChatFileProps {
   id: string
@@ -17,7 +18,10 @@ interface ChatFileProps {
 }
 
 const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
-  // TODO: add new chat when user presses enter or clicks away
+  // TODO: add new chat when user clicks away
+  // TODO: add alert dialog when user deletes chat
+  const router = useRouter()
+  const cilckableRef = useRef<HTMLDivElement>(null)
 
   const [isEditMode, setIsEditMode] = useState(false)
   const [chatName, setChatName] = useState(name)
@@ -50,26 +54,42 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
             description: 'Something went wrong',
             duration: 3000,
           })
+        } finally {
+          router.refresh()
         }
       }
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
-          setIsEditMode(false)
           setChatName(name)
+          setIsEditMode(false)
         } else if (e.key === 'Enter') {
           UpdateChatName(chatName)
           setIsEditMode(false)
         }
       }
 
+      const handleOutsideClick = (e: MouseEvent) => {
+        if (
+          cilckableRef.current &&
+          !cilckableRef.current.contains(e.target as Node)
+        ) {
+          if (chatName !== name) {
+            UpdateChatName(chatName)
+          }
+          setIsEditMode(false)
+        }
+      }
+
       window.addEventListener('keydown', handleKeyDown)
+      document.addEventListener('mousedown', handleOutsideClick)
 
       return () => {
         window.removeEventListener('keydown', handleKeyDown)
+        document.removeEventListener('mousedown', handleOutsideClick)
       }
     }
-  }, [isEditMode, id, name, chatName])
+  }, [isEditMode, id, name, chatName, router])
 
   const handleDelete = async () => {
     try {
@@ -85,6 +105,8 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
         description: 'Something went wrong',
         duration: 3000,
       })
+    } finally {
+      router.refresh()
     }
   }
 
@@ -96,6 +118,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
             'pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer',
             isEditMode && 'bg-muted-foreground/20',
           )}
+          ref={cilckableRef}
         >
           <MessageSquare size={24} />
           {isEditMode ? (

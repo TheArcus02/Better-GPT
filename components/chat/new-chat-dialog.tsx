@@ -31,6 +31,7 @@ import {
 } from '../ui/form'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
+import { useRouter } from 'next/navigation'
 
 const NewChatFormValidator = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -53,6 +54,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
   children,
   folders,
 }) => {
+  const router = useRouter()
   const form = useForm<NewChatFormValidatorType>({
     resolver: zodResolver(NewChatFormValidator),
     defaultValues: {
@@ -79,6 +81,8 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
         description: 'something went wrong',
         duration: 3000,
       })
+    } finally {
+      router.refresh()
     }
   }
 
