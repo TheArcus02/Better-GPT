@@ -30,6 +30,12 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
     setInput,
   } = useCompletion({
     api: `/api/chat/${chat.id}`,
+    body: {
+      messages: chat.messages.map((message) => ({
+        content: message.content,
+        role: message.role,
+      })),
+    },
     onFinish(_prompt, completion) {
       const chatMessage: ChatMessageProps = {
         role: 'system',

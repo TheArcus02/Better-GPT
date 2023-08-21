@@ -10,6 +10,11 @@ export interface ChatMessageProps {
   content: string
   role: string
   isLoading?: boolean
+  id?: string
+  userId?: string
+  chatId?: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({

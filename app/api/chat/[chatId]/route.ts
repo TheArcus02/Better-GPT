@@ -8,11 +8,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request,
+  { params }: { params: { chatId: string } },
+) {
   try {
     const { userId } = auth()
     const body = await req.json()
-    const { messages } = body
+    const { messages, prompt } = body
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 })
@@ -28,13 +31,55 @@ export async function POST(req: Request) {
       return new NextResponse('Missing message', { status: 400 })
     }
 
+    const chat = await prismadb.chat.update({
+      where: {
+        id: params.chatId,
+      },
+      data: {
+        messages: {
+          create: {
+            content: prompt,
+            role: 'user',
+            userId: userId,
+          },
+        },
+      },
+    })
+
+    if (!chat) {
+      return new NextResponse('Chat not found', { status: 404 })
+    }
+
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages,
+      messages: [
+        ...messages,
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
       stream: true,
     })
 
-    const stream = OpenAIStream(response)
+    const stream = OpenAIStream(response, {
+      onCompletion: async (data) => {
+        await prismadb.chat.update({
+          where: {
+            id: params.chatId,
+          },
+          data: {
+            messages: {
+              create: {
+                content: data,
+                role: 'system',
+                userId: userId,
+              },
+            },
+          },
+        })
+      },
+    })
 
     return new StreamingTextResponse(stream)
   } catch (error) {
