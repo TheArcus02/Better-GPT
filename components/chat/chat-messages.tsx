@@ -5,7 +5,7 @@ import ChatMessage, { ChatMessageProps } from './chat-message'
 
 interface ChatMessagesProps {
   messages: ChatMessageProps[]
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
@@ -28,7 +28,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   }, [])
 
   return (
-    <div className='flex-1 overflow-y-auto px-4 w-full pt-6'>
+    <div className='overflow-y-auto px-4 w-full pt-6'>
       <ChatMessage
         isLoading={fakeLoading}
         role='system'
@@ -37,7 +37,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
       {messages.map((message, index) => (
         <ChatMessage
           isLoading={isLoading}
-          key={message.content + index}
+          key={message.id ? message.id : message.content + index}
           role={message.role}
           content={message.content}
         />

@@ -33,7 +33,7 @@ const ChatPage: React.FC<ChatPageProps> = async ({
     },
   })
 
-  if (!chat) return redirect('/chat')
+  if (!chat) return redirect('/app/chat')
 
   return <ChatClient chat={chat} />
 }

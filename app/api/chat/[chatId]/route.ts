@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
 
@@ -15,7 +15,7 @@ export async function POST(
   try {
     const { userId } = auth()
     const body = await req.json()
-    const { messages, prompt } = body
+    const { messages } = body as { messages: Message[] }
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 })
@@ -31,6 +31,15 @@ export async function POST(
       return new NextResponse('Missing message', { status: 400 })
     }
 
+    const lastUserMessage = messages
+      .slice()
+      .reverse()
+      .find((message) => message.role === 'user')?.content
+
+    if (!lastUserMessage) {
+      return new NextResponse('Missing message', { status: 400 })
+    }
+
     const chat = await prismadb.chat.update({
       where: {
         id: params.chatId,
@@ -38,7 +47,7 @@ export async function POST(
       data: {
         messages: {
           create: {
-            content: prompt,
+            content: lastUserMessage,
             role: 'user',
             userId: userId,
           },
@@ -52,13 +61,7 @@ export async function POST(
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [
-        ...messages,
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+      messages,
       stream: true,
     })
 

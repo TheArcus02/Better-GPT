@@ -21,6 +21,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   content,
   role,
   isLoading,
+  id,
+  userId,
+  chatId,
+  createdAt,
+  updatedAt,
 }) => {
   const { theme } = useTheme()
 
@@ -53,7 +58,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           role !== 'user' ? 'bg-foreground/10' : 'bg-primary/50',
         )}
       >
-        {isLoading ? (
+        {isLoading && role !== 'user' ? (
           <BeatLoader
             color={theme === 'light' ? 'black' : 'white'}
             size={5}

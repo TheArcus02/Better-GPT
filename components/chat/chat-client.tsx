@@ -1,13 +1,14 @@
 'use client'
 
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
 import ChatForm from './chat-form'
 import { useRouter } from 'next/navigation'
-import { useCompletion } from 'ai/react'
+import { useChat, useCompletion } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
 import { ChatMessageProps } from './chat-message'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface ChatClientProps {
   chat: Chat & {
@@ -18,49 +19,26 @@ interface ChatClientProps {
 const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
   const router = useRouter()
 
-  const [messages, setMessages] = useState<ChatMessageProps[]>(
-    chat.messages,
-  )
-
-  const {
-    input,
-    isLoading,
-    handleInputChange,
-    handleSubmit,
-    setInput,
-  } = useCompletion({
-    api: `/api/chat/${chat.id}`,
-    body: {
-      messages: chat.messages.map((message) => ({
-        content: message.content,
+  const { input, handleInputChange, handleSubmit, messages } =
+    useChat({
+      api: `/api/chat/${chat.id}`,
+      initialMessages: chat.messages.map((message) => ({
+        id: message.id,
         role: message.role,
+        content: message.content,
+        createdAt: message.createdAt,
       })),
-    },
-    onFinish(_prompt, completion) {
-      const chatMessage: ChatMessageProps = {
-        role: 'system',
-        content: completion,
-      }
-      setMessages((prev) => [...prev, chatMessage])
-      setInput('')
-      router.refresh()
-    },
-  })
+    })
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    const userMessage = {
-      role: 'user',
-      content: input,
-    }
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => handleSubmit(e)
 
-    setMessages((prev) => [...prev, userMessage])
-
-    handleSubmit(e)
-  }
+  useEffect(() => {
+    console.log(messages)
+  }, [messages])
 
   return (
     <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>
-      <ChatTabs
+      {/* <ChatTabs
         tabNames={[
           {
             name: 'Chat 1',
@@ -69,9 +47,11 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
           { name: 'Chat 2', active: false },
           { name: 'Chat 3', active: false },
         ]}
-      />
+      /> */}
       <div className='flex flex-col h-full max-w-4xl w-full'>
-        <ChatMessages messages={messages} isLoading={isLoading} />
+        <ScrollArea className='flex-1'>
+          <ChatMessages messages={messages} />
+        </ScrollArea>
         <ChatForm
           input={input}
           handleInputChange={handleInputChange}
