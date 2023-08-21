@@ -2,21 +2,34 @@ import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
 import { Copy } from 'lucide-react'
 import { Avatar, AvatarImage } from '../ui/avatar'
+import { toast } from '../ui/use-toast'
+import { BeatLoader } from 'react-spinners'
+import { useTheme } from 'next-themes'
 
 // TODO: DELETE type after schema is created
 type ChatMessageProps = {
   content: string
   role: 'user' | 'system'
+  isLoading: boolean
 }
 
-const ChatMessage = ({ content, role }: ChatMessageProps) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  content,
+  role,
+  isLoading,
+}) => {
+  const { theme } = useTheme()
+
   const onCopy = () => {
     if (!content) {
       return
     }
 
     navigator.clipboard.writeText(content)
-    // TODO: Add toast
+    toast({
+      description: 'Copied to clipboard',
+      duration: 3000,
+    })
   }
   return (
     <div
@@ -36,7 +49,14 @@ const ChatMessage = ({ content, role }: ChatMessageProps) => {
           role !== 'user' ? 'bg-foreground/10' : 'bg-primary/50',
         )}
       >
-        {content}
+        {isLoading ? (
+          <BeatLoader
+            color={theme === 'light' ? 'black' : 'white'}
+            size={5}
+          />
+        ) : (
+          content
+        )}
       </div>
       {role !== 'user' && (
         <Button

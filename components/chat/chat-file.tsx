@@ -110,6 +110,11 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
     }
   }
 
+  const handleNavigate = () => {
+    if (isEditMode) return
+    router.push(`/app/chat/${id}`)
+  }
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -119,6 +124,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
             isEditMode && 'bg-muted-foreground/20',
           )}
           ref={cilckableRef}
+          onClick={handleNavigate}
         >
           <MessageSquare size={24} />
           {isEditMode ? (

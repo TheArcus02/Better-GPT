@@ -6,8 +6,34 @@ import ChatMessages from './chat-messages'
 import ChatForm, { ChatFormValidatorType } from './chat-form'
 import { useRouter } from 'next/navigation'
 import { useCompletion } from 'ai/react'
+import { Chat, Message } from '@prisma/client'
 
-const ChatClient = () => {
+// const chat: ({
+//   messages: {
+//       id: string;
+//       role: $Enums.Role;
+//       content: string;
+//       userId: string;
+//       chatId: string;
+//       createdAt: Date;
+//       updatedAt: Date;
+//   }[];
+// } & {
+//   id: string;
+//   userId: string;
+//   folderId: string;
+//   name: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }) | null
+
+interface ChatClientProps {
+  chat: Chat & {
+    messages: Message[]
+  }
+}
+
+const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
   const router = useRouter()
 
   const [messages, setMessages] = useState([])
@@ -48,7 +74,10 @@ const ChatClient = () => {
         ]}
       />
       <div className='flex flex-col h-full max-w-4xl w-full'>
-        <ChatMessages />
+        <ChatMessages
+          messages={chat.messages}
+          isLoading={isLoading}
+        />
         <ChatForm onSubmit={onSubmit} isLoading={false} />
       </div>
     </div>
