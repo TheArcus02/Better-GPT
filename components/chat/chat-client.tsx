@@ -1,31 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
-import ChatForm, { ChatFormValidatorType } from './chat-form'
+import ChatForm from './chat-form'
 import { useRouter } from 'next/navigation'
 import { useCompletion } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
-
-// const chat: ({
-//   messages: {
-//       id: string;
-//       role: $Enums.Role;
-//       content: string;
-//       userId: string;
-//       chatId: string;
-//       createdAt: Date;
-//       updatedAt: Date;
-//   }[];
-// } & {
-//   id: string;
-//   userId: string;
-//   folderId: string;
-//   name: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }) | null
+import { ChatMessageProps } from './chat-message'
 
 interface ChatClientProps {
   chat: Chat & {
@@ -36,10 +18,9 @@ interface ChatClientProps {
 const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
   const router = useRouter()
 
-  const [messages, setMessages] = useState([])
-
-  // TODO: get chat id from params in server component
-  const chatId = '1'
+  const [messages, setMessages] = useState<ChatMessageProps[]>(
+    chat.messages,
+  )
 
   const {
     input,
@@ -48,17 +29,27 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
     handleSubmit,
     setInput,
   } = useCompletion({
-    api: `/api/chat/${chatId}`,
-    onFinish(_prompt, completion) {},
+    api: `/api/chat/${chat.id}`,
+    onFinish(_prompt, completion) {
+      const chatMessage: ChatMessageProps = {
+        role: 'system',
+        content: completion,
+      }
+      setMessages((prev) => [...prev, chatMessage])
+      setInput('')
+      router.refresh()
+    },
   })
 
-  const onSubmit = (data: ChatFormValidatorType) => {
-    try {
-    } catch (error) {
-      console.log(error)
-    } finally {
-      router.refresh()
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const userMessage = {
+      role: 'user',
+      content: input,
     }
+
+    setMessages((prev) => [...prev, userMessage])
+
+    handleSubmit(e)
   }
 
   return (
@@ -74,11 +65,13 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
         ]}
       />
       <div className='flex flex-col h-full max-w-4xl w-full'>
-        <ChatMessages
-          messages={chat.messages}
-          isLoading={isLoading}
+        <ChatMessages messages={messages} isLoading={isLoading} />
+        <ChatForm
+          input={input}
+          handleInputChange={handleInputChange}
+          onSubmit={onSubmit}
+          isLoading={false}
         />
-        <ChatForm onSubmit={onSubmit} isLoading={false} />
       </div>
     </div>
   )

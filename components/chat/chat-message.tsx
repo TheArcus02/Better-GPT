@@ -6,11 +6,10 @@ import { toast } from '../ui/use-toast'
 import { BeatLoader } from 'react-spinners'
 import { useTheme } from 'next-themes'
 
-// TODO: DELETE type after schema is created
-type ChatMessageProps = {
+export interface ChatMessageProps {
   content: string
-  role: 'user' | 'system'
-  isLoading: boolean
+  role: string
+  isLoading?: boolean
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({

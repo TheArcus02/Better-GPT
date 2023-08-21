@@ -1,11 +1,10 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import ChatMessage from './chat-message'
-import { Message } from '@prisma/client'
+import ChatMessage, { ChatMessageProps } from './chat-message'
 
 interface ChatMessagesProps {
-  messages: Message[]
+  messages: ChatMessageProps[]
   isLoading: boolean
 }
 
@@ -35,10 +34,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
         role='system'
         content='Hi, Im your AI assistant. How can I help you?'
       />
-      {messages.map((message) => (
+      {messages.map((message, index) => (
         <ChatMessage
           isLoading={isLoading}
-          key={message.id}
+          key={message.content + index}
           role={message.role}
           content={message.content}
         />
