@@ -5,13 +5,9 @@ import ChatMessage, { ChatMessageProps } from './chat-message'
 
 interface ChatMessagesProps {
   messages: ChatMessageProps[]
-  isLoading?: boolean
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({
-  messages,
-  isLoading,
-}) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [fakeLoading, setFakeLoading] = useState(
     messages.length === 0 ? true : false,
@@ -27,8 +23,17 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     }
   }, [])
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    }
+  }, [messages])
+
   return (
-    <div className='overflow-y-auto px-4 w-full pt-6'>
+    <div className='px-4 w-full pt-6'>
       <ChatMessage
         isLoading={fakeLoading}
         role='system'
@@ -36,7 +41,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
       />
       {messages.map((message, index) => (
         <ChatMessage
-          isLoading={isLoading}
           key={message.id ? message.id : message.content + index}
           role={message.role}
           content={message.content}

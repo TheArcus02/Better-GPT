@@ -5,6 +5,12 @@ import { Avatar, AvatarImage } from '../ui/avatar'
 import { toast } from '../ui/use-toast'
 import { BeatLoader } from 'react-spinners'
 import { useTheme } from 'next-themes'
+import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import {
+  atomDark,
+  oneLight,
+} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 export interface ChatMessageProps {
   content: string
@@ -48,7 +54,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       )}
     >
       {role !== 'user' && (
-        <Avatar>
+        <Avatar className='hidden sm:block'>
           <AvatarImage src='https://github.com/shadcn.png' />
         </Avatar>
       )}
@@ -64,13 +70,52 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             size={5}
           />
         ) : (
-          content
+          <ReactMarkdown
+            components={{
+              pre: ({ node, ...props }) => (
+                <div className=' w-full my-2 p-2 rounded-lg bg-black/10'>
+                  <pre {...props} className='whitespace-pre-wrap ' />
+                </div>
+              ),
+              code: ({
+                node,
+                inline,
+                className,
+                children,
+                ...props
+              }) => {
+                const match = /language-(\w+)/.exec(className || '')
+                return !inline && match ? (
+                  <SyntaxHighlighter
+                    {...props}
+                    // eslint-disable-next-line react/no-children-prop
+                    children={String(children).replace(/\n$/, '')}
+                    style={theme === 'light' ? oneLight : atomDark}
+                    language={match[1]}
+                    PreTag='div'
+                    wrapLines={true}
+                    wrapLongLines={true}
+                  />
+                ) : (
+                  <code
+                    // className='rounded-lg p-1 bg-black/10'
+                    className={className}
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                )
+              },
+            }}
+          >
+            {content}
+          </ReactMarkdown>
         )}
       </div>
       {role !== 'user' && (
         <Button
           onClick={onCopy}
-          className='opacity-0 group-hover:opacity-100 transition'
+          className='hidden sm:block opacity-0 group-hover:opacity-100 transition'
           size='icon'
           variant='ghost'
         >

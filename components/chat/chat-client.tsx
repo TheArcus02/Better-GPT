@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useState } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
 import ChatForm from './chat-form'
@@ -15,18 +15,21 @@ interface ChatClientProps {
 }
 
 const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
-  const { input, handleInputChange, handleSubmit, messages } =
-    useChat({
-      api: `/api/chat/${chat.id}`,
-      initialMessages: chat.messages.map((message) => ({
-        id: message.id,
-        role: message.role,
-        content: message.content,
-        createdAt: message.createdAt,
-      })),
-    })
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => handleSubmit(e)
+  const {
+    input,
+    handleInputChange,
+    handleSubmit,
+    messages,
+    isLoading,
+  } = useChat({
+    api: `/api/chat/${chat.id}`,
+    initialMessages: chat.messages.map((message) => ({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      createdAt: message.createdAt,
+    })),
+  })
 
   return (
     <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>
@@ -47,8 +50,8 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
         <ChatForm
           input={input}
           handleInputChange={handleInputChange}
-          onSubmit={onSubmit}
-          isLoading={false}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
         />
       </div>
     </div>
