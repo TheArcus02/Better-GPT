@@ -12,6 +12,8 @@ import { useState } from 'react'
 import NewChatDialog from './new-chat-dialog'
 import NewFolderDialog from './new-folder-dialog'
 import { Chat, Folder } from '@prisma/client'
+import { DialogTrigger } from '@radix-ui/react-dialog'
+import { Dialog } from '../ui/dialog'
 
 interface ChatSidebarProps {
   folders: ({
@@ -44,12 +46,15 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
       {isOpen && (
         <>
           <div className='flex gap-3 min-w-max px-4'>
-            <NewChatDialog folders={folders}>
-              <Button>
-                <MessageSquarePlus size={24} className='mr-2' />
-                New Chat
-              </Button>
-            </NewChatDialog>
+            <Dialog>
+              <DialogTrigger>
+                <Button>
+                  <MessageSquarePlus size={24} className='mr-2' />
+                  New Chat
+                </Button>
+              </DialogTrigger>
+              <NewChatDialog folders={folders} />
+            </Dialog>
             <NewFolderDialog>
               <Button variant='outline'>
                 <FolderPlus size={24} />

@@ -4,10 +4,7 @@ import {
   Folder,
   FolderEdit,
   FolderX,
-  MessageSquare,
   MessageSquarePlus,
-  PencilLine,
-  XCircle,
 } from 'lucide-react'
 import {
   ContextMenu,
@@ -15,13 +12,28 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '../ui/context-menu'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ChatFile from './chat-file'
 import { Chat } from '@prisma/client'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog'
+import axios from 'axios'
+import { toast } from '../ui/use-toast'
+import { useRouter } from 'next/navigation'
 
 interface ChatFolderProps {
   name: string
   chatsCount: number
+  id: string
   chats: (Chat & {
     _count: {
       messages: number
@@ -33,11 +45,22 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
   name,
   chatsCount,
   chats,
+  id,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const cilckableRef = useRef<HTMLDivElement>(null)
+  const [folderName, setFolderName] = useState(name)
+
+  const router = useRouter()
 
   const handleOpen = () => {
+    if (isEditMode) return
     setIsOpen((prev) => !prev)
+  }
+
+  const handleChangeEditMode = () => {
+    setIsEditMode((prev) => !prev)
   }
 
   const handleAddNewChat = () => {
@@ -45,39 +68,156 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
     // TODO: add new chat with api
   }
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select()
+  }
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/chat/folder/${id}`)
+      toast({
+        description: 'Folder deleted',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+        duration: 3000,
+      })
+    } finally {
+      router.refresh()
+    }
+  }
+
+  useEffect(() => {
+    if (isEditMode) {
+      const UpdateFolderName = async (newName: string) => {
+        try {
+          setFolderName(newName)
+          await axios.patch(`/api/chat/folder/${id}`, {
+            name: newName,
+          })
+          toast({
+            description: 'Folder name updated',
+            duration: 3000,
+          })
+        } catch (error) {
+          setFolderName(name)
+          console.error(error)
+          toast({
+            variant: 'destructive',
+            description: 'Something went wrong',
+            duration: 3000,
+          })
+        } finally {
+          router.refresh()
+        }
+      }
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setFolderName(name)
+          setIsEditMode(false)
+        } else if (e.key === 'Enter') {
+          UpdateFolderName(folderName)
+          setIsEditMode(false)
+        }
+      }
+
+      const handleOutsideClick = (e: MouseEvent) => {
+        if (
+          cilckableRef.current &&
+          !cilckableRef.current.contains(e.target as Node)
+        ) {
+          if (folderName !== name) {
+            UpdateFolderName(folderName)
+          }
+          setIsEditMode(false)
+        }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+      document.addEventListener('mousedown', handleOutsideClick)
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown)
+        document.removeEventListener('mousedown', handleOutsideClick)
+      }
+    }
+  }, [isEditMode, id, name, folderName, router])
+
   return (
     <div className='flex flex-col gap-2'>
       {/* Folder Name */}
-      <ContextMenu>
-        <ContextMenuTrigger>
-          <div
-            className='flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer px-3 py-1'
-            onClick={handleOpen}
-          >
-            {isOpen ? (
-              <ChevronDown size={24} />
-            ) : (
-              <ChevronRight size={24} />
-            )}
-            <Folder />
-            <h3 className='text-md font-bold'>{name}</h3>
-            <span className='text-foreground/50'>{chatsCount}</span>
-          </div>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem onClick={handleAddNewChat}>
-            <MessageSquarePlus className='mr-2' /> New Chat
-          </ContextMenuItem>
-          <ContextMenuItem>
-            <FolderEdit className='mr-2' />
-            Rename
-          </ContextMenuItem>
-          <ContextMenuItem>
-            <FolderX className='mr-2' />
-            Delete
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+      <AlertDialog>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <div
+              className='flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer px-3 py-1'
+              onClick={handleOpen}
+              ref={cilckableRef}
+            >
+              {isOpen ? (
+                <ChevronDown size={24} />
+              ) : (
+                <ChevronRight size={24} />
+              )}
+              <Folder />
+              {isEditMode ? (
+                <input
+                  type='text'
+                  autoFocus
+                  onFocus={handleFocus}
+                  onChange={(e) => setFolderName(e.target.value)}
+                  className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
+                  value={folderName}
+                />
+              ) : (
+                <>
+                  <h3 className='text-md font-bold'>{folderName}</h3>
+                  <span className='text-foreground/50'>
+                    {chatsCount}
+                  </span>
+                </>
+              )}
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={handleAddNewChat}>
+              <MessageSquarePlus className='mr-2' /> New Chat
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleChangeEditMode}>
+              <FolderEdit className='mr-2' />
+              Rename
+            </ContextMenuItem>
+            <AlertDialogTrigger>
+              <ContextMenuItem>
+                <FolderX className='mr-2' />
+                Delete
+              </ContextMenuItem>
+            </AlertDialogTrigger>
+          </ContextMenuContent>
+        </ContextMenu>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you absolutely sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently
+              delete folder and all chats inside from our server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Chats */}
       {chats.length !== 0 &&

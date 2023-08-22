@@ -1,13 +1,11 @@
 'use client'
 
-import React, { FormEvent, useEffect, useState } from 'react'
+import React, { FormEvent } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
 import ChatForm from './chat-form'
-import { useRouter } from 'next/navigation'
-import { useChat, useCompletion } from 'ai/react'
+import { useChat } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
-import { ChatMessageProps } from './chat-message'
 import { ScrollArea } from '../ui/scroll-area'
 
 interface ChatClientProps {
@@ -17,8 +15,6 @@ interface ChatClientProps {
 }
 
 const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
-  const router = useRouter()
-
   const { input, handleInputChange, handleSubmit, messages } =
     useChat({
       api: `/api/chat/${chat.id}`,
@@ -31,10 +27,6 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
     })
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => handleSubmit(e)
-
-  useEffect(() => {
-    console.log(messages)
-  }, [messages])
 
   return (
     <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>

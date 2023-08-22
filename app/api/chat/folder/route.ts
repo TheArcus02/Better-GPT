@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
-import { currentUser } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
+import { currentUser } from '@clerk/nextjs'
+import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
@@ -16,14 +16,14 @@ export async function POST(req: Request) {
       return new NextResponse('Name is required', { status: 400 })
     }
 
-    const chat = await prismadb.folder.create({
+    const folder = await prismadb.folder.create({
       data: {
         name,
         userId: user.id,
       },
     })
 
-    return NextResponse.json(chat)
+    return NextResponse.json(folder)
   } catch (error) {
     console.log('[CHAT_ERROR/FOLDER]', error)
     return new NextResponse('Internal error', { status: 500 })

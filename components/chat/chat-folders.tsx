@@ -32,6 +32,7 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
               folders.map((folder) => (
                 <ChatFolder
                   key={folder.id}
+                  id={folder.id}
                   name={folder.name}
                   chatsCount={folder._count.chats}
                   chats={folder.chats}
