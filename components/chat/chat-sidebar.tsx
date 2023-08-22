@@ -55,11 +55,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
               </DialogTrigger>
               <NewChatDialog folders={folders} />
             </Dialog>
-            <NewFolderDialog>
-              <Button variant='outline'>
-                <FolderPlus size={24} />
-              </Button>
-            </NewFolderDialog>
+            <Dialog>
+              <DialogTrigger>
+                <Button variant='outline'>
+                  <FolderPlus size={24} />
+                </Button>
+              </DialogTrigger>
+              <NewFolderDialog />
+            </Dialog>
           </div>
 
           <div className='bg-background'>

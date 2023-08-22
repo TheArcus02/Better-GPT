@@ -32,6 +32,7 @@ import {
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const NewChatFormValidator = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -47,24 +48,22 @@ interface NewChatDialogProps {
     id: string
     name: string
   }[]
-  initialFolder?: string
 }
 
-const NewChatDialog: React.FC<NewChatDialogProps> = ({
-  folders,
-  initialFolder,
-}) => {
+const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
+  const [isAdding, setIsAdding] = useState(false)
+
   const router = useRouter()
   const form = useForm<NewChatFormValidatorType>({
     resolver: zodResolver(NewChatFormValidator),
     defaultValues: {
       name: 'New Chat',
-      folder: initialFolder ?? undefined,
+      folder: folders.length === 1 ? folders[0].id : undefined,
     },
   })
 
   const onSubmit = async (data: NewChatFormValidatorType) => {
-    console.log(data)
+    setIsAdding(true)
     try {
       await axios.post('/api/chat', {
         name: data.name,
@@ -83,6 +82,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
       })
     } finally {
       router.refresh()
+      setIsAdding(false)
     }
   }
 
@@ -137,7 +137,9 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({
             />
           </div>
           <DialogFooter>
-            <Button type='submit'>Create</Button>
+            <Button type='submit' disabled={isAdding}>
+              Create
+            </Button>
           </DialogFooter>
         </form>
       </Form>

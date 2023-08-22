@@ -29,6 +29,10 @@ import {
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { Dialog } from '../ui/dialog'
+import { DialogTrigger } from '@radix-ui/react-dialog'
+import NewChatDialog from './new-chat-dialog'
+import CustomAlertDialog from './custom-alert-dialog'
 
 interface ChatFolderProps {
   name: string
@@ -151,73 +155,69 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
   return (
     <div className='flex flex-col gap-2'>
       {/* Folder Name */}
-      <AlertDialog>
-        <ContextMenu>
-          <ContextMenuTrigger>
-            <div
-              className='flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer px-3 py-1'
-              onClick={handleOpen}
-              ref={cilckableRef}
-            >
-              {isOpen ? (
-                <ChevronDown size={24} />
-              ) : (
-                <ChevronRight size={24} />
-              )}
-              <Folder />
-              {isEditMode ? (
-                <input
-                  type='text'
-                  autoFocus
-                  onFocus={handleFocus}
-                  onChange={(e) => setFolderName(e.target.value)}
-                  className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
-                  value={folderName}
-                />
-              ) : (
-                <>
-                  <h3 className='text-md font-bold'>{folderName}</h3>
-                  <span className='text-foreground/50'>
-                    {chatsCount}
-                  </span>
-                </>
-              )}
-            </div>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem onClick={handleAddNewChat}>
-              <MessageSquarePlus className='mr-2' /> New Chat
-            </ContextMenuItem>
-            <ContextMenuItem onClick={handleChangeEditMode}>
-              <FolderEdit className='mr-2' />
-              Rename
-            </ContextMenuItem>
-            <AlertDialogTrigger>
-              <ContextMenuItem>
-                <FolderX className='mr-2' />
-                Delete
+      <Dialog>
+        <AlertDialog>
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <div
+                className='flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer px-3 py-1'
+                onClick={handleOpen}
+                ref={cilckableRef}
+              >
+                {isOpen ? (
+                  <ChevronDown size={24} />
+                ) : (
+                  <ChevronRight size={24} />
+                )}
+                <Folder />
+                {isEditMode ? (
+                  <input
+                    type='text'
+                    autoFocus
+                    onFocus={handleFocus}
+                    onChange={(e) => setFolderName(e.target.value)}
+                    className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
+                    value={folderName}
+                  />
+                ) : (
+                  <>
+                    <h3 className='text-md font-bold'>
+                      {folderName}
+                    </h3>
+                    <span className='text-foreground/50'>
+                      {chatsCount}
+                    </span>
+                  </>
+                )}
+              </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <DialogTrigger className='block w-full'>
+                <ContextMenuItem onClick={handleAddNewChat}>
+                  <MessageSquarePlus className='mr-2' /> New Chat
+                </ContextMenuItem>
+              </DialogTrigger>
+              <ContextMenuItem onClick={handleChangeEditMode}>
+                <FolderEdit className='mr-2' />
+                Rename
               </ContextMenuItem>
-            </AlertDialogTrigger>
-          </ContextMenuContent>
-        </ContextMenu>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you absolutely sure?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently
-              delete folder and all chats inside from our server.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              <AlertDialogTrigger className='block w-full'>
+                <ContextMenuItem>
+                  <FolderX className='mr-2' />
+                  Delete
+                </ContextMenuItem>
+              </AlertDialogTrigger>
+            </ContextMenuContent>
+          </ContextMenu>
+          <CustomAlertDialog
+            title='Are you absolutely sure?'
+            description='This action cannot be undone. This will permanently delete
+folder and all chats inside from our server.'
+            handleDelete={handleDelete}
+          />
+          <NewChatDialog folders={[{ id, name }]} />
+        </AlertDialog>
+      </Dialog>
 
       {/* Chats */}
       {chats.length !== 0 &&
@@ -235,3 +235,5 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 }
 
 export default ChatFolder
+
+//

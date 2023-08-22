@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 import { toast } from '../ui/use-toast'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
+import CustomAlertDialog from './custom-alert-dialog'
 
 interface ChatFileProps {
   id: string
@@ -115,47 +117,57 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
   }
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <div
-          className={cn(
-            'pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer',
-            isEditMode && 'bg-muted-foreground/20',
-          )}
-          ref={cilckableRef}
-          onClick={handleNavigate}
-        >
-          <MessageSquare size={24} />
-          {isEditMode ? (
-            <input
-              type='text'
-              autoFocus
-              onFocus={handleFocus}
-              onChange={(e) => setChatName(e.target.value)}
-              className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
-              value={chatName}
-            />
-          ) : (
-            <h4 className=''>{chatName}</h4>
-          )}
+    <AlertDialog>
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            className={cn(
+              'pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer',
+              isEditMode && 'bg-muted-foreground/20',
+            )}
+            ref={cilckableRef}
+            onClick={handleNavigate}
+          >
+            <MessageSquare size={24} />
+            {isEditMode ? (
+              <input
+                type='text'
+                autoFocus
+                onFocus={handleFocus}
+                onChange={(e) => setChatName(e.target.value)}
+                className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none'
+                value={chatName}
+              />
+            ) : (
+              <h4 className=''>{chatName}</h4>
+            )}
 
-          {count !== 0 ||
-            (isEditMode && (
-              <span className='text-foreground/50'>{count}</span>
-            ))}
-        </div>
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem onClick={handleChangeEditMode}>
-          <PencilLine className='mr-2' />
-          Rename
-        </ContextMenuItem>
-        <ContextMenuItem onClick={handleDelete}>
-          <XCircle className='mr-2' />
-          Delete
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+            {count !== 0 ||
+              (isEditMode && (
+                <span className='text-foreground/50'>{count}</span>
+              ))}
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onClick={handleChangeEditMode}>
+            <PencilLine className='mr-2' />
+            Rename
+          </ContextMenuItem>
+          <AlertDialogTrigger className='block w-full'>
+            <ContextMenuItem>
+              <XCircle className='mr-2' />
+              Delete
+            </ContextMenuItem>
+          </AlertDialogTrigger>
+        </ContextMenuContent>
+      </ContextMenu>
+      <CustomAlertDialog
+        title='Are you absolutely sure?'
+        description='This action cannot be undone. This will permanently delete
+chat and all messages inside from our server.'
+        handleDelete={handleDelete}
+      />
+    </AlertDialog>
   )
 }
 
