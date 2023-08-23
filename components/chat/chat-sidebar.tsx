@@ -14,6 +14,7 @@ import NewFolderDialog from './new-folder-dialog'
 import { Chat, Folder } from '@prisma/client'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { Dialog } from '../ui/dialog'
+import Image from 'next/image'
 
 interface ChatSidebarProps {
   folders: ({
@@ -36,7 +37,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
   }
 
   return (
-    <div className='flex flex-col gap-4 h-full bg-secondary py-6'>
+    <div className='flex flex-col gap-4 h-full bg-secondary pt-6'>
       <div className='flex gap-2 items-center px-4'>
         <Button variant='ghost' size='icon' onClick={handleOpen}>
           {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
@@ -65,8 +66,29 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
             </Dialog>
           </div>
 
-          <div className='bg-background'>
+          <div className='bg-background flex flex-col h-full justify-between'>
             <ChatFolders folders={folders} />
+
+            {/* TODO: check if pro then render */}
+            <div className='pt-24 relative px-4 py-6 bg-primary/20 mx-6 mb-10 rounded-3xl flex flex-col  items-center max-w-xs'>
+              <Image
+                src='/assets/Developer.svg'
+                width={200}
+                height={200}
+                alt='upgrade'
+                className='absolute top-0 -mt-24'
+              />
+              <h2 className='text-2xl font-light mt-2'>
+                Get Premium
+              </h2>
+              <p className='text-sm text-foreground/50 text-center '>
+                Unlock the full potential of the AI. Get unlimited
+                access to all features.
+              </p>
+              <Button variant='outline' size='lg' className='mt-6'>
+                Buy Premium
+              </Button>
+            </div>
           </div>
         </>
       )}
