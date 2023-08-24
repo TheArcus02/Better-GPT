@@ -1,6 +1,5 @@
 'use client'
 
-import React, { FormEvent, useState } from 'react'
 import ChatTabs from './chat-tabs'
 import ChatMessages from './chat-messages'
 import ChatForm from './chat-form'
