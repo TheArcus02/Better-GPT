@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
-import { Copy } from 'lucide-react'
+import { Copy, Save } from 'lucide-react'
 import { Avatar, AvatarImage } from '../ui/avatar'
 import { toast } from '../ui/use-toast'
 import { BeatLoader } from 'react-spinners'
@@ -11,6 +11,8 @@ import {
   atomDark,
   oneLight,
 } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { Tooltip, TooltipContent } from '../ui/tooltip'
+import { TooltipTrigger } from '@radix-ui/react-tooltip'
 
 export interface ChatMessageProps {
   content: string
@@ -46,6 +48,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       duration: 3000,
     })
   }
+
+  const onSavePrompt = () => {
+    if (!content) {
+      return
+    }
+
+    // TODO: add function to save prompt to database
+  }
+
   return (
     <div
       className={cn(
@@ -53,10 +64,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         role === 'user' && 'justify-end',
       )}
     >
-      {role !== 'user' && (
+      {role !== 'user' ? (
         <Avatar className='hidden sm:block'>
           <AvatarImage src='https://github.com/shadcn.png' />
         </Avatar>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={onSavePrompt}
+              className='hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition '
+              size='icon'
+              variant='ghost'
+            >
+              <Save className='w-5 h-5' />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Save prompt</TooltipContent>
+        </Tooltip>
       )}
       <div
         className={cn(
@@ -113,14 +138,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         )}
       </div>
       {role !== 'user' && (
-        <Button
-          onClick={onCopy}
-          className='hidden sm:block opacity-0 group-hover:opacity-100 transition'
-          size='icon'
-          variant='ghost'
-        >
-          <Copy className='w-4 h-4' />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={onCopy}
+              className='hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition '
+              size='icon'
+              variant='ghost'
+            >
+              <Copy className='w-4 h-4' />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Copy to clipboard</TooltipContent>
+        </Tooltip>
       )}
     </div>
   )
