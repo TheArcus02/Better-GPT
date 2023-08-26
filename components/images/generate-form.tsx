@@ -53,7 +53,7 @@ const GenerateImageForm: React.FC = () => {
     try {
       setIsGenerating(true)
       setPhoto(null)
-      const response = await axios.post('/api/images', data)
+      const response = await axios.post('/api/images/generate', data)
       setPhoto(`data:image/jpeg;base64,${response.data.image}`)
       toast({
         description: 'Image generated successfully',

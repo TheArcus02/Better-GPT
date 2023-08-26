@@ -57,3 +57,16 @@ model Message {
 
   @@index([chatId])
 }
+
+model Image {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String
+
+  prompt         String
+  url            String
+  shared         Boolean     @default(false)
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+}
