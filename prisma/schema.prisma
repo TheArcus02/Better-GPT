@@ -61,6 +61,8 @@ model Message {
 model Image {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
   userId         String
+  username       String
+  profilePicture String
 
   prompt         String
   url            String

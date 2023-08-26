@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-const ChatsPage = () => {
+const ChatsPage = async () => {
   return (
     <div className='flex items-center bg-secondary/50 justify-center h-full w-full flex-col gap-5'>
       <Image

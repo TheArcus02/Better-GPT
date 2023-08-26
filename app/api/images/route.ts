@@ -37,6 +37,8 @@ export async function POST(req: Request) {
         url: result.url,
         userId: user.id,
         shared: shared || false,
+        profilePicture: user.imageUrl,
+        username: `${user.firstName} ${user.lastName}`,
       },
     })
 

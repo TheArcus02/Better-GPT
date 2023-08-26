@@ -1,5 +1,3 @@
-import { UserButton } from '@clerk/nextjs'
-
 const RootPage = () => {
   return (
     <div className='text-red-500'>
