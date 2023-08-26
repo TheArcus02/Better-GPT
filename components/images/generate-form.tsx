@@ -69,6 +69,7 @@ const GenerateImageForm: React.FC = () => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -122,7 +123,7 @@ const GenerateImageForm: React.FC = () => {
           )}
         </div>
         <div className='mt-10 flex gap-6'>
-          <Button size='lg'>
+          <Button size='lg' type='submit' disabled={isGenerating}>
             {isGenerating ? 'Generating...' : 'Generate image'}
           </Button>
           <Button variant='secondary' size='lg'>
