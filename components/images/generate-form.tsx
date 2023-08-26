@@ -24,6 +24,8 @@ import Image from 'next/image'
 import { RingLoader } from 'react-spinners'
 import { useTheme } from 'next-themes'
 import { Button } from '../ui/button'
+import axios from 'axios'
+import { toast } from '../ui/use-toast'
 
 const generateImageFormSchema = z.object({
   prompt: z.string().min(1).max(1000),
@@ -46,8 +48,28 @@ const GenerateImageForm: React.FC = () => {
     },
   })
 
-  const onSubmit = (data: GenerateImageFormType) => {
-    console.log(data)
+  console.log(photo)
+
+  const onSubmit = async (data: GenerateImageFormType) => {
+    try {
+      setIsGenerating(true)
+      setPhoto(null)
+      const response = await axios.post('/api/images', data)
+      setPhoto(`data:image/jpeg;base64,${response.data.image}`)
+      toast({
+        description: 'Image generated successfully',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+        duration: 3000,
+      })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   return (
@@ -100,7 +122,11 @@ const GenerateImageForm: React.FC = () => {
         />
         <div className='relative bg-secondary/30 border border-secondary text-sm rounded-lg  w-96 p-3 h-96 flex justify-center items-center'>
           {photo ? (
-            <Image alt={form.getValues('prompt')} src={photo} />
+            <Image
+              alt={form.getValues('prompt')}
+              src={photo}
+              layout='fill'
+            />
           ) : !isGenerating ? (
             <Image
               alt='preview'
