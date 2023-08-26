@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     if (!prompt || !photo) {
-      return new NextResponse('Missing prompt or size', {
+      return new NextResponse('Missing fields', {
         status: 400,
       })
     }

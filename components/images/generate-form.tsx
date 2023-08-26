@@ -26,7 +26,7 @@ import { useTheme } from 'next-themes'
 import { Button } from '../ui/button'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
-import { Group, Share2 } from 'lucide-react'
+import { Group, Share2, Wand2 } from 'lucide-react'
 
 const generateImageFormSchema = z.object({
   prompt: z.string().min(1).max(1000),
@@ -37,7 +37,11 @@ type GenerateImageFormType = z.infer<typeof generateImageFormSchema>
 
 const GenerateImageForm: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null)
+  const [imageId, setImageId] = useState<number | null>(null)
+
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
 
   const { theme } = useTheme()
 
@@ -52,6 +56,7 @@ const GenerateImageForm: React.FC = () => {
   const onSubmit = async (data: GenerateImageFormType) => {
     try {
       setIsGenerating(true)
+      setImageId(null)
       setPhoto(null)
       const response = await axios.post('/api/images/generate', data)
       setPhoto(`data:image/jpeg;base64,${response.data.image}`)
@@ -68,6 +73,57 @@ const GenerateImageForm: React.FC = () => {
       })
     } finally {
       setIsGenerating(false)
+    }
+  }
+
+  const onSave = async () => {
+    try {
+      setIsSaving(true)
+      const response = await axios.post('/api/images', {
+        photo: photo,
+        prompt: form.getValues('prompt'),
+        shared: false,
+      })
+
+      setImageId(response.data.id)
+
+      toast({
+        description: 'Image saved',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+        duration: 3000,
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const onShare = async () => {
+    if (!imageId) return
+    try {
+      setIsSharing(true)
+      await axios.patch(`/api/images/${imageId}`, {
+        shared: true,
+      })
+
+      toast({
+        description: 'Image shared',
+        duration: 3000,
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+        duration: 3000,
+      })
+    } finally {
+      setIsSharing(false)
     }
   }
 
@@ -156,25 +212,40 @@ const GenerateImageForm: React.FC = () => {
               size='lg'
               className='w-full'
               type='submit'
-              disabled={isGenerating}
+              disabled={isGenerating || isSaving || isSharing}
             >
-              {isGenerating ? 'Generating...' : 'Generate image'}
+              {isGenerating ? (
+                'Generating...'
+              ) : (
+                <>
+                  <Wand2 className='mr-2' />
+                  {'Generate image'}
+                </>
+              )}
             </Button>
-            <div className='flex space-x-3'>
-              <Button variant='secondary' size='lg' disabled={!photo}>
+            {!imageId ? (
+              <Button
+                variant='secondary'
+                size='lg'
+                disabled={!photo || isSaving}
+                className='w-full'
+                onClick={onSave}
+              >
                 <Group size={20} className='mr-2' />
-                Save
+                {isSaving ? 'Saving...' : 'Save'}
               </Button>
+            ) : (
               <Button
                 variant='accent'
                 className='w-full'
                 size='lg'
-                disabled={!photo}
+                disabled={!photo || isSharing}
+                onClick={onShare}
               >
-                <Share2 className='mr-2' size={20} />
-                Share
+                <Share2 size={20} className='mr-2' />
+                {isSharing ? 'Sharing...' : 'Share'}
               </Button>
-            </div>
+            )}
           </div>
         </div>
       </form>
