@@ -1,6 +1,8 @@
+'use client'
 import { Image as ImageSchema } from '@prisma/client'
 import React from 'react'
 import Image from 'next/image'
+import { CldImage } from 'next-cloudinary'
 
 interface ImageCardProps {
   image: ImageSchema
@@ -8,15 +10,17 @@ interface ImageCardProps {
 
 const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
   return (
-    <div className='rounded-xl group relative card  min-h-[20rem] md:min-h-[30rem] xl:min-h-[35rem]'>
-      <Image
-        className='w-full h-auto object-cover rounded-xl'
-        src={image.url}
+    <div className='rounded-xl group relative card max-w-fit'>
+      <CldImage
+        src={image.publicId}
         alt={image.prompt}
-        fill
+        height={image.size}
+        width={528}
+        crop='fill'
+        sizes='100vw, (min-width: 768px) 33vw, (min-width: 1024px) 25vw'
       />
       <div className=' group-hover:flex flex-col max-h-[94.5%] hidden absolute bottom-0 left-0 right-0 bg-secondary m-2 p-4 rounded-md'>
-        <p className='text-white text-sm overflow-y-auto prompt'>
+        <p className='text-foreground text-sm overflow-y-auto prompt'>
           {image.prompt}
         </p>
 
@@ -29,7 +33,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
               alt={image.username}
               src={image.profilePicture}
             />
-            <p className='text-white text-sm'>{image.username}</p>
+            <p className='text-foreground text-sm'>
+              {image.username}
+            </p>
           </div>
           {/* <button type="button" onClick={() => downloadImage(_id, photo)} className="outline-none bg-transparent border-none">
           <img src={download} alt="download" className="w-6 h-6 object-contain invert" />
@@ -41,3 +47,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
 }
 
 export default ImageCard
+
+// cld-sample-5
+// pk8is3oskm2pzpoi25o0

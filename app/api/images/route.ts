@@ -9,21 +9,28 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
+const sizeMapping = {
+  '256x256': 256,
+  '512x512': 512,
+  '1024x1024': 1024,
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { prompt, photo, shared } = body as {
+    const { prompt, photo, shared, size } = body as {
       prompt: string
       photo: string
       shared: boolean
+      size: '256x256' | '512x512' | '1024x1024'
     }
 
     if (!user || !user.id || !user.firstName) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    if (!prompt || !photo) {
+    if (!prompt || !photo || !size) {
       return new NextResponse('Missing fields', {
         status: 400,
       })
@@ -31,14 +38,18 @@ export async function POST(req: Request) {
 
     const result = await cloudinary.uploader.upload(photo)
 
+    const mappedSize = sizeMapping[size]
+
     const image = await prismadb.image.create({
       data: {
         prompt,
         url: result.url,
+        publicId: result.public_id,
         userId: user.id,
         shared: shared || false,
         profilePicture: user.imageUrl,
         username: `${user.firstName} ${user.lastName}`,
+        size: mappedSize,
       },
     })
 

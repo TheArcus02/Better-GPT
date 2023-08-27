@@ -124,6 +124,7 @@ const GenerateImageForm: React.FC = () => {
       })
     } finally {
       setIsSharing(false)
+      setPhoto(null)
     }
   }
 
@@ -171,6 +172,7 @@ const GenerateImageForm: React.FC = () => {
                 <FormLabel>Prompt</FormLabel>
                 <FormControl>
                   <Textarea
+                    disabled={isGenerating || !!photo}
                     className='resize-none'
                     placeholder='Futuristic cityscape at night with towering skyscrapers, neon lights, and flying cars, all in a cyberpunk aesthetic.'
                     {...field}
@@ -189,6 +191,7 @@ const GenerateImageForm: React.FC = () => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  disabled={isGenerating || !!photo}
                 >
                   <FormControl>
                     <SelectTrigger>
