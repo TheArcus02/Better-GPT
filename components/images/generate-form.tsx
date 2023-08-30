@@ -35,13 +35,18 @@ const generateImageFormSchema = z.object({
 
 type GenerateImageFormType = z.infer<typeof generateImageFormSchema>
 
+interface Photo {
+  id?: number
+  src: string
+  prompt: string
+  size: string
+}
+
 const GenerateImageForm: React.FC = () => {
-  const [photo, setPhoto] = useState<string | null>(null)
-  const [imageId, setImageId] = useState<number | null>(null)
+  const [photo, setPhoto] = useState<Photo | null>(null)
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isSharing, setIsSharing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { theme } = useTheme()
 
@@ -56,10 +61,13 @@ const GenerateImageForm: React.FC = () => {
   const onSubmit = async (data: GenerateImageFormType) => {
     try {
       setIsGenerating(true)
-      setImageId(null)
       setPhoto(null)
       const response = await axios.post('/api/images/generate', data)
-      setPhoto(`data:image/jpeg;base64,${response.data.image}`)
+      setPhoto({
+        src: `data:image/jpeg;base64,${response.data.image}`,
+        prompt: data.prompt,
+        size: data.size,
+      })
       toast({
         description: 'Image generated successfully',
         duration: 3000,
@@ -77,15 +85,22 @@ const GenerateImageForm: React.FC = () => {
   }
 
   const onSave = async () => {
+    if (!photo) return
     try {
-      setIsSaving(true)
+      setIsLoading(true)
       const response = await axios.post('/api/images', {
-        photo: photo,
-        prompt: form.getValues('prompt'),
+        photo: photo.src,
+        prompt: photo.prompt,
         shared: false,
+        size: photo.size,
       })
 
-      setImageId(response.data.id)
+      const imageId = response.data.id
+
+      setPhoto((prev) => ({
+        ...prev!,
+        id: imageId,
+      }))
 
       toast({
         description: 'Image saved',
@@ -99,15 +114,15 @@ const GenerateImageForm: React.FC = () => {
         duration: 3000,
       })
     } finally {
-      setIsSaving(false)
+      setIsLoading(false)
     }
   }
 
   const onShare = async () => {
-    if (!imageId) return
+    if (!photo?.id) return
     try {
-      setIsSharing(true)
-      await axios.patch(`/api/images/${imageId}`, {
+      setIsLoading(true)
+      await axios.patch(`/api/images/${photo.id}`, {
         shared: true,
       })
 
@@ -123,7 +138,7 @@ const GenerateImageForm: React.FC = () => {
         duration: 3000,
       })
     } finally {
-      setIsSharing(false)
+      setIsLoading(false)
       setPhoto(null)
     }
   }
@@ -138,7 +153,7 @@ const GenerateImageForm: React.FC = () => {
           {photo ? (
             <Image
               alt={form.getValues('prompt')}
-              src={photo}
+              src={photo.src}
               layout='fill'
               className='p-2'
             />
@@ -172,7 +187,7 @@ const GenerateImageForm: React.FC = () => {
                 <FormLabel>Prompt</FormLabel>
                 <FormControl>
                   <Textarea
-                    disabled={isGenerating || !!photo}
+                    disabled={isGenerating || isLoading}
                     className='resize-none'
                     placeholder='Futuristic cityscape at night with towering skyscrapers, neon lights, and flying cars, all in a cyberpunk aesthetic.'
                     {...field}
@@ -191,7 +206,7 @@ const GenerateImageForm: React.FC = () => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  disabled={isGenerating || !!photo}
+                  disabled={isGenerating || isLoading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -215,7 +230,7 @@ const GenerateImageForm: React.FC = () => {
               size='lg'
               className='w-full'
               type='submit'
-              disabled={isGenerating || isSaving || isSharing}
+              disabled={isGenerating || isLoading}
             >
               {isGenerating ? (
                 'Generating...'
@@ -226,27 +241,27 @@ const GenerateImageForm: React.FC = () => {
                 </>
               )}
             </Button>
-            {!imageId ? (
+            {!photo?.id ? (
               <Button
                 variant='secondary'
                 size='lg'
-                disabled={!photo || isSaving}
+                disabled={!photo || isLoading}
                 className='w-full'
                 onClick={onSave}
               >
                 <Group size={20} className='mr-2' />
-                {isSaving ? 'Saving...' : 'Save'}
+                {isLoading ? 'Saving...' : 'Save'}
               </Button>
             ) : (
               <Button
                 variant='accent'
                 className='w-full'
                 size='lg'
-                disabled={!photo || isSharing}
+                disabled={!photo || isLoading}
                 onClick={onShare}
               >
                 <Share2 size={20} className='mr-2' />
-                {isSharing ? 'Sharing...' : 'Share'}
+                {isLoading ? 'Sharing...' : 'Share'}
               </Button>
             )}
           </div>

@@ -1,7 +1,6 @@
 'use client'
 import { Image } from '@prisma/client'
 import ImageCard from './image-card'
-import { CldImage } from 'next-cloudinary'
 
 interface GaleryProps {
   images: Image[]
@@ -13,7 +12,7 @@ const Galery: React.FC<GaleryProps> = ({ images }) => {
   }
 
   return images.length > 0 ? (
-    <div className='grid lg:grid-cols-3 sm:grid-cols-3 grid-cols-1 gap-4'>
+    <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4'>
       {[getColumns(0), getColumns(1), getColumns(2)].map(
         (column, index) => (
           <div className='flex flex-col gap-4' key={index}>

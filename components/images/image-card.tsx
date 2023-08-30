@@ -47,6 +47,3 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
 }
 
 export default ImageCard
-
-// cld-sample-5
-// pk8is3oskm2pzpoi25o0
