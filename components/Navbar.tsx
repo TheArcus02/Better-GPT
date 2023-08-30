@@ -155,7 +155,7 @@ const Navbar = ({ isApp }: NavbarProps) => {
 
         <ModeToggle />
         {isSignedIn ? (
-          <UserButton />
+          <UserButton afterSignOutUrl='/app' />
         ) : (
           <Button
             variant='outline'
