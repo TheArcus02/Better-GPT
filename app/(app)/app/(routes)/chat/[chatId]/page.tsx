@@ -35,6 +35,8 @@ const ChatPage: React.FC<ChatPageProps> = async ({
 
   if (!chat) return redirect('/app/chat')
 
+  if (chat.userId !== userId) return redirect('/app/chat')
+
   return <ChatClient chat={chat} />
 }
 
