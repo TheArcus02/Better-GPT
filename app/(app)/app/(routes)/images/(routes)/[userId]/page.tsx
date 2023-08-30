@@ -6,29 +6,43 @@ interface UserGaleryProps {
   params: {
     userId: string
   }
+  searchParams: {
+    query: string
+    filter: string
+  }
 }
 
 const UserGaleryPage: React.FC<UserGaleryProps> = async ({
   params: { userId },
+  searchParams: { query, filter },
 }) => {
   const { userId: loggedUserId } = auth()
   const isOwner = loggedUserId === userId
 
-  const whereOptions = {
-    owner: {
-      userId,
-    },
-    notOwner: {
-      userId,
-      shared: true,
-    },
-  }
-
-  const where = isOwner ? whereOptions.owner : whereOptions.notOwner
-
   const images = await prismadb.image.findMany({
-    where,
+    where:
+      query || filter
+        ? {
+            OR: [
+              {
+                prompt: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                username: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+            userId,
+            shared: isOwner ? undefined : true,
+          }
+        : { shared: true, userId },
   })
+
   // TODO: add user to db when created and retrieve it here and change the title to the user's name
   return (
     <section className='mt-16 max-w-7xl mx-auto h-full'>

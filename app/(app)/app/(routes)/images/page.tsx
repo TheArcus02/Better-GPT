@@ -4,18 +4,45 @@ import prismadb from '@/lib/prismadb'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
 import Link from 'next/link'
 
-const ImagesPage = async () => {
+interface ImagePageProps {
+  searchParams: {
+    query: string
+    filter: string
+  }
+}
+
+const ImagesPage: React.FC<ImagePageProps> = async ({
+  searchParams: { query, filter },
+}) => {
   const { userId } = auth()
 
   if (!userId) return redirectToSignIn()
-
+  console.log(query)
+  // TODO: Add filter
   const images = await prismadb.image.findMany({
     orderBy: {
       createdAt: 'desc',
     },
-    where: {
-      shared: true,
-    },
+    where:
+      query || filter
+        ? {
+            OR: [
+              {
+                prompt: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                username: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+            shared: true,
+          }
+        : { shared: true },
   })
 
   return (
