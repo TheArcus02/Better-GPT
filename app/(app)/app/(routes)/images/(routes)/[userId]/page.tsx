@@ -1,6 +1,6 @@
 import Galery from '@/components/images/galery'
 import prismadb from '@/lib/prismadb'
-import { auth } from '@clerk/nextjs'
+import { auth, clerkClient } from '@clerk/nextjs'
 
 interface UserGaleryProps {
   params: {
@@ -18,6 +18,8 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
 }) => {
   const { userId: loggedUserId } = auth()
   const isOwner = loggedUserId === userId
+  const user = await clerkClient.users.getUser(userId)
+  console.log(user)
 
   const images = await prismadb.image.findMany({
     where:
@@ -43,15 +45,16 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
         : { shared: true, userId },
   })
 
-  // TODO: add user to db when created and retrieve it here and change the title to the user's name
   return (
     <section className='mt-16 max-w-7xl mx-auto h-full'>
       <div>
         <h1 className='text-3xl font-extrabold'>
-          {isOwner ? 'Your' : ''} Gallery
+          {isOwner ? 'Your' : `${user.firstName} ${user.lastName}`}{' '}
+          Gallery
         </h1>
         <p className='mt-2'>
-          Images created by {isOwner ? 'you' : 'this user'}
+          Images created by{' '}
+          {isOwner ? 'you' : `${user.firstName} ${user.lastName}`}
         </p>
       </div>
 

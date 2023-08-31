@@ -3,12 +3,29 @@ import { Image as ImageSchema } from '@prisma/client'
 import React from 'react'
 import Image from 'next/image'
 import { CldImage } from 'next-cloudinary'
+import Link from 'next/link'
+import FileSaver from 'file-saver'
+import { CalendarDays, Download } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../ui/tooltip'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '../ui/hover-card'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 interface ImageCardProps {
   image: ImageSchema
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
+  const downloadImage = async (id: string, photo: string) => {
+    FileSaver.saveAs(photo, `download-${id}.jpg`)
+  }
   return (
     <div className='rounded-xl group relative card max-w-fit'>
       <CldImage
@@ -25,21 +42,35 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
         </p>
 
         <div className='mt-5 flex justify-between items-center gap-2'>
-          <div className='flex items-center gap-2'>
-            <Image
-              className='w-7 h-7 rounded-full object-cover'
-              width={28}
-              height={28}
-              alt={image.username}
-              src={image.profilePicture}
-            />
+          <Link
+            href={`/app/images/${image.userId}`}
+            className='flex items-center gap-2'
+          >
+            <Avatar className='w-7 h-7'>
+              <AvatarImage src={image.profilePicture} />
+              <AvatarFallback>
+                {image.username[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <p className='text-foreground text-sm'>
               {image.username}
             </p>
-          </div>
-          {/* <button type="button" onClick={() => downloadImage(_id, photo)} className="outline-none bg-transparent border-none">
-          <img src={download} alt="download" className="w-6 h-6 object-contain invert" />
-        </button> */}
+          </Link>
+
+          <Tooltip>
+            <TooltipTrigger>
+              <button
+                type='button'
+                onClick={() => downloadImage(image.id, image.url)}
+                className='outline-none bg-transparent border-none'
+              >
+                <Download className='w-6 h-6' size={24} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className='text-foreground text-sm'>Download</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </div>
