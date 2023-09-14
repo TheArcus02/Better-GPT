@@ -32,7 +32,7 @@ model Chat {
   updatedAt      DateTime    @updatedAt
 
   messages       Message[]
-  folder         Folder      @relation(fields: [folderId], references: [id])
+  folder         Folder      @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@index([folderId])
 }

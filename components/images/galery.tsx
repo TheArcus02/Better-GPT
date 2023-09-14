@@ -2,7 +2,6 @@
 import { Image } from '@prisma/client'
 import ImageCard from './image-card'
 import SearchBar from './search-bar'
-
 interface GaleryProps {
   images: Image[]
 }
@@ -14,7 +13,7 @@ const Galery: React.FC<GaleryProps> = ({ images }) => {
 
   return (
     <>
-      <div className='mb-16 max-w-3xl'>
+      <div className='mb-16'>
         <SearchBar />
       </div>
 
@@ -31,7 +30,7 @@ const Galery: React.FC<GaleryProps> = ({ images }) => {
           )}
         </div>
       ) : (
-        <div>Galery</div>
+        <div>No results.</div>
       )}
     </>
   )

@@ -20,7 +20,6 @@ interface ChatFileProps {
 }
 
 const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
-  // TODO: add alert dialog when user deletes chat
   const router = useRouter()
   const cilckableRef = useRef<HTMLDivElement>(null)
 

@@ -11,6 +11,7 @@ import {
   MessagesSquare,
   Image,
   Terminal,
+  Languages,
 } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import Link from 'next/link'
@@ -51,6 +52,12 @@ export const AppRoutes: NavRoute[] = [
     icon: Image,
     href: '/app/images',
     label: 'Images',
+    pro: true,
+  },
+  {
+    icon: Languages,
+    href: '/app/translator',
+    label: 'Translator',
     pro: true,
   },
 ]
@@ -124,10 +131,6 @@ const Navbar = ({ isApp }: NavbarProps) => {
               {route.icon && <route.icon className='h-5 w-5 mr-1' />}
               <span className='hidden md:block'>{route.label}</span>
             </div>
-            {/* Underline don't know if I like it  
-            {pathname === route.href && 'text-accent' && (
-              <div className='h-0.5 bg-accent rounded-full ' />
-            )} */}
           </div>
         ))}
       </div>

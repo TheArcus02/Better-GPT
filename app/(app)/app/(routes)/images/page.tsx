@@ -17,8 +17,7 @@ const ImagesPage: React.FC<ImagePageProps> = async ({
   const { userId } = auth()
 
   if (!userId) return redirectToSignIn()
-  console.log(query)
-  // TODO: Add filter
+
   const images = await prismadb.image.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -26,18 +25,25 @@ const ImagesPage: React.FC<ImagePageProps> = async ({
     where:
       query || filter
         ? {
-            OR: [
+            AND: [
               {
-                prompt: {
-                  contains: query,
-                  mode: 'insensitive',
-                },
+                OR: [
+                  {
+                    prompt: {
+                      contains: query,
+                      mode: 'insensitive',
+                    },
+                  },
+                  {
+                    username: {
+                      contains: query,
+                      mode: 'insensitive',
+                    },
+                  },
+                ],
               },
               {
-                username: {
-                  contains: query,
-                  mode: 'insensitive',
-                },
+                size: filter ? parseInt(filter) : undefined,
               },
             ],
             shared: true,
