@@ -147,7 +147,7 @@ const GenerateImageForm: React.FC = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='mt-16 max-w-3xl w-full flex'
+        className='max-w-3xl w-full flex'
       >
         <div className='flex-shrink-0 relative bg-secondary/30 border border-secondary text-sm rounded-lg  w-96 p-3 h-96 flex justify-center items-center'>
           {photo ? (
