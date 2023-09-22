@@ -56,7 +56,7 @@ export const AppRoutes: NavRoute[] = [
   },
   {
     icon: Languages,
-    href: '/app/translator',
+    href: '/app/translation',
     label: 'Translator',
     pro: true,
   },
