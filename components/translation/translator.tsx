@@ -2,9 +2,11 @@
 
 import { useCompletion } from 'ai/react'
 import { ArrowRightLeft } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Combobox, { ComboboxItem } from '../combobox'
 import { Textarea } from '../ui/textarea'
+import { useDebounce } from '@/hooks/use-debounce'
+import axios from 'axios'
 
 const languages = [
   { label: 'English', value: 'en' },
@@ -29,28 +31,38 @@ const Translator = () => {
   const [originalLanguage, setOriginalLanguage] = useState<
     ComboboxItem | undefined
   >(undefined)
-
   const [translateLanguage, setTranslateLanguage] = useState<
     ComboboxItem | undefined
   >({ label: 'English', value: 'en' })
+  const debouncedContent = useDebounce<string>(content, 1000)
 
-  const { complete } = useCompletion({
-    api: '/api/completion',
+  const { complete, completion, isLoading } = useCompletion({
+    api: '/api/translation',
+    body: {
+      originalLanguage: originalLanguage?.label,
+      translateLanguage: translateLanguage?.label,
+    },
   })
 
+  useEffect(() => {
+    if (debouncedContent && translateLanguage) {
+      complete(debouncedContent)
+    }
+  }, [debouncedContent, translateLanguage])
+
   return (
-    <div className='flex flex-col bg-secondary rounded-xl '>
-      <div className='flex justify-between items-center px-10 py-4'>
+    <div className='flex flex-col bg-secondary/80 rounded-xl border-2 border-white/20'>
+      <div className='flex justify-between items-center px-5 py-4'>
         <div>
           <Combobox
             items={languages}
-            title='Select a language'
+            title='Detect language'
             value={originalLanguage ? originalLanguage.value : ''}
             setValue={setOriginalLanguage}
             searchText='Search language...'
           />
         </div>
-        <div>
+        <div className='cursor-pointer'>
           <ArrowRightLeft />
         </div>
         <div>
@@ -64,12 +76,19 @@ const Translator = () => {
         </div>
       </div>
 
-      <div className='flex border-t min-h-[200px] h-full gap-1 border-t-background'>
-        <div className='w-full'>
-          <Textarea className='resize-none rounded-none h-full rounded-bl-xl' />
+      <div className='flex  min-h-[200px] h-full border-t-2 border-white/20'>
+        <div className='w-full border-r-[1px] border-white/20'>
+          <Textarea
+            className='resize-none rounded-none h-full rounded-bl-xl focus-visible:ring-1'
+            placeholder='Type to translate...'
+            onChange={(e) => setContent(e.target.value)}
+          />
         </div>
-        <div className='w-full'>
-          <Textarea className='resize-none rounded-none h-full rounded-br-xl' />
+        <div className='w-full border-l-[1px] border-white/20'>
+          <Textarea
+            className='resize-none rounded-none h-full rounded-br-xl focus-visible:ring-1'
+            value={completion}
+          />
         </div>
       </div>
     </div>

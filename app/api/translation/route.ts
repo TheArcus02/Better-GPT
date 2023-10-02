@@ -11,9 +11,10 @@ export async function POST(req: Request) {
   try {
     const { userId } = auth()
     const body = await req.json()
-    const { text, language } = body as {
-      text: string
-      language: string
+    const { prompt, originalLanguage, translateLanguage } = body as {
+      prompt: string
+      originalLanguage: string
+      translateLanguage: string
     }
 
     if (!userId) {
@@ -26,8 +27,18 @@ export async function POST(req: Request) {
       })
     }
 
-    if (!text || !language) {
+    if (!prompt || !translateLanguage) {
       return new NextResponse('Missing fields', { status: 400 })
+    }
+
+    let promptMessage = `Translate the following text to 
+    ${translateLanguage}:\n
+    ${prompt}`
+
+    if (originalLanguage) {
+      promptMessage = `Translate the following text from ${originalLanguage}
+       to ${translateLanguage}:\n
+      ${prompt}`
     }
 
     const response = await openai.chat.completions.create({
@@ -36,12 +47,11 @@ export async function POST(req: Request) {
       messages: [
         {
           role: 'user',
-          content: `Given the following text, 
-          translate to the ${language} language. \n
-          Text:${text}`,
+          content: promptMessage,
         },
       ],
     })
+    console.log('[TRANSLATION_RESPONSE]', response)
     const stream = OpenAIStream(response)
 
     return new StreamingTextResponse(stream)
