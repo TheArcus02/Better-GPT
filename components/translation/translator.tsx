@@ -45,8 +45,27 @@ const Translator = () => {
   })
 
   useEffect(() => {
-    if (debouncedContent && translateLanguage) {
-      complete(debouncedContent)
+    if (debouncedContent && translateLanguage && originalLanguage) {
+      // complete(debouncedContent)
+    }
+    if (!originalLanguage && debouncedContent) {
+      const detectLanguage = async () => {
+        try {
+          const res = await axios.post('/api/translation/detect', {
+            prompt: debouncedContent,
+          })
+
+          const detectedLanguage = res.data
+          // const detectedLanguageItem = languages.find(
+          //   (language) => language.value === detectedLanguage,
+          // )
+          // setOriginalLanguage(detectedLanguageItem)
+          console.log(detectedLanguage)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      detectLanguage()
     }
   }, [debouncedContent, translateLanguage])
 
@@ -77,7 +96,7 @@ const Translator = () => {
       </div>
 
       <div className='flex  min-h-[200px] h-full border-t-2 border-white/20'>
-        <div className='w-full border-r-[1px] border-white/20'>
+        <div className='w-full border-r-[1px] border-white/20 z-10'>
           <Textarea
             className='resize-none rounded-none h-full rounded-bl-xl focus-visible:ring-1'
             placeholder='Type to translate...'
