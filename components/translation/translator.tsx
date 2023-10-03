@@ -8,35 +8,27 @@ import { Textarea } from '../ui/textarea'
 import { useDebounce } from '@/hooks/use-debounce'
 import axios from 'axios'
 
-const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'French', value: 'fr' },
-  { label: 'German', value: 'de' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Italian', value: 'it' },
-  { label: 'Portuguese', value: 'pt' },
-  { label: 'Russian', value: 'ru' },
-  { label: 'Japanese', value: 'ja' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Chinese', value: 'zh' },
-  { label: 'Arabic', value: 'ar' },
-  { label: 'Hindi', value: 'hi' },
-  { label: 'Turkish', value: 'tr' },
-  { label: 'Dutch', value: 'nl' },
-  { label: 'Polish', value: 'pl' },
-]
+interface TranslatorProps {
+  languages: ComboboxItem[]
+}
 
-const Translator = () => {
+const Translator: React.FC<TranslatorProps> = ({ languages }) => {
   const [content, setContent] = useState('')
+
   const [originalLanguage, setOriginalLanguage] = useState<
     ComboboxItem | undefined
   >(undefined)
   const [translateLanguage, setTranslateLanguage] = useState<
     ComboboxItem | undefined
   >({ label: 'English', value: 'en' })
+
   const debouncedContent = useDebounce<string>(content, 1000)
 
-  const { complete, completion, isLoading } = useCompletion({
+  const {
+    complete,
+    completion,
+    isLoading: TranslateLoading,
+  } = useCompletion({
     api: '/api/translation',
     body: {
       originalLanguage: originalLanguage?.label,
@@ -46,9 +38,9 @@ const Translator = () => {
 
   useEffect(() => {
     if (debouncedContent && translateLanguage && originalLanguage) {
-      // complete(debouncedContent)
+      complete(debouncedContent)
     }
-    if (!originalLanguage && debouncedContent) {
+    if (debouncedContent) {
       const detectLanguage = async () => {
         try {
           const res = await axios.post('/api/translation/detect', {
@@ -56,18 +48,27 @@ const Translator = () => {
           })
 
           const detectedLanguage = res.data
-          // const detectedLanguageItem = languages.find(
-          //   (language) => language.value === detectedLanguage,
-          // )
-          // setOriginalLanguage(detectedLanguageItem)
-          console.log(detectedLanguage)
+          const detectedLanguageItem = languages.find(
+            (language) => language.value === detectedLanguage,
+          )
+
+          if (detectedLanguageItem) {
+            setOriginalLanguage(detectedLanguageItem)
+          }
         } catch (error) {
           console.log(error)
         }
       }
       detectLanguage()
     }
-  }, [debouncedContent, translateLanguage])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    debouncedContent,
+    translateLanguage,
+    originalLanguage,
+    languages,
+  ])
 
   return (
     <div className='flex flex-col bg-secondary/80 rounded-xl border-2 border-white/20'>

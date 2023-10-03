@@ -1,6 +1,7 @@
 import Translator from '@/components/translation/translator'
+import languages from '@/lib/languages'
 
-const TranslationPage = () => {
+const TranslationPage = async () => {
   return (
     <section className='mt-16 max-w-7xl mx-auto h-full px-10'>
       <div className='w-full flex justify-between'>
@@ -13,7 +14,7 @@ const TranslationPage = () => {
         </div>
       </div>
       <div className='mt-16 h-full'>
-        <Translator />
+        <Translator languages={languages} />
       </div>
     </section>
   )
