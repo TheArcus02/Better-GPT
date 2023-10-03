@@ -7,6 +7,8 @@ import Combobox, { ComboboxItem } from '../combobox'
 import { Textarea } from '../ui/textarea'
 import { useDebounce } from '@/hooks/use-debounce'
 import axios from 'axios'
+import { SyncLoader } from 'react-spinners'
+import { useTheme } from 'next-themes'
 
 interface TranslatorProps {
   languages: ComboboxItem[]
@@ -23,11 +25,15 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
   >({ label: 'English', value: 'en' })
 
   const debouncedContent = useDebounce<string>(content, 1000)
+  const { theme } = useTheme()
+
+  const [detectinLoading, setDetectinLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     complete,
     completion,
-    isLoading: TranslateLoading,
+    isLoading: translateLoading,
   } = useCompletion({
     api: '/api/translation',
     body: {
@@ -37,11 +43,21 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
   })
 
   useEffect(() => {
-    if (debouncedContent && translateLanguage && originalLanguage) {
+    if (translateLanguage && originalLanguage && debouncedContent) {
       complete(debouncedContent)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    debouncedContent,
+    translateLanguage,
+    originalLanguage,
+    languages,
+  ])
+
+  useEffect(() => {
     if (debouncedContent) {
       const detectLanguage = async () => {
+        setDetectinLoading(true)
         try {
           const res = await axios.post('/api/translation/detect', {
             prompt: debouncedContent,
@@ -57,18 +73,21 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
           }
         } catch (error) {
           console.log(error)
+        } finally {
+          setDetectinLoading(false)
         }
       }
       detectLanguage()
     }
+  }, [debouncedContent, languages])
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    debouncedContent,
-    translateLanguage,
-    originalLanguage,
-    languages,
-  ])
+  useEffect(() => {
+    if (translateLoading || detectinLoading) {
+      setIsLoading(true)
+    } else {
+      setIsLoading(false)
+    }
+  }, [translateLoading, detectinLoading])
 
   return (
     <div className='flex flex-col bg-secondary/80 rounded-xl border-2 border-white/20'>
@@ -76,7 +95,9 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
         <div>
           <Combobox
             items={languages}
-            title='Detect language'
+            title={
+              detectinLoading ? 'Detecting...' : 'Detect language'
+            }
             value={originalLanguage ? originalLanguage.value : ''}
             setValue={setOriginalLanguage}
             searchText='Search language...'
@@ -104,12 +125,23 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className='w-full border-l-[1px] border-white/20'>
-          <Textarea
-            className='resize-none rounded-none h-full rounded-br-xl focus-visible:ring-1'
-            value={completion}
-          />
-        </div>
+        {isLoading ? (
+          <div className='w-full border-l-[1px] border-white/20 relative'>
+            <div className='absolute inset-0 z-0 flex justify-center bg-background items-center rounded-br-xl'>
+              <SyncLoader
+                color={theme === 'light' ? 'black' : 'white'}
+                size={8}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className='w-full border-l-[1px] border-white/20'>
+            <Textarea
+              className='resize-none rounded-none h-full rounded-br-xl focus-visible:ring-1'
+              value={completion}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
