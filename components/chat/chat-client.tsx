@@ -31,8 +31,8 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
   })
 
   return (
-    <div className='flex flex-col h-full w-full bg-secondary/50 items-center border-l'>
-      {/* <ChatTabs
+    <div className='flex flex-col h-auto w-full bg-secondary/50 items-center border-l'>
+      <ChatTabs
         tabNames={[
           {
             name: 'Chat 1',
@@ -41,11 +41,13 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
           { name: 'Chat 2', active: false },
           { name: 'Chat 3', active: false },
         ]}
-      /> */}
-      <div className='flex flex-col h-full max-w-4xl w-full'>
-        <ScrollArea className='flex-1'>
-          <ChatMessages messages={messages} />
-        </ScrollArea>
+      />
+      <div className='flex flex-col max-w-4xl w-full'>
+        <div className=''>
+          <ScrollArea>
+            <ChatMessages messages={messages} />
+          </ScrollArea>
+        </div>
         <ChatForm
           input={input}
           handleInputChange={handleInputChange}

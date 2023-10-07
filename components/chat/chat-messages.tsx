@@ -33,7 +33,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   }, [messages])
 
   return (
-    <div className='px-4 w-full pt-6'>
+    <div className='px-4 w-full pt-6 max-h-screen'>
       <ChatMessage
         isLoading={fakeLoading}
         role='system'

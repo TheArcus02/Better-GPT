@@ -14,13 +14,13 @@ import NewFolderDialog from './new-folder-dialog'
 import { Chat, Folder } from '@prisma/client'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { Dialog } from '../ui/dialog'
-import Image from 'next/image'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '../ui/tooltip'
 import GetPremiumCard from '../get-premium-card'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface ChatSidebarProps {
   folders: ({
@@ -82,8 +82,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
             </Tooltip>
           </div>
 
-          <div className='bg-background flex flex-col h-full justify-between'>
-            <ChatFolders folders={folders} />
+          <div className='bg-background flex flex-col max-h-[98vh] h-[inherit] justify-between'>
+            <ScrollArea>
+              {/* <div className=''> */}
+              <ChatFolders folders={folders} />
+              {/* </div> */}
+            </ScrollArea>
 
             {/* TODO: check if pro then render */}
             <div className='mx-6 mb-10'>

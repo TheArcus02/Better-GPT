@@ -4,7 +4,7 @@ import { Button } from './ui/button'
 
 const GetPremiumCard = () => {
   return (
-    <div className='pt-20 relative px-4 py-6 bg-primary/60  rounded-3xl flex flex-col items-center max-w-[260px]'>
+    <div className='mt-24 pt-20 relative px-4 py-6 bg-primary/60  rounded-3xl flex flex-col items-center max-w-[260px]'>
       <Image
         src='/assets/Developer.svg'
         width={170}
