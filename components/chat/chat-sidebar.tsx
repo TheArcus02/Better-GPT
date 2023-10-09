@@ -82,7 +82,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
             </Tooltip>
           </div>
 
-          <div className='bg-background flex flex-col max-h-[98vh] h-[inherit] justify-between'>
+          <div className='bg-background h-[inherit] flex flex-col justify-between overflow-auto'>
             <ScrollArea>
               {/* <div className=''> */}
               <ChatFolders folders={folders} />

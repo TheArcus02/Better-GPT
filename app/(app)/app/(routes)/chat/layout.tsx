@@ -34,7 +34,7 @@ const ChatLayout = async ({
   })
 
   return (
-    <div className='flex h-auto w-full bg-secondary/50'>
+    <div className='flex h-full w-full bg-secondary/50'>
       <div className='hidden md:flex'>
         <ChatSidebar folders={folders} />
       </div>
