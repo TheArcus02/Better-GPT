@@ -53,7 +53,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
   })
 
   return (
-    <section className='mt-16 max-w-7xl mx-auto h-full'>
+    <section className='mt-16 max-w-7xl mx-auto h-full px-10'>
       <div>
         <h1 className='text-3xl font-extrabold'>
           {isOwner ? 'Your' : `${user.firstName} ${user.lastName}`}{' '}
