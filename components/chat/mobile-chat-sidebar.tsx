@@ -14,7 +14,7 @@ const MobileChatSidebar = () => {
         </Button>
       </SheetTrigger>
       <SheetContent side='right' className='p-0 bg-secondary pt-10'>
-        <ChatSidebar />
+        <ChatSidebar folders={[]} />
       </SheetContent>
     </Sheet>
   )
