@@ -4,7 +4,7 @@ import { Button } from './ui/button'
 
 const GetPremiumCard = () => {
   return (
-    <div className='mt-24 pt-20 relative px-4 py-6 bg-primary/60  rounded-3xl flex flex-col items-center max-w-[260px]'>
+    <div className='mt-24 pt-20 relative px-4 py-6 bg-primary/80  rounded-3xl flex flex-col items-center max-w-[260px]'>
       <Image
         src='/assets/Developer.svg'
         width={170}
@@ -12,8 +12,10 @@ const GetPremiumCard = () => {
         alt='upgrade'
         className='absolute top-0 -mt-20'
       />
-      <h2 className='text-2xl font-light mt-2'>Get Premium</h2>
-      <p className='text-sm text-foreground/50 text-center mt-3'>
+      <h2 className='text-2xl font-light mt-2 text-primary-foreground'>
+        Get Premium
+      </h2>
+      <p className='text-sm text-center mt-3 text-primary-foreground/80'>
         Unlock the full potential of the AI. Get unlimited access to
         all features.
       </p>
