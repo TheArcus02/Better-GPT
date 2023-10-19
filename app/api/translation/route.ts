@@ -51,7 +51,6 @@ export async function POST(req: Request) {
         },
       ],
     })
-    console.log('[TRANSLATION_RESPONSE]', response)
     const stream = OpenAIStream(response)
 
     return new StreamingTextResponse(stream)
