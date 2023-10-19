@@ -7,6 +7,11 @@ declare global {
     icon: LucideIcon | null
     href: string
     label: string
-    pro: boolean
+    subRoutes?: Array<
+      NavRoute & {
+        titleRoute?: boolean
+        description: string
+      }
+    >
   }
 }
