@@ -9,7 +9,7 @@ const MobileNavSidebar = ({ routes }: { routes: NavRoute[] }) => {
   const router = useRouter()
   const pathname = usePathname()
 
-  const onNavigate = (href: string, pro: boolean) => {
+  const onNavigate = (href: string) => {
     // TODO: implement pro
 
     return router.push(href)
@@ -29,7 +29,7 @@ const MobileNavSidebar = ({ routes }: { routes: NavRoute[] }) => {
             <div className='space-y-2'>
               {routes.map((route) => (
                 <div
-                  onClick={() => onNavigate(route.href, route.pro)}
+                  onClick={() => onNavigate(route.href)}
                   key={route.href}
                   className={cn(
                     'text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-accent hover:bg-accent/10 rounded-lg transition',

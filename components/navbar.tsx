@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { UserButton, useAuth } from '@clerk/nextjs'
+import { UserButton, useAuth, useUser } from '@clerk/nextjs'
 import {
   AreaChart,
   CreditCard,
@@ -10,7 +10,6 @@ import {
   LayoutPanelLeft,
   MessagesSquare,
   Image,
-  Terminal,
   Languages,
 } from 'lucide-react'
 import { Poppins } from 'next/font/google'
@@ -38,62 +37,6 @@ interface NavbarProps {
   isApp: boolean
 }
 
-export const AppRoutes: NavRoute[] = [
-  {
-    icon: AreaChart,
-    href: '/app',
-    label: 'Dashboard',
-  },
-  {
-    icon: MessagesSquare,
-    href: '/app/chat',
-    label: 'Chat',
-  },
-  {
-    icon: Terminal,
-    href: '/app/prompts',
-    label: 'Prompts',
-  },
-  {
-    icon: Image,
-    href: '/app/images',
-    label: 'Images',
-    subRoutes: [
-      {
-        titleRoute: true,
-        icon: Image,
-        href: '/app/images',
-        label: 'Images',
-        description:
-          'Generate unique AI images and explore a vibrant community gallery.',
-      },
-      {
-        icon: null,
-        href: '/app/images',
-        label: 'Community Gallery',
-        description: 'Browse images from the community.',
-      },
-      {
-        icon: null,
-        href: '/app/images/',
-        label: 'Your Images',
-        description: 'Browse images you have generated.',
-      },
-      {
-        icon: null,
-        href: '/app/images/generate',
-        label: 'Generate',
-        description: 'Generate images from text.',
-      },
-    ],
-  },
-  {
-    icon: Languages,
-    href: '/app/translation',
-    label: 'Translator',
-  },
-]
-
 export const HomeRoutes: NavRoute[] = [
   {
     icon: Home,
@@ -118,9 +61,61 @@ export const HomeRoutes: NavRoute[] = [
 ]
 
 const Navbar = ({ isApp }: NavbarProps) => {
+  const { user, isSignedIn } = useUser()
+  console.log(user)
+  const AppRoutes: NavRoute[] = [
+    {
+      icon: AreaChart,
+      href: '/app',
+      label: 'Dashboard',
+    },
+    {
+      icon: MessagesSquare,
+      href: '/app/chat',
+      label: 'Chat',
+    },
+    {
+      icon: Image,
+      href: '/app/images',
+      label: 'Images',
+      subRoutes: [
+        {
+          titleRoute: true,
+          icon: Image,
+          href: '/app/images',
+          label: 'Images',
+          description:
+            'Generate unique AI images and explore a vibrant community gallery.',
+        },
+        {
+          icon: null,
+          href: '/app/images',
+          label: 'Community Gallery',
+          description: 'Browse images from the community.',
+        },
+        {
+          icon: null,
+          href: `/app/images/${user?.id}`,
+          label: 'Your Images',
+          description: 'Browse images you have generated.',
+        },
+        {
+          icon: null,
+          href: '/app/images/generate',
+          label: 'Generate',
+          description: 'Generate images from text.',
+        },
+      ],
+    },
+    {
+      icon: Languages,
+      href: '/app/translation',
+      label: 'Translator',
+    },
+  ]
+
   const pathname = usePathname()
   const router = useRouter()
-  const { isSignedIn } = useAuth()
   const routes = isApp ? AppRoutes : HomeRoutes
 
   const onNavigate = (href: string) => {
