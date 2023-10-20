@@ -14,4 +14,9 @@ declare global {
       }
     >
   }
+
+  type ChatTab = {
+    id: string
+    name: string
+  }
 }

@@ -32,16 +32,7 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
 
   return (
     <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
-      <ChatTabs
-        tabNames={[
-          {
-            name: 'Chat 1',
-            active: true,
-          },
-          { name: 'Chat 2', active: false },
-          { name: 'Chat 3', active: false },
-        ]}
-      />
+      <ChatTabs />
       <div className='flex flex-col h-full max-w-4xl w-full overflow-auto'>
         <ScrollArea className='flex-1'>
           <ChatMessages messages={messages} />

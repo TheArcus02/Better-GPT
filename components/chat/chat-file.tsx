@@ -12,6 +12,7 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import CustomAlertDialog from './custom-alert-dialog'
+import useTabs from '@/hooks/use-tabs'
 
 interface ChatFileProps {
   id: string
@@ -25,6 +26,8 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
 
   const [isEditMode, setIsEditMode] = useState(false)
   const [chatName, setChatName] = useState(name)
+
+  const { setActiveChatTab, setChatTabs, chatTabs } = useTabs()
 
   const handleChangeEditMode = () => {
     setIsEditMode((prev) => !prev)
@@ -112,6 +115,14 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
 
   const handleNavigate = () => {
     if (isEditMode) return
+
+    const chatTab: ChatTab = {
+      id,
+      name: chatName,
+    }
+    setChatTabs([...chatTabs, chatTab])
+    setActiveChatTab(chatTab)
+
     router.push(`/app/chat/${id}`)
   }
 
