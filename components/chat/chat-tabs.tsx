@@ -1,25 +1,27 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import MobileChatSidebar from './mobile-chat-sidebar'
-import useTabs from '@/hooks/use-tabs'
+import { useTabsStore } from '@/hooks/use-tabs'
 import { useRouter } from 'next/navigation'
 import { MessageSquare, X } from 'lucide-react'
+import useStore from '@/hooks/use-store'
 
-const ChatTabs = () => {
+interface ChatTabsProps {
+  chatId: string
+}
+
+const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
   const router = useRouter()
 
-  const {
-    activeChatTab,
-    setActiveChatTab,
-    chatTabs,
-    removeActiveChatTab,
-    removeChatTab,
-  } = useTabs()
+  const tabsState = useStore(useTabsStore, (state) => state)
 
   const handleOnClick = (id: string, name: string) => {
-    setActiveChatTab({
+    if (!tabsState) return
+    if (tabsState.activeChatTab?.id === id) return
+
+    tabsState.setActiveChatTab({
       id,
       name,
     })
@@ -27,19 +29,38 @@ const ChatTabs = () => {
   }
 
   useEffect(() => {
-    console.log('activeChatTab', activeChatTab)
-    console.log('chatTabs', chatTabs)
-  }, [activeChatTab, chatTabs])
+    if (!tabsState) return
+
+    if (tabsState.chatTabs.length > 0) {
+      if (!tabsState.activeChatTab) {
+        // console.log(
+        //   'no active chat tab. Setting last tab as active...',
+        // )
+        tabsState.setActiveChatTab(
+          tabsState.chatTabs[tabsState.chatTabs.length - 1],
+        )
+      } else {
+        if (chatId === tabsState.activeChatTab.id) return
+        // console.log('active chat tab found. Pushing to route...')
+        router.push(`/app/chat/${tabsState.activeChatTab.id}`)
+      }
+    } else {
+      // console.log('no chat tabs')
+      router.push('/app/chat')
+    }
+  }, [tabsState, router, chatId])
+
+  if (!tabsState) return null
 
   return (
     <div className='flex justify-between w-full border-b-2 bg-background/60'>
       <div className='flex'>
-        {chatTabs.map(({ id, name }) => (
+        {tabsState.chatTabs.map(({ id, name }) => (
           <div
             key={id}
             className={cn(
               'group px-3 py-2.5 text-sm text-center font-semibold cursor-pointer flex items-center justify-between',
-              id === activeChatTab?.id
+              id === tabsState.activeChatTab?.id
                 ? 'text-foreground bg-secondary border-foreground border-b'
                 : 'text-muted-foreground border-l border-r border-black bg-background/40 hover:bg-secondary/60',
             )}
@@ -51,18 +72,13 @@ const ChatTabs = () => {
             <X
               className={cn(
                 'ml-2.5 w-4 h-4 hover:text-foreground transition-colors',
-                id === activeChatTab?.id
+                id === tabsState.activeChatTab?.id
                   ? 'text-foreground/80'
                   : 'invisible text-muted-foreground group-hover:visible',
               )}
               onClick={(e) => {
                 e.stopPropagation()
-                if (id === activeChatTab?.id) {
-                  removeActiveChatTab()
-                  router.push(`/app/chat/${chatTabs[length - 1].id}`)
-                } else {
-                  removeChatTab(id)
-                }
+                tabsState.removeChatTab(id)
               }}
             />
           </div>
