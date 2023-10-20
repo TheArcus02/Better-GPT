@@ -11,6 +11,7 @@ type Actions = {
   setChatTabs: (tabs: ChatTab[]) => void
   addChatTab: (tab: ChatTab) => void
   removeChatTab: (id: string) => void
+  updateChatTab: (tab: ChatTab) => void
 }
 
 export const useTabsStore = create<State & Actions>()(
@@ -21,19 +22,25 @@ export const useTabsStore = create<State & Actions>()(
       setActiveChatTab: (tab) => set({ activeChatTab: tab }),
       setChatTabs: (tabs) => set({ chatTabs: tabs }),
       addChatTab: (tab) =>
-        set((state) => ({
-          chatTabs: state.chatTabs.find((t) => t.id === tab.id)
-            ? state.chatTabs
-            : [...state.chatTabs, tab],
-        })),
+        set({
+          chatTabs: get().chatTabs.find((t) => t.id === tab.id)
+            ? get().chatTabs
+            : [...get().chatTabs, tab],
+        }),
       removeChatTab: (id) =>
-        set((state) => ({
-          chatTabs: state.chatTabs.filter((t) => t.id !== id),
+        set({
+          chatTabs: get().chatTabs.filter((t) => t.id !== id),
           activeChatTab:
-            state.activeChatTab?.id === id
+            get().activeChatTab?.id === id
               ? null
-              : state.activeChatTab,
-        })),
+              : get().activeChatTab,
+        }),
+      updateChatTab: (tab) =>
+        set({
+          chatTabs: get().chatTabs.map((t) =>
+            t.id === tab.id ? tab : t,
+          ),
+        }),
     }),
     {
       name: 'tabs-storage',

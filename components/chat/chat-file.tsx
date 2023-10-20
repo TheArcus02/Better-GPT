@@ -42,10 +42,12 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
     if (isEditMode) {
       const UpdateChatName = async (newName: string) => {
         try {
+          if (!tabsState) throw new Error('Tabs state not found')
           setChatName(newName)
           await axios.patch(`/api/chat/${id}`, {
             name: newName,
           })
+          tabsState.updateChatTab({ id, name: newName })
           toast({
             description: 'Chat name updated',
             duration: 3000,
@@ -97,7 +99,10 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
 
   const handleDelete = async () => {
     try {
+      if (!tabsState) throw new Error('Tabs state not found')
       await axios.delete(`/api/chat/${id}`)
+      tabsState.removeChatTab(id)
+
       toast({
         description: 'Chat deleted',
         duration: 3000,
