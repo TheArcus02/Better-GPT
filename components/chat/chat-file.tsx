@@ -27,7 +27,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
   const [isEditMode, setIsEditMode] = useState(false)
   const [chatName, setChatName] = useState(name)
 
-  const { setActiveChatTab, setChatTabs, chatTabs } = useTabs()
+  const { addChatTab, setActiveChatTab } = useTabs()
 
   const handleChangeEditMode = () => {
     setIsEditMode((prev) => !prev)
@@ -120,8 +120,8 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
       id,
       name: chatName,
     }
-    setChatTabs([...chatTabs, chatTab])
     setActiveChatTab(chatTab)
+    addChatTab(chatTab)
 
     router.push(`/app/chat/${id}`)
   }

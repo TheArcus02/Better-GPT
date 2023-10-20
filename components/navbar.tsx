@@ -62,7 +62,6 @@ export const HomeRoutes: NavRoute[] = [
 
 const Navbar = ({ isApp }: NavbarProps) => {
   const { user, isSignedIn } = useUser()
-  console.log(user)
   const AppRoutes: NavRoute[] = [
     {
       icon: AreaChart,
