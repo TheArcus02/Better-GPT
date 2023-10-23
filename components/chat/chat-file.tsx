@@ -95,7 +95,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
         document.removeEventListener('mousedown', handleOutsideClick)
       }
     }
-  }, [isEditMode, id, name, chatName, router])
+  }, [isEditMode, id, name, chatName, router, tabsState])
 
   const handleDelete = async () => {
     try {

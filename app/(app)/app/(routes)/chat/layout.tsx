@@ -1,42 +1,14 @@
-import ChatSidebar from '@/components/chat/chat-sidebar'
-import prismadb from '@/lib/prismadb'
-import { auth, redirectToSignIn } from '@clerk/nextjs'
+import Sidebar from './sidebar'
 
 const ChatLayout = async ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const { userId } = auth()
-
-  if (!userId) return redirectToSignIn()
-
-  const folders = await prismadb.folder.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      _count: {
-        select: {
-          chats: true,
-        },
-      },
-      chats: {
-        include: {
-          _count: {
-            select: {
-              messages: true,
-            },
-          },
-        },
-      },
-    },
-  })
-
   return (
     <div className='flex h-full w-full bg-secondary/50'>
       <div className='hidden md:flex'>
-        <ChatSidebar folders={folders} />
+        <Sidebar />
       </div>
       {children}
     </div>
