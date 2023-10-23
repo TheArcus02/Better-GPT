@@ -7,8 +7,12 @@ export async function POST(req: Request) {
     const body = await req.json()
     const user = await currentUser()
     const { name } = body
-
-    if (!user || !user.id || !user.firstName) {
+    console.log(user)
+    if (
+      !user ||
+      !user.id ||
+      !((user.firstName && user.lastName) || user.username)
+    ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

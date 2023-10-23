@@ -26,7 +26,11 @@ export async function POST(req: Request) {
       size: '256x256' | '512x512' | '1024x1024'
     }
 
-    if (!user || !user.id || !user.firstName) {
+    if (
+      !user ||
+      !user.id ||
+      !((user.firstName && user.lastName) || user.username)
+    ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -34,6 +38,12 @@ export async function POST(req: Request) {
       return new NextResponse('Missing fields', {
         status: 400,
       })
+    }
+
+    let username = user.username
+
+    if (user.firstName && user.lastName) {
+      username = `${user.firstName} ${user.lastName}`
     }
 
     const result = await cloudinary.uploader.upload(photo)
@@ -48,7 +58,7 @@ export async function POST(req: Request) {
         userId: user.id,
         shared: shared || false,
         profilePicture: user.imageUrl,
-        username: `${user.firstName} ${user.lastName}`,
+        username: username!,
         size: mappedSize,
       },
     })

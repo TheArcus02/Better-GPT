@@ -11,7 +11,11 @@ export async function PATCH(
     const user = await currentUser()
     const { shared } = body as { shared: boolean }
 
-    if (!user || !user.id || !user.firstName) {
+    if (
+      !user ||
+      !user.id ||
+      !((user.firstName && user.lastName) || user.username)
+    ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

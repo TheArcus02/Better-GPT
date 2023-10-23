@@ -10,8 +10,6 @@ const MobileNavSidebar = ({ routes }: { routes: NavRoute[] }) => {
   const pathname = usePathname()
 
   const onNavigate = (href: string) => {
-    // TODO: implement pro
-
     return router.push(href)
   }
 

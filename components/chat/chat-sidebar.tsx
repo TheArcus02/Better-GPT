@@ -58,21 +58,28 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
       {isOpen && (
         <>
           <div className='flex gap-3 min-w-max px-4'>
-            <Dialog>
-              <DialogTrigger>
-                <Button>
-                  <MessageSquarePlus size={24} className='mr-2' />
-                  New Chat
-                </Button>
-              </DialogTrigger>
-              <NewChatDialog folders={folders} />
-            </Dialog>
+            {folders.length !== 0 && (
+              <Dialog>
+                <DialogTrigger>
+                  <Button>
+                    <MessageSquarePlus size={24} className='mr-2' />
+                    New Chat
+                  </Button>
+                </DialogTrigger>
+                <NewChatDialog folders={folders} />
+              </Dialog>
+            )}
+
             <Tooltip>
               <Dialog>
                 <TooltipTrigger>
                   <DialogTrigger>
-                    <Button variant='outline'>
-                      <FolderPlus size={24} />
+                    <Button variant='outline' className='w-full'>
+                      <FolderPlus
+                        size={24}
+                        className={folders.length === 0 ? 'mr-2' : ''}
+                      />
+                      {folders.length === 0 && 'New folder'}
                     </Button>
                   </DialogTrigger>
                 </TooltipTrigger>
@@ -83,10 +90,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
           </div>
 
           <div className='bg-background h-[inherit] flex flex-col justify-between overflow-auto'>
-            <ScrollArea>
-              {/* <div className=''> */}
+            <ScrollArea className='min-h-[150px]'>
               <ChatFolders folders={folders} />
-              {/* </div> */}
             </ScrollArea>
 
             {/* TODO: check if pro then render */}

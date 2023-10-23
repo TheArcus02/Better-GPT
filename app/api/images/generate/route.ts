@@ -15,7 +15,11 @@ export async function POST(req: Request) {
       size: '256x256' | '512x512' | '1024x1024' | null
     }
 
-    if (!user || !user.id || !user.firstName) {
+    if (
+      !user ||
+      !user.id ||
+      !((user.firstName && user.lastName) || user.username)
+    ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

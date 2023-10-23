@@ -53,7 +53,9 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
                   />
                 ))
               ) : (
-                <div>No chats</div>
+                <p className='text-secondary-foreground/60 text-center'>
+                  No folders created.
+                </p>
               )}
             </div>
           </ScrollArea>

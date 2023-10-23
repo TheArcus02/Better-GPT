@@ -44,7 +44,6 @@ const NewFolderDialog = () => {
   })
 
   const onSubmit = async (data: NewFolderFormValidatorType) => {
-    console.log(data)
     try {
       await axios.post('/api/chat/folder', data)
       toast({
