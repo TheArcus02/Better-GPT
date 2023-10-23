@@ -1,20 +1,41 @@
 'use client'
 
-import { MenuSquare } from 'lucide-react'
-import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
+import { Sheet, SheetContent } from '../ui/sheet'
 import ChatSidebar from './chat-sidebar'
-import { Button } from '../ui/button'
+import useStore from '@/hooks/use-store'
+import { useMobileChatSidebar } from '@/hooks/use-mobile-chat-sidebar'
+import { Chat, Folder } from '@prisma/client'
 
-const MobileChatSidebar = () => {
+interface MobileChatSidebarProps {
+  folders: ({
+    chats: ({
+      _count: {
+        messages: number
+      }
+    } & Chat)[]
+    _count: {
+      chats: number
+    }
+  } & Folder)[]
+}
+
+const MobileChatSidebar: React.FC<MobileChatSidebarProps> = ({
+  folders,
+}) => {
+  const sidebarState = useStore(
+    useMobileChatSidebar,
+    (state) => state,
+  )
+
+  if (!sidebarState) return null
+
   return (
-    <Sheet>
-      <SheetTrigger>
-        <Button size='icon' variant='ghost'>
-          <MenuSquare size={24} />
-        </Button>
-      </SheetTrigger>
+    <Sheet
+      open={sidebarState.isOpen}
+      onOpenChange={() => sidebarState.setOpen(!sidebarState.isOpen)}
+    >
       <SheetContent side='right' className='p-0 bg-secondary pt-10'>
-        <ChatSidebar folders={[]} />
+        <ChatSidebar folders={folders} />
       </SheetContent>
     </Sheet>
   )

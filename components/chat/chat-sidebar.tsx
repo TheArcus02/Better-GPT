@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import ChatFolders from './chat-folders'
 import { Button } from '../ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NewChatDialog from './new-chat-dialog'
 import NewFolderDialog from './new-folder-dialog'
 import { Chat, Folder } from '@prisma/client'
@@ -21,6 +21,9 @@ import {
 } from '../ui/tooltip'
 import GetPremiumCard from '../get-premium-card'
 import { ScrollArea } from '../ui/scroll-area'
+import useStore from '@/hooks/use-store'
+import { useTabsStore } from '@/hooks/use-tabs'
+import { useRouter } from 'next/navigation'
 
 interface ChatSidebarProps {
   folders: ({
@@ -37,6 +40,16 @@ interface ChatSidebarProps {
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
   const [isOpen, setIsOpen] = useState(true)
+  const tabsState = useStore(useTabsStore, (state) => state)
+
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!tabsState) return
+    if (tabsState.chatTabs.length > 0) {
+      router.push(`/app/chat/${tabsState.chatTabs[0].id}`)
+    }
+  }, [tabsState, router])
 
   const handleOpen = () => {
     setIsOpen((prev) => !prev)
@@ -45,14 +58,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
   return (
     <div className='flex flex-col gap-4 h-full bg-secondary pt-6'>
       <div className='flex gap-2 items-center px-4'>
-        <Tooltip>
-          <TooltipTrigger>
-            <Button variant='ghost' size='icon' onClick={handleOpen}>
-              {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Toggle sidebar</TooltipContent>
-        </Tooltip>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={handleOpen}
+          className='hidden md:flex'
+        >
+          {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
+        </Button>
         {isOpen && <h1 className='text-2xl font-bold'>Chats</h1>}
       </div>
       {isOpen && (

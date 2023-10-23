@@ -7,7 +7,7 @@ type State = {
 }
 
 type Actions = {
-  setActiveChatTab: (tab: ChatTab) => void
+  setActiveChatTab: (tab: ChatTab | null) => void
   setChatTabs: (tabs: ChatTab[]) => void
   addChatTab: (tab: ChatTab) => void
   removeChatTab: (id: string) => void

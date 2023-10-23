@@ -5,8 +5,10 @@ import { useEffect } from 'react'
 import MobileChatSidebar from './mobile-chat-sidebar'
 import { useTabsStore } from '@/hooks/use-tabs'
 import { useRouter } from 'next/navigation'
-import { MessageSquare, X } from 'lucide-react'
+import { MenuSquare, MessageSquare, X } from 'lucide-react'
 import useStore from '@/hooks/use-store'
+import { Button } from '../ui/button'
+import { useMobileChatSidebar } from '@/hooks/use-mobile-chat-sidebar'
 
 interface ChatTabsProps {
   chatId: string
@@ -16,6 +18,10 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
   const router = useRouter()
 
   const tabsState = useStore(useTabsStore, (state) => state)
+  const sidebarState = useStore(
+    useMobileChatSidebar,
+    (state) => state,
+  )
 
   const handleOnClick = (id: string, name: string) => {
     if (!tabsState) return
@@ -30,7 +36,6 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
 
   useEffect(() => {
     if (!tabsState) return
-
     if (tabsState.chatTabs.length > 0) {
       if (!tabsState.activeChatTab) {
         // console.log(
@@ -50,7 +55,7 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
     }
   }, [tabsState, router, chatId])
 
-  if (!tabsState) return null
+  if (!tabsState || !sidebarState) return null
 
   return (
     <div className='flex justify-between w-full border-b-2 bg-background/60'>
@@ -84,8 +89,14 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
           </div>
         ))}
       </div>
-      <div className='md:hidden'>
-        <MobileChatSidebar />
+      <div>
+        <Button
+          size='icon'
+          variant='ghost'
+          onClick={() => sidebarState.setOpen(true)}
+        >
+          <MenuSquare size={24} />
+        </Button>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import ChatSidebar from '@/components/chat/chat-sidebar'
+import MobileChatSidebar from '@/components/chat/mobile-chat-sidebar'
 import prismadb from '@/lib/prismadb'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
 
@@ -29,7 +30,16 @@ const Sidebar = async () => {
     },
   })
 
-  return <ChatSidebar folders={folders} />
+  return (
+    <>
+      <div className='md:hidden'>
+        <MobileChatSidebar folders={folders} />
+      </div>
+      <div className='hidden md:block'>
+        <ChatSidebar folders={folders} />
+      </div>
+    </>
+  )
 }
 
 export default Sidebar

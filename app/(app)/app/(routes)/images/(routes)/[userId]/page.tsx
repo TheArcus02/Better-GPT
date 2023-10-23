@@ -25,7 +25,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
   if (user.firstName && user.lastName) {
     username = `${user.firstName} ${user.lastName}`
   }
-
+  console.log(username)
   const images = await prismadb.image.findMany({
     where:
       query || filter
@@ -62,7 +62,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
     <section className='mt-16 max-w-7xl mx-auto h-full px-10'>
       <div>
         <h1 className='text-3xl font-extrabold'>
-          {isOwner ? 'Your' : username + "'s "}
+          {isOwner ? 'Your ' : username + "'s "}
           Gallery
         </h1>
         <p className='mt-2'>

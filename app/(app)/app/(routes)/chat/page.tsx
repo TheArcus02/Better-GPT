@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import MobileButton from '@/components/chat/mobile-button'
 import Image from 'next/image'
 
 const ChatsPage = async () => {
@@ -13,7 +13,9 @@ const ChatsPage = async () => {
       <p className='text-secondary-foreground/60'>
         No conversation started.
       </p>
-      <div className='md:hidden'></div>
+      <div className='md:hidden'>
+        <MobileButton />
+      </div>
     </div>
   )
 }
