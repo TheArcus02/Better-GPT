@@ -13,7 +13,7 @@ const Galery: React.FC<GaleryProps> = ({ images }) => {
 
   return (
     <>
-      <div className='mb-16'>
+      <div className='mb-8 md:mb-16'>
         <SearchBar />
       </div>
 

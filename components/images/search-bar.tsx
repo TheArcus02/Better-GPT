@@ -47,7 +47,7 @@ const SearchBar = () => {
   }, [debouncedValue, router, size])
 
   return (
-    <div className='flex gap-4'>
+    <div className='flex flex-col md:flex-row gap-4'>
       <div className='relative max-w-3xl w-full'>
         <Search
           className='absolute h-4 w-4 top-3 left-4 text-muted-foreground'

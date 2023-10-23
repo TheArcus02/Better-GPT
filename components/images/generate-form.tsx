@@ -27,6 +27,8 @@ import { Button } from '../ui/button'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { Group, Share2, Wand2 } from 'lucide-react'
+import { useWindowWidth } from '@/hooks/use-window-width'
+import { tailwindBreakpoints } from '@/lib/breakpoints'
 
 const generateImageFormSchema = z.object({
   prompt: z.string().min(1).max(1000),
@@ -49,6 +51,8 @@ const GenerateImageForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const { theme } = useTheme()
+
+  const width = useWindowWidth()
 
   const form = useForm<GenerateImageFormType>({
     resolver: zodResolver(generateImageFormSchema),
@@ -147,9 +151,9 @@ const GenerateImageForm: React.FC = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='max-w-3xl w-full flex'
+        className='max-w-3xl w-full flex flex-col items-center md:items mb-8 md:mb-0 md:flex-row gap-6 md:gap-0'
       >
-        <div className='flex-shrink-0 relative bg-secondary/30 border border-secondary text-sm rounded-lg  w-96 p-3 h-96 flex justify-center items-center'>
+        <div className='flex-shrink-0 relative bg-secondary/30 border border-secondary text-sm rounded-lg w-60 h-60 md:w-96 md:h-96 p-3 flex justify-center items-center'>
           {photo ? (
             <Image
               alt={form.getValues('prompt')}
@@ -165,20 +169,20 @@ const GenerateImageForm: React.FC = () => {
                   ? '/assets/PreviewBlack.png'
                   : '/assets/PreviewWhite.png'
               }
-              width={256}
-              height={256}
+              width={width < tailwindBreakpoints.md ? 128 : 256}
+              height={width < tailwindBreakpoints.md ? 128 : 256}
               className='object-contain opacity-30'
             />
           ) : (
             <div className='absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg'>
               <RingLoader
                 color={theme === 'light' ? 'black' : 'white'}
-                size={256}
+                size={width < tailwindBreakpoints.md ? 128 : 256}
               />
             </div>
           )}
         </div>
-        <div className='w-full space-y-6 ml-6 h-96 flex flex-col'>
+        <div className='w-full space-y-6 md:ml-6 md:h-96 flex flex-col'>
           <FormField
             control={form.control}
             name='prompt'

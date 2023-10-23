@@ -59,27 +59,27 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
 
   return (
     <div className='flex justify-between w-full border-b-2 bg-background/60'>
-      <div className='flex'>
+      <div className='flex overflow-x-auto'>
         {tabsState.chatTabs.map(({ id, name }) => (
           <div
             key={id}
             className={cn(
-              'group px-3 py-2.5 text-sm text-center font-semibold cursor-pointer flex items-center justify-between',
+              'group px-3 py-5 md:py-2.5 text-xs md:text-sm  text-center font-semibold cursor-pointer flex items-center justify-between',
               id === tabsState.activeChatTab?.id
                 ? 'text-foreground bg-secondary border-foreground border-b'
                 : 'text-muted-foreground border-l border-r border-black bg-background/40 hover:bg-secondary/60',
             )}
             onClick={() => handleOnClick(id, name)}
           >
-            <MessageSquare className='mr-2.5 w-4 h-4' />
+            <MessageSquare className='mr-2.5 w-4 h-4 hidden md:block' />
             {name}
 
             <X
               className={cn(
-                'ml-2.5 w-4 h-4 hover:text-foreground transition-colors',
+                'ml-2.5 w-6 h-6 md:w-4 md:h-4 hover:text-foreground transition-colors',
                 id === tabsState.activeChatTab?.id
                   ? 'text-foreground/80'
-                  : 'invisible text-muted-foreground group-hover:visible',
+                  : 'md:invisible md:text-muted-foreground text-muted-foreground/30 group-hover:visible',
               )}
               onClick={(e) => {
                 e.stopPropagation()
@@ -89,13 +89,14 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
           </div>
         ))}
       </div>
-      <div>
+      <div className='md:hidden'>
         <Button
           size='icon'
           variant='ghost'
           onClick={() => sidebarState.setOpen(true)}
+          className='flex items-center justify-center h-full mx-3'
         >
-          <MenuSquare size={24} />
+          <MenuSquare className='w-9 h-9' />
         </Button>
       </div>
     </div>
