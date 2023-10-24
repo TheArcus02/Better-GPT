@@ -17,6 +17,7 @@ interface ChatFormProps {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => void
   isLoading: boolean
+  btnDisabled: boolean
 }
 
 const ChatForm: React.FC<ChatFormProps> = ({
@@ -24,6 +25,7 @@ const ChatForm: React.FC<ChatFormProps> = ({
   handleInputChange,
   onSubmit,
   isLoading,
+  btnDisabled,
 }) => {
   return (
     <form
@@ -37,7 +39,11 @@ const ChatForm: React.FC<ChatFormProps> = ({
         placeholder='Type a message'
         className='rounded-lg bg-secondary/10'
       />
-      <Button variant='ghost' type='submit' disabled={isLoading}>
+      <Button
+        variant='ghost'
+        type='submit'
+        disabled={isLoading || btnDisabled}
+      >
         <SendHorizonal className='w-6 h-6' />
       </Button>
     </form>
