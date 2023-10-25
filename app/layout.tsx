@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import GetPremiumModal from '@/components/get-premium-modal'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +28,10 @@ export default function RootLayout({
             defaultTheme='system'
             enableSystem
           >
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider>
+              <GetPremiumModal />
+              {children}
+            </TooltipProvider>
             <Toaster />
           </ThemeProvider>
         </body>

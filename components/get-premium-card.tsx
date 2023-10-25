@@ -1,8 +1,14 @@
 'use client'
 import Image from 'next/image'
 import { Button } from './ui/button'
+import useStore from '@/hooks/use-store'
+import { usePremiumModal } from '@/hooks/use-premium-modal'
 
 const GetPremiumCard = () => {
+  const modalState = useStore(usePremiumModal, (state) => state)
+
+  if (!modalState) return null
+
   return (
     <div className='mt-24 pt-20 relative px-4 py-6 bg-primary/80  rounded-3xl flex flex-col items-center max-w-[260px]'>
       <Image
@@ -19,7 +25,12 @@ const GetPremiumCard = () => {
         Unlock the full potential of the AI. Get unlimited access to
         all features.
       </p>
-      <Button variant='outline' size='lg' className='mt-5'>
+      <Button
+        variant='outline'
+        size='lg'
+        className='mt-5'
+        onClick={() => modalState.setOpen(true)}
+      >
         Buy Premium
       </Button>
     </div>
