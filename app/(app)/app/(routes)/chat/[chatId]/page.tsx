@@ -1,4 +1,5 @@
 import ChatClient from '@/components/chat/chat-client'
+import { toast } from '@/components/ui/use-toast'
 import prismadb from '@/lib/prismadb'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
@@ -17,7 +18,6 @@ const ChatPage: React.FC<ChatPageProps> = async ({
 
   if (!userId) return redirectToSignIn()
   let chat = null
-  console.log('chatId', chatId)
   try {
     chat = await prismadb.chat.findUniqueOrThrow({
       where: {
@@ -35,17 +35,29 @@ const ChatPage: React.FC<ChatPageProps> = async ({
       },
     })
   } catch (error) {
-    console.log('chat not found 1')
+    toast({
+      variant: 'destructive',
+      description: 'Chat not found',
+      duration: 3000,
+    })
     return redirect('/app/chat')
   }
 
   if (!chat) {
-    console.log('chat not found')
+    toast({
+      variant: 'destructive',
+      description: 'Chat not found',
+      duration: 3000,
+    })
     return redirect('/app/chat')
   }
 
   if (chat.userId !== userId) {
-    console.log('user not found')
+    toast({
+      variant: 'destructive',
+      description: 'Chat not found',
+      duration: 3000,
+    })
     return redirect('/app/chat')
   }
 

@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
+import { checkSubscription } from '@/lib/subscription'
+import { checkCreatedMessages } from '@/lib/restrictions'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -29,6 +31,17 @@ export async function POST(
 
     if (!messages) {
       return new NextResponse('Missing message', { status: 400 })
+    }
+
+    const isPremium = await checkSubscription()
+
+    if (!isPremium) {
+      if (!(await checkCreatedMessages())) {
+        return new NextResponse(
+          'You have reached the limit of messages in the free tier.',
+          { status: 403 },
+        )
+      }
     }
 
     const lastUserMessage = messages

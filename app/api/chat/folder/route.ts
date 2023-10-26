@@ -1,4 +1,6 @@
 import prismadb from '@/lib/prismadb'
+import { checkCreatedFolders } from '@/lib/restrictions'
+import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 
@@ -18,6 +20,17 @@ export async function POST(req: Request) {
 
     if (!name) {
       return new NextResponse('Name is required', { status: 400 })
+    }
+
+    const isPremium = await checkSubscription()
+
+    if (!isPremium) {
+      if (!(await checkCreatedFolders())) {
+        return new NextResponse(
+          'You have reached the limit of folders in the free tier.',
+          { status: 403 },
+        )
+      }
     }
 
     const folder = await prismadb.folder.create({

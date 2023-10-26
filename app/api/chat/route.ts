@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
+import { checkSubscription } from '@/lib/subscription'
+import { checkCreatedChats } from '@/lib/restrictions'
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +22,16 @@ export async function POST(req: Request) {
       return new NextResponse('Fields are required', { status: 400 })
     }
 
-    // TODO: check for subscription
+    const isPremium = await checkSubscription()
+
+    if (!isPremium) {
+      if (!(await checkCreatedChats())) {
+        return new NextResponse(
+          'You have reached the limit of chats in the free tier.',
+          { status: 403 },
+        )
+      }
+    }
 
     const chat = await prismadb.chat.create({
       data: {

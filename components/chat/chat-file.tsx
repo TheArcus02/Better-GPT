@@ -128,7 +128,6 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
     }
     tabsState.setActiveChatTab(chatTab)
     tabsState.addChatTab(chatTab)
-    console.log(id)
     router.push(`/app/chat/${id}`)
   }
 
