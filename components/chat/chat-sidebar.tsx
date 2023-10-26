@@ -53,7 +53,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     if (tabsState.chatTabs.length > 0) {
       router.push(`/app/chat/${tabsState.chatTabs[0].id}`)
     }
-  }, [tabsState, router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleOpen = () => {
     setIsOpen((prev) => !prev)

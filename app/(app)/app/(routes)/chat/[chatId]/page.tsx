@@ -17,7 +17,7 @@ const ChatPage: React.FC<ChatPageProps> = async ({
 
   if (!userId) return redirectToSignIn()
   let chat = null
-
+  console.log('chatId', chatId)
   try {
     chat = await prismadb.chat.findUniqueOrThrow({
       where: {
@@ -35,12 +35,19 @@ const ChatPage: React.FC<ChatPageProps> = async ({
       },
     })
   } catch (error) {
+    console.log('chat not found 1')
     return redirect('/app/chat')
   }
 
-  if (!chat) return redirect('/app/chat')
+  if (!chat) {
+    console.log('chat not found')
+    return redirect('/app/chat')
+  }
 
-  if (chat.userId !== userId) return redirect('/app/chat')
+  if (chat.userId !== userId) {
+    console.log('user not found')
+    return redirect('/app/chat')
+  }
 
   return <ChatClient chat={chat} />
 }
