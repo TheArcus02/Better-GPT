@@ -36,3 +36,15 @@ export const checkCreatedMessages = async () => {
 
   return !(createdMessages >= 20)
 }
+
+export const checkCreatedImages = async () => {
+  const { userId } = auth()
+
+  if (!userId) return false
+
+  const createdImages = await prismadb.image.count({
+    where: { userId },
+  })
+
+  return !(createdImages >= 10)
+}

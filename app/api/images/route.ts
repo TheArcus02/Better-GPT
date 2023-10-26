@@ -2,6 +2,8 @@ import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
 import prismadb from '@/lib/prismadb'
+import { checkSubscription } from '@/lib/subscription'
+import { checkCreatedImages } from '@/lib/restrictions'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -44,6 +46,23 @@ export async function POST(req: Request) {
 
     if (user.firstName && user.lastName) {
       username = `${user.firstName} ${user.lastName}`
+    }
+
+    const isPremium = await checkSubscription()
+
+    if (!isPremium) {
+      if (size !== '256x256') {
+        return new NextResponse(
+          'Only 256x256 images are available in the free tier.',
+          { status: 403 },
+        )
+      }
+      if (!(await checkCreatedImages())) {
+        return new NextResponse(
+          'You have reached the limit of generating images in the free tier.',
+          { status: 403 },
+        )
+      }
     }
 
     const result = await cloudinary.uploader.upload(photo)

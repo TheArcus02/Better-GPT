@@ -1,3 +1,5 @@
+import { checkCreatedImages } from '@/lib/restrictions'
+import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
@@ -33,6 +35,23 @@ export async function POST(req: Request) {
       return new NextResponse('Missing prompt or size', {
         status: 400,
       })
+    }
+
+    const isPremium = await checkSubscription()
+
+    if (!isPremium) {
+      if (size !== '256x256') {
+        return new NextResponse(
+          'Only 256x256 images are available in the free tier.',
+          { status: 403 },
+        )
+      }
+      if (!(await checkCreatedImages())) {
+        return new NextResponse(
+          'You have reached the limit of generating images in the free tier.',
+          { status: 403 },
+        )
+      }
     }
 
     const response = await openai.images.generate({

@@ -44,7 +44,7 @@ interface Photo {
   size: string
 }
 
-const GenerateImageForm: React.FC = () => {
+const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
   const [photo, setPhoto] = useState<Photo | null>(null)
 
   const [isGenerating, setIsGenerating] = useState(false)
@@ -219,8 +219,13 @@ const GenerateImageForm: React.FC = () => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value='256x256'>256x256</SelectItem>
-                    <SelectItem value='512x512'>512x512</SelectItem>
-                    <SelectItem value='1024x1024'>
+                    <SelectItem value='512x512' disabled={isPremium}>
+                      512x512
+                    </SelectItem>
+                    <SelectItem
+                      value='1024x1024'
+                      disabled={isPremium}
+                    >
                       1024x1024
                     </SelectItem>
                   </SelectContent>

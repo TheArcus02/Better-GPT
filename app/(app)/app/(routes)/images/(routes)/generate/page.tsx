@@ -15,7 +15,7 @@ const GenarateImagePage = async () => {
         </p>
       </div>
       {!isPremium && <GetPremiumAlert className='max-w-3xl mb-10' />}
-      <GenerateImageForm />
+      <GenerateImageForm isPremium={isPremium} />
     </section>
   )
 }
