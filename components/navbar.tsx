@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { UserButton, useAuth, useUser } from '@clerk/nextjs'
+import { UserButton, useUser } from '@clerk/nextjs'
 import {
   AreaChart,
   CreditCard,
@@ -11,6 +11,7 @@ import {
   MessagesSquare,
   Image,
   Languages,
+  Sparkle,
 } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import Link from 'next/link'
@@ -27,6 +28,8 @@ import {
   NavigationMenuTrigger,
 } from './ui/navigation-menu'
 import { ListItem } from './ui/list-item'
+import useStore from '@/hooks/use-store'
+import { usePremiumModal } from '@/hooks/use-premium-modal'
 
 const font = Poppins({
   weight: '400',
@@ -35,6 +38,7 @@ const font = Poppins({
 
 interface NavbarProps {
   isApp: boolean
+  isPremium?: boolean
 }
 
 export const HomeRoutes: NavRoute[] = [
@@ -60,8 +64,10 @@ export const HomeRoutes: NavRoute[] = [
   },
 ]
 
-const Navbar = ({ isApp }: NavbarProps) => {
+const Navbar = ({ isApp, isPremium }: NavbarProps) => {
   const { user, isSignedIn } = useUser()
+  const modalState = useStore(usePremiumModal, (state) => state)
+
   const AppRoutes: NavRoute[] = [
     {
       icon: AreaChart,
@@ -219,8 +225,8 @@ const Navbar = ({ isApp }: NavbarProps) => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className='flex items-center gap-x-5'>
-        {!isApp &&
-          (isSignedIn ? (
+        {!isApp ? (
+          isSignedIn ? (
             <Button
               variant='default'
               size='sm'
@@ -238,11 +244,23 @@ const Navbar = ({ isApp }: NavbarProps) => {
               Get started
               <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
             </Button>
-          ))}
+          )
+        ) : (
+          !isPremium && (
+            <Button
+              variant='accent'
+              size='sm'
+              onClick={() => modalState?.setOpen(true)}
+            >
+              Get Premium
+              <Sparkle className='h-4 w-4 fill-white ml-2' />
+            </Button>
+          )
+        )}
 
         <ModeToggle />
         {isSignedIn ? (
-          <UserButton afterSignOutUrl='/app' />
+          <UserButton afterSignOutUrl='/' />
         ) : (
           <Button
             variant='outline'

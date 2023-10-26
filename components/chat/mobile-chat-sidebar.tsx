@@ -17,10 +17,12 @@ interface MobileChatSidebarProps {
       chats: number
     }
   } & Folder)[]
+  isPremium: boolean
 }
 
 const MobileChatSidebar: React.FC<MobileChatSidebarProps> = ({
   folders,
+  isPremium,
 }) => {
   const sidebarState = useStore(
     useMobileChatSidebar,
@@ -35,7 +37,7 @@ const MobileChatSidebar: React.FC<MobileChatSidebarProps> = ({
       onOpenChange={() => sidebarState.setOpen(!sidebarState.isOpen)}
     >
       <SheetContent side='right' className='p-0 bg-secondary pt-10'>
-        <ChatSidebar folders={folders} />
+        <ChatSidebar folders={folders} isPremium={isPremium} />
       </SheetContent>
     </Sheet>
   )

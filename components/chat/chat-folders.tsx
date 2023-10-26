@@ -41,7 +41,7 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
       <ContextMenu>
         <ContextMenuTrigger>
           <ScrollArea>
-            <div className='flex flex-col gap-3 py-4'>
+            <div className='flex flex-col gap-3 py-4 '>
               {folders.length ? (
                 folders.map((folder) => (
                   <ChatFolder

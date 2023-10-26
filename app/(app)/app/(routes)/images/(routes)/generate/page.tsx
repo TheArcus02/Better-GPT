@@ -1,7 +1,10 @@
 import GetPremiumAlert from '@/components/get-premium-alert'
 import GenerateImageForm from '@/components/images/generate-form'
+import { checkSubscription } from '@/lib/subscription'
 
-const GenarateImagePage = () => {
+const GenarateImagePage = async () => {
+  const isPremium = await checkSubscription()
+
   return (
     <section className='container mt-16 flex flex-col items-center'>
       <div className='mb-16'>
@@ -11,7 +14,7 @@ const GenarateImagePage = () => {
           DALL-E AI and share them with community
         </p>
       </div>
-      <GetPremiumAlert className='max-w-3xl mb-10' />
+      {!isPremium && <GetPremiumAlert className='max-w-3xl mb-10' />}
       <GenerateImageForm />
     </section>
   )

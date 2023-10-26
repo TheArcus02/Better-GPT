@@ -36,9 +36,13 @@ interface ChatSidebarProps {
       chats: number
     }
   } & Folder)[]
+  isPremium: boolean
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
+const ChatSidebar: React.FC<ChatSidebarProps> = ({
+  folders,
+  isPremium,
+}) => {
   const [isOpen, setIsOpen] = useState(true)
   const tabsState = useStore(useTabsStore, (state) => state)
 
@@ -107,10 +111,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ folders }) => {
               <ChatFolders folders={folders} />
             </ScrollArea>
 
-            {/* TODO: check if pro then render */}
-            <div className='mx-6 mb-10'>
-              <GetPremiumCard />
-            </div>
+            {!isPremium && (
+              <div className='mx-6 mb-10'>
+                <GetPremiumCard />
+              </div>
+            )}
           </div>
         </>
       )}

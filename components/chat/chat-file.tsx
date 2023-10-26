@@ -140,7 +140,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
         <ContextMenuTrigger>
           <div
             className={cn(
-              'pl-11 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer',
+              'pl-11 pr-1 flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer',
               isEditMode && 'bg-muted-foreground/20',
             )}
             ref={cilckableRef}
