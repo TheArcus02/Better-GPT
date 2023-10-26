@@ -24,7 +24,7 @@ import Image from 'next/image'
 import { RingLoader } from 'react-spinners'
 import { useTheme } from 'next-themes'
 import { Button } from '../ui/button'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { toast } from '../ui/use-toast'
 import { Group, Share2, Wand2 } from 'lucide-react'
 import { useWindowWidth } from '@/hooks/use-window-width'
@@ -78,6 +78,16 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
       })
     } catch (error) {
       console.error(error)
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 403) {
+          toast({
+            variant: 'destructive',
+            description: error.response.data,
+            duration: 3000,
+          })
+          return
+        }
+      }
       toast({
         variant: 'destructive',
         description: 'Something went wrong',
@@ -112,6 +122,16 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
       })
     } catch (error) {
       console.error(error)
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 403) {
+          toast({
+            variant: 'destructive',
+            description: error.response.data,
+            duration: 3000,
+          })
+          return
+        }
+      }
       toast({
         variant: 'destructive',
         description: 'Something went wrong',

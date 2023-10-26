@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from '../ui/form'
 import { toast } from '../ui/use-toast'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 
 const NewFolderFormValidator = z.object({
@@ -52,6 +52,16 @@ const NewFolderDialog = () => {
       })
     } catch (error) {
       console.error(error)
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 403) {
+          toast({
+            variant: 'destructive',
+            description: error.response.data,
+            duration: 3000,
+          })
+          return
+        }
+      }
       toast({
         variant: 'destructive',
         description: 'something went wrong',

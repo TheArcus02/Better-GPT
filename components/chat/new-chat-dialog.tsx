@@ -29,7 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -75,6 +75,16 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
       })
     } catch (error) {
       console.error(error)
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 403) {
+          toast({
+            variant: 'destructive',
+            description: error.response.data,
+            duration: 3000,
+          })
+          return
+        }
+      }
       toast({
         variant: 'destructive',
         description: 'something went wrong',

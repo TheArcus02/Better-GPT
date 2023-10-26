@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth, currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedChats } from '@/lib/restrictions'
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     if (
       !user ||
       !user.id ||
-      !((user.firstName && user.lastName) || user.username)
+      !(user.firstName || user.lastName || user.username)
     ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }

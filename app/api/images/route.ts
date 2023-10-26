@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     if (
       !user ||
       !user.id ||
-      !((user.firstName && user.lastName) || user.username)
+      !(user.firstName || user.lastName || user.username)
     ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
     let username = user.username
 
-    if (user.firstName && user.lastName) {
+    if (user.firstName || user.lastName) {
       username = `${user.firstName} ${user.lastName}`
     }
 

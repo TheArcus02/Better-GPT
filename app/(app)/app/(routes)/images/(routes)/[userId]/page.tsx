@@ -22,7 +22,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
 
   let username = user.username
 
-  if (user.firstName && user.lastName) {
+  if (user.firstName || user.lastName) {
     username = `${user.firstName} ${user.lastName}`
   }
   console.log(username)
