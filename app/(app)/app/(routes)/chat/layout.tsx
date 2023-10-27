@@ -7,9 +7,9 @@ const ChatLayout = async ({
 }) => {
   return (
     <div className='flex h-full w-full bg-secondary/50'>
-      <div className='hidden md:flex'>
+      <aside className='hidden md:flex'>
         <Sidebar />
-      </div>
+      </aside>
       {children}
     </div>
   )

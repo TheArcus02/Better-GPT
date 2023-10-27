@@ -11,7 +11,8 @@ import {
   MessagesSquare,
   Image,
   Languages,
-  Sparkle,
+  Settings,
+  Sparkles,
 } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import Link from 'next/link'
@@ -117,6 +118,11 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
       href: '/app/translation',
       label: 'Translator',
     },
+    {
+      icon: Settings,
+      href: '/app/settings',
+      label: 'Settings',
+    },
   ]
 
   const pathname = usePathname()
@@ -128,7 +134,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
   }
 
   return (
-    <div className='fixed w-full z-50 flex justify-between items-center py-7 px-6 border-b border-muted-foreground bg-secondary'>
+    <nav className='fixed w-full z-50 flex justify-between items-center py-7 px-6 border-b border-muted-foreground bg-secondary'>
       <div className='flex items-center'>
         <MobileNavSidebar routes={routes} />
         <Link href='/'>
@@ -253,7 +259,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
               onClick={() => modalState?.setOpen(true)}
             >
               Get Premium
-              <Sparkle className='h-4 w-4 fill-white ml-2' />
+              <Sparkles className='h-4 w-4 fill-white ml-2' />
             </Button>
           )
         )}
@@ -270,7 +276,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
           </Button>
         )}
       </div>
-    </div>
+    </nav>
   )
 }
 export default Navbar

@@ -1,5 +1,6 @@
 import Galery from '@/components/images/galery'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import prismadb from '@/lib/prismadb'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
 import Link from 'next/link'
