@@ -60,7 +60,7 @@ export const HomeRoutes: NavRoute[] = [
   },
   {
     icon: AreaChart,
-    href: '/dashboard',
+    href: '/app',
     label: 'Dashboard',
   },
 ]

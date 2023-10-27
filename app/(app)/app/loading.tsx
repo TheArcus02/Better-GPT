@@ -1,9 +1,9 @@
-import { RingLoader } from 'react-spinners'
+import { PropagateLoader, PulseLoader } from 'react-spinners'
 
 const Loading = () => {
   return (
     <div className='flex items-center justify-center min-h-full'>
-      <RingLoader color='white' size={256} />
+      <PulseLoader color='#6D28D9' size={128} />
     </div>
   )
 }
