@@ -4,6 +4,7 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { ChangeEvent, FormEvent } from 'react'
 import { ChatRequestOptions } from 'ai'
+import { ClipLoader } from 'react-spinners'
 
 interface ChatFormProps {
   input: string
@@ -39,12 +40,17 @@ const ChatForm: React.FC<ChatFormProps> = ({
         placeholder='Type a message'
         className='rounded-lg bg-secondary/10'
       />
-      <Button
-        variant='ghost'
-        type='submit'
-        disabled={isLoading || btnDisabled}
-      >
-        <SendHorizonal className='w-6 h-6' />
+      <Button variant='ghost' type='submit' disabled={btnDisabled}>
+        {isLoading ? (
+          <>
+            Stop generation
+            <div>
+              <ClipLoader size={24} color='white' />
+            </div>
+          </>
+        ) : (
+          <SendHorizonal className='w-6 h-6' />
+        )}
       </Button>
     </form>
   )

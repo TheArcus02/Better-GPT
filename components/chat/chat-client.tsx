@@ -6,12 +6,13 @@ import ChatForm from './chat-form'
 import { useChat } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
 import { ScrollArea } from '../ui/scroll-area'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '../ui/popover'
+import { ChatRequestOptions } from 'ai'
 
 interface ChatClientProps {
   chat: Chat & {
@@ -46,10 +47,11 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
   const {
     input,
     handleInputChange: handleChatInputChange,
-    handleSubmit,
+    handleSubmit: handleChatSubmit,
     messages,
     isLoading,
     setInput,
+    stop,
   } = useChat({
     api: `/api/chat/${chat.id}`,
     initialMessages: chat.messages.map((message) => ({
@@ -103,6 +105,17 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
     setPopoverOpen(false)
   }
 
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement>,
+    chatRequestOptions?: ChatRequestOptions | undefined,
+  ) => {
+    e.preventDefault()
+    if (isLoading) {
+      return stop()
+    }
+    handleChatSubmit(e, chatRequestOptions)
+  }
+
   return (
     <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
       <ChatTabs chatId={chat.id} />
@@ -111,7 +124,6 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
           <ChatMessages messages={messages} />
         </ScrollArea>
         <Popover
-          // open={true}
           open={popoverOpen && !usedCommand}
           onOpenChange={() => setPopoverOpen((prev) => !prev)}
         >
