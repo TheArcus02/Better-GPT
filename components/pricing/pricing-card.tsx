@@ -1,7 +1,11 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { CheckCircle } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
+import { useAuth } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 interface PricingCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -9,6 +13,7 @@ interface PricingCardProps
   description: string
   price: string
   features: string[]
+  isPremium: boolean
 }
 
 const PricingCard = ({
@@ -16,9 +21,20 @@ const PricingCard = ({
   features,
   price,
   title,
+  isPremium,
   className,
   ...props
 }: PricingCardProps) => {
+  const { isSignedIn } = useAuth()
+  const router = useRouter()
+
+  const handleOnClick = async () => {
+    if (!isSignedIn) {
+      return router.push('/sign-in')
+    }
+    return router.push('/app/settings')
+  }
+
   return (
     <div
       className={cn(
@@ -57,8 +73,16 @@ const PricingCard = ({
         </ul>
       </div>
       <div>
-        <Button variant='outline' className='mt-6 w-full'>
-          Get started
+        <Button
+          variant='outline'
+          className='mt-6 w-full'
+          onClick={handleOnClick}
+        >
+          {isPremium
+            ? 'Manage subscription'
+            : isSignedIn
+            ? 'Upgrade'
+            : 'Get started'}
         </Button>
       </div>
     </div>

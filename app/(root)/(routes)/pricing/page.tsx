@@ -1,8 +1,11 @@
 import PricingCard from '@/components/pricing/pricing-card'
 import PricingSwitch from '@/components/pricing/pricing-switch'
+import { checkSubscription } from '@/lib/subscription'
 import React from 'react'
 
-const pricingPage = () => {
+const pricingPage = async () => {
+  const isPremium = await checkSubscription()
+
   return (
     <section className='mt-16 max-w-7xl mx-auto'>
       <div className='w-full flex flex-col items-center'>
@@ -30,6 +33,7 @@ const pricingPage = () => {
               'Limited sizes for image generation.',
               '20 Messages limit.',
             ]}
+            isPremium={isPremium}
             className='md:mt-8'
           />
           <PricingCard
@@ -41,6 +45,7 @@ const pricingPage = () => {
               'No Chats limit.',
               'Unlimited image generation size.',
             ]}
+            isPremium={isPremium}
           />
           <PricingCard
             title='Enterprise'
@@ -52,6 +57,7 @@ const pricingPage = () => {
               'Unlimited image generation size.',
               'Dedicated support.',
             ]}
+            isPremium={isPremium}
             className='md:mt-8'
           />
         </div>
