@@ -237,6 +237,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
               variant='default'
               size='sm'
               onClick={() => onNavigate('/app')}
+              className='hidden md:flex'
             >
               Launch App
               <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
@@ -246,6 +247,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
               variant='default'
               size='sm'
               onClick={() => onNavigate('/sign-up')}
+              className='hidden md:flex'
             >
               Get started
               <LayoutPanelLeft className='h-4 w-4 fill-white ml-2' />
@@ -257,6 +259,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
               variant='accent'
               size='sm'
               onClick={() => modalState?.setOpen(true)}
+              className='hidden md:flex'
             >
               Get Premium
               <Sparkles className='h-4 w-4 fill-white ml-2' />
