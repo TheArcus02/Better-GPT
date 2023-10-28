@@ -239,12 +239,12 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value='256x256'>256x256</SelectItem>
-                    <SelectItem value='512x512' disabled={isPremium}>
+                    <SelectItem value='512x512' disabled={!isPremium}>
                       512x512
                     </SelectItem>
                     <SelectItem
                       value='1024x1024'
-                      disabled={isPremium}
+                      disabled={!isPremium}
                     >
                       1024x1024
                     </SelectItem>
