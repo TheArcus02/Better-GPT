@@ -22,11 +22,11 @@ const RootPage = async () => {
   const isPremium = await checkSubscription()
 
   return (
-    <div className='h-full mt-16 px-6'>
+    <div className='h-full mt-16 px-6 '>
       {/* hero */}
       <section className='max-w-6xl mx-auto md:flex justify-between items-center'>
         <div className='text-center md:text-left'>
-          <h1 className=' text-3xl md:text-5xl uppercase font-extrabold leading-snug'>
+          <h1 className='text-5xl uppercase font-extrabold leading-snug'>
             Revolutionize <br />
             your{' '}
             <span
@@ -242,7 +242,7 @@ const RootPage = async () => {
             </AccordionItem>
             <AccordionItem value='item-5'>
               <AccordionTrigger>
-                s my data secure while using BetterGPT?
+                Is my data secure while using BetterGPT?
               </AccordionTrigger>
               <AccordionContent className='text-muted-foreground'>
                 Yes, we prioritize the security of your data.
