@@ -1,7 +1,13 @@
 import SubscriptionButton from '@/components/settings/subscription-button'
 import { Separator } from '@/components/ui/separator'
 import { checkSubscription } from '@/lib/subscription'
+import { Metadata } from 'next'
 import React from 'react'
+
+export const metadata: Metadata = {
+  title: 'Settings',
+  description: 'Manage your account settings and preferences.',
+}
 
 const settingsPage = async () => {
   const isPremium = await checkSubscription()

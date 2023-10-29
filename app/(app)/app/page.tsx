@@ -6,6 +6,7 @@ import {
   Image,
   LucideIcon,
 } from 'lucide-react'
+import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
@@ -43,6 +44,12 @@ const routes: Array<Route> = [
     description: 'Change your settings.',
   },
 ]
+
+export const metadata: Metadata = {
+  title: 'App',
+  description:
+    'Welcome to your dashboard! Explore advanced AI features including chat, image generation, translation, and settings customization. BetterGPT empowers your creativity and communication.',
+}
 
 const AppPage = () => {
   return (

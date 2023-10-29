@@ -1,6 +1,13 @@
 import GetPremiumAlert from '@/components/get-premium-alert'
 import GenerateImageForm from '@/components/images/generate-form'
 import { checkSubscription } from '@/lib/subscription'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Image Generation',
+  description:
+    'Experience powerful AI-driven image generation with BetterGPT. Create stunning visuals, unique designs, and artistic masterpieces effortlessly. Generate images based on your preferences and unleash your creativity. Transform your ideas into captivating visuals with BetterGPT.',
+}
 
 const GenarateImagePage = async () => {
   const isPremium = await checkSubscription()

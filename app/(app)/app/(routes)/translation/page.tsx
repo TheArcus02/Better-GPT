@@ -2,6 +2,13 @@ import GetPremiumAlert from '@/components/get-premium-alert'
 import Translator from '@/components/translation/translator'
 import languages from '@/lib/languages'
 import { checkSubscription } from '@/lib/subscription'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Translation',
+  description:
+    'Break language barriers with BetterGPT Translation. Translate text to and from multiple languages seamlessly. Accurately convey your messages, documents, and ideas across different cultures. Enhance global communication and connect with people worldwide using BetterGPT Translation.',
+}
 
 const TranslationPage = async () => {
   const isPremium = await checkSubscription()
