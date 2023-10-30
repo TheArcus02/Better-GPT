@@ -1,34 +1,83 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# [BetterGPT](https://github.com/TheArcus02/Better-GPT)
 
-## Getting Started
+This is an open source AI based build in Next.js 13.
 
-First, run the development server:
+[![BetterGPT](./public/screenshot/landing-page.png)](https://better-gpt-demo.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** [Next.js](https://nextjs.org)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com)
+- **User Management:** [Clerk](https://clerk.com)
+- **Form validation:** [Zod](https://www.npmjs.com/package/zod)
+- **ORM:** [PrismaDB](https://www.prisma.io)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com)
+- **State management:** [Zustand](https://zustand-demo.pmnd.rs/)
+- **Streaming responses:** [Vercel AI SDK](https://sdk.vercel.ai/)
+- **Image Uploads:** [Cloudinary](https://cloudinary.com)
+- **Payments infrastructure:** [Stripe](https://stripe.com)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Features to be implemented
 
-## Learn More
+- [x] Authentication with **Clerk**
+- [x] Database on **MongoDB**
+- [x] ORM using **PrismaDB**
+- [x] Validation with **Zod**
+- [x] Open AI streaming responses with **Vercel AI SDK**
+- [x] Image generation with **OpenAI API** and upload to **Cloudinary**  
+- [x] User subscriptions with **Stripe**
+- [x] State management with **Zustand**
+- [ ] Generating images within chat (something like midjourney on discord)
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Running Locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. Clone the repository
 
-## Deploy on Vercel
+   ```bash
+   git clone https://github.com/TheArcus02/Better-GPT.git
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Install dependencies using pnpm
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   ```bash
+   npm install
+   ```
+
+3. Copy the `.env.example` to `.env` and update the variables.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Start the development server
+
+   ```bash
+   npm run dev
+   ```
+
+5. Push the database schema
+
+   ```bash
+   npx prisma generate
+   npx prisma migrate
+   ```
+
+6. Start the Stripe webhook listener
+
+   ```bash
+   npm run stripe:listen
+   ```
+
+## How do I deploy this?
+
+Follow the deployment guides for [Vercel](https://nextjs.org/learn-pages-router/basics/deploying-nextjs-app/deploy) for more information.
+
+## Contributing
+
+Contributions are welcome! Please open an issue if you have any questions or suggestions. Your contributions will be acknowledged.
+
+## License
+
+Licensed under the MIT License. Check the [LICENSE](./LICENSE) file for details.
