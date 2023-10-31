@@ -1,6 +1,7 @@
 # [BetterGPT](https://github.com/TheArcus02/Better-GPT)
 
-This is an open source AI based build in Next.js 13.
+This is an open source SaaS application developed in Next.js 13. BetterGPT enhances AI tools with a
+good-looking UI and additional functionalities. 
 
 [![BetterGPT](./public/screenshot/landing-page.png)](https://better-gpt-demo.vercel.app)
 
