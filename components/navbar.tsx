@@ -42,7 +42,7 @@ interface NavbarProps {
   isPremium?: boolean
 }
 
-export const HomeRoutes: NavRoute[] = [
+const HomeRoutes: NavRoute[] = [
   {
     icon: Home,
     href: '/',
