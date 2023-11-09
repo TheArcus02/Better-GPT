@@ -1,11 +1,9 @@
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -23,6 +21,7 @@ import {
 import { toast } from '../ui/use-toast'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const NewFolderFormValidator = z.object({
   name: z
@@ -35,6 +34,8 @@ export type NewFolderFormValidatorType = z.infer<
 >
 
 const NewFolderDialog = () => {
+  const [isAdding, setIsAdding] = useState(false)
+
   const router = useRouter()
   const form = useForm<NewFolderFormValidatorType>({
     resolver: zodResolver(NewFolderFormValidator),
@@ -44,6 +45,7 @@ const NewFolderDialog = () => {
   })
 
   const onSubmit = async (data: NewFolderFormValidatorType) => {
+    setIsAdding(true)
     try {
       await axios.post('/api/chat/folder', data)
       toast({
@@ -69,6 +71,7 @@ const NewFolderDialog = () => {
       })
     } finally {
       router.refresh()
+      setIsAdding(false)
     }
   }
 
@@ -96,7 +99,9 @@ const NewFolderDialog = () => {
             />
           </div>
           <DialogFooter>
-            <Button type='submit'>Create</Button>
+            <Button type='submit' disabled={isAdding}>
+              Create
+            </Button>
           </DialogFooter>
         </form>
       </Form>
