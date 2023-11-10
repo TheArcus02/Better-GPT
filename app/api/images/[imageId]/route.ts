@@ -14,7 +14,12 @@ export async function PATCH(
     if (
       !user ||
       !user.id ||
-      !(user.firstName || user.lastName || user.username)
+      !(
+        user.firstName ||
+        user.lastName ||
+        user.username ||
+        user.emailAddresses[0].emailAddress
+      )
     ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }

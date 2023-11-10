@@ -31,7 +31,12 @@ export async function POST(req: Request) {
     if (
       !user ||
       !user.id ||
-      !(user.firstName || user.lastName || user.username)
+      !(
+        user.firstName ||
+        user.lastName ||
+        user.username ||
+        user.emailAddresses[0].emailAddress
+      )
     ) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
@@ -46,6 +51,8 @@ export async function POST(req: Request) {
 
     if (user.firstName || user.lastName) {
       username = `${user.firstName} ${user.lastName}`
+    } else {
+      username = user.emailAddresses[0].emailAddress
     }
 
     const isPremium = await checkSubscription()
@@ -77,7 +84,7 @@ export async function POST(req: Request) {
         userId: user.id,
         shared: shared || false,
         profilePicture: user.imageUrl,
-        username: username!,
+        username: username,
         size: mappedSize,
       },
     })

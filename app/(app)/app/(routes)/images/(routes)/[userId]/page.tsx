@@ -25,7 +25,10 @@ const getUserData = async (userId: string) => {
 
     if (user.firstName || user.lastName) {
       username = `${user.firstName} ${user.lastName}`
+    } else {
+      username = user.emailAddresses[0].emailAddress
     }
+
     return {
       user,
       isOwner,
