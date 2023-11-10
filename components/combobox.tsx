@@ -24,6 +24,7 @@ interface ComboboxProps {
   value: string
   setValue: Dispatch<SetStateAction<ComboboxItem | undefined>>
   searchText: string
+  disabled?: boolean
 }
 
 const Combobox: React.FC<ComboboxProps> = ({
@@ -32,6 +33,7 @@ const Combobox: React.FC<ComboboxProps> = ({
   value,
   setValue,
   searchText,
+  disabled,
 }) => {
   const [open, setOpen] = useState(false)
 
@@ -43,6 +45,7 @@ const Combobox: React.FC<ComboboxProps> = ({
           role='combobox'
           aria-expanded={open}
           className='w-[200px] justify-between'
+          disabled={disabled}
         >
           {value
             ? items.find((item) => item.value === value)?.label

@@ -113,6 +113,7 @@ const Translator: React.FC<TranslatorProps> = ({ languages }) => {
             value={translateLanguage ? translateLanguage.value : ''}
             setValue={setTranslateLanguage}
             searchText='Search language...'
+            disabled={isLoading}
           />
         </div>
       </div>

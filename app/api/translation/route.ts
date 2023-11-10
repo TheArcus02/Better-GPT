@@ -1,15 +1,21 @@
-import { auth } from '@clerk/nextjs'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
+import { getAuth } from '@clerk/nextjs/server'
+
+export const runtime = 'edge'
+
+// disabling caching
+export const fetchCache = 'force-no-store'
+export const revalidate = 0
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = getAuth(req)
     const body = await req.json()
     const { prompt, originalLanguage, translateLanguage } = body as {
       prompt: string
