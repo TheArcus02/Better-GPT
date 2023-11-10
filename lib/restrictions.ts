@@ -1,8 +1,17 @@
 import { auth } from '@clerk/nextjs'
 import prismadb from './prismadb'
+import { NextRequest } from 'next/server'
+import { getAuth } from '@clerk/nextjs/server'
 
-export const checkCreatedChats = async () => {
-  const { userId } = auth()
+export const checkCreatedChats = async (req?: NextRequest) => {
+  let userId
+
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
 
   if (!userId) return false
 
@@ -13,8 +22,15 @@ export const checkCreatedChats = async () => {
   return !(createdChats >= 3)
 }
 
-export const checkCreatedFolders = async () => {
-  const { userId } = auth()
+export const checkCreatedFolders = async (req?: NextRequest) => {
+  let userId
+
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
 
   if (!userId) return false
 
@@ -25,9 +41,15 @@ export const checkCreatedFolders = async () => {
   return !(createdFolders >= 2)
 }
 
-export const checkCreatedMessages = async () => {
-  const { userId } = auth()
+export const checkCreatedMessages = async (req?: NextRequest) => {
+  let userId
 
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
   if (!userId) return false
 
   const createdMessages = await prismadb.message.count({
@@ -37,8 +59,15 @@ export const checkCreatedMessages = async () => {
   return !(createdMessages >= 20)
 }
 
-export const checkCreatedImages = async () => {
-  const { userId } = auth()
+export const checkCreatedImages = async (req?: NextRequest) => {
+  let userId
+
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
 
   if (!userId) return false
 

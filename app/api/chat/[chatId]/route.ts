@@ -1,21 +1,28 @@
-import { auth } from '@clerk/nextjs'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedMessages } from '@/lib/restrictions'
+import { getAuth } from '@clerk/nextjs/server'
+
+export const runtime = 'edge'
+
+// disabling caching
+export const fetchCache = 'force-no-store'
+export const revalidate = 0
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { chatId: string } },
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = getAuth(req)
+
     const body = await req.json()
     const { messages } = body as { messages: Message[] }
 
@@ -33,10 +40,10 @@ export async function POST(
       return new NextResponse('Missing message', { status: 400 })
     }
 
-    const isPremium = await checkSubscription()
+    const isPremium = await checkSubscription(req)
 
     if (!isPremium) {
-      if (!(await checkCreatedMessages())) {
+      if (!(await checkCreatedMessages(req))) {
         return new NextResponse(
           'You have reached the limit of messages in the free tier.',
           { status: 403 },
@@ -52,7 +59,6 @@ export async function POST(
     if (!lastUserMessage) {
       return new NextResponse('Missing message', { status: 400 })
     }
-
     const chat = await prismadb.chat.update({
       where: {
         id: params.chatId,
@@ -100,16 +106,24 @@ export async function POST(
     return new StreamingTextResponse(stream)
   } catch (error) {
     console.log('[CHAT_ERROR/[CHAT_ID]]', error)
+    if (error instanceof OpenAI.APIError) {
+      const { name, status, headers, message } = error
+      return NextResponse.json(
+        { name, status, headers, message },
+        { status },
+      )
+    }
     return new NextResponse('Internal error', { status: 500 })
   }
 }
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { chatId: string } },
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = getAuth(req)
+
     const body = await req.json()
     const { name, folderId } = body
 
@@ -153,11 +167,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { chatId: string } },
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = getAuth(req)
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 })

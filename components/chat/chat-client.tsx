@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from '../ui/popover'
 import { ChatRequestOptions } from 'ai'
+import { toast } from '../ui/use-toast'
 
 interface ChatClientProps {
   chat: Chat & {
@@ -60,6 +61,14 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
       content: message.content,
       createdAt: message.createdAt,
     })),
+    onError: (err) => {
+      console.error(err)
+      toast({
+        variant: 'destructive',
+        title: 'An error occurred',
+        description: err.message,
+      })
+    },
   })
 
   const handleInputChange = (

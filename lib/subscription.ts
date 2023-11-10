@@ -1,10 +1,19 @@
 import { auth } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
+import { NextRequest } from 'next/server'
+import { getAuth } from '@clerk/nextjs/server'
 
 const DAY_IN_MS = 86_400_000
 
-export const checkSubscription = async () => {
-  const { userId } = auth()
+export const checkSubscription = async (req?: NextRequest) => {
+  let userId
+
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
 
   if (!userId) return false
 
