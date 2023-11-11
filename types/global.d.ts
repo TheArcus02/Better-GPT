@@ -19,4 +19,6 @@ declare global {
     id: string
     name: string
   }
+
+  type ChatModel = 'gpt-3.5-turbo' | 'gpt-4'
 }

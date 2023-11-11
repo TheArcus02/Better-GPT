@@ -1,6 +1,7 @@
 import ChatClient from '@/components/chat/chat-client'
 import { toast } from '@/components/ui/use-toast'
 import prismadb from '@/lib/prismadb'
+import { checkSubscription } from '@/lib/subscription'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
@@ -104,7 +105,9 @@ const ChatPage: React.FC<ChatPageProps> = async ({
     return redirect('/app/chat')
   }
 
-  return <ChatClient chat={chat} />
+  const isPremium = await checkSubscription()
+
+  return <ChatClient chat={chat} isPremium={isPremium} />
 }
 
 export default ChatPage

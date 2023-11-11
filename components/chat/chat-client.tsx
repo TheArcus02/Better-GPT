@@ -19,6 +19,7 @@ interface ChatClientProps {
   chat: Chat & {
     messages: Message[]
   }
+  isPremium: boolean
 }
 
 interface Command {
@@ -37,13 +38,18 @@ const commands: Array<Command> = [
   },
 ]
 
-const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
+const ChatClient: React.FC<ChatClientProps> = ({
+  chat,
+  isPremium,
+}) => {
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [matchingCommands, setMatchingCommands] = useState<
     Array<Command>
   >([])
   const [usedCommand, setUsedCommand] = useState<Command | null>(null)
+  const [chatModel, setChatModel] =
+    useState<ChatModel>('gpt-3.5-turbo')
 
   const {
     input,
@@ -68,6 +74,9 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
         title: 'An error occurred',
         description: err.message,
       })
+    },
+    body: {
+      model: chatModel,
     },
   })
 
@@ -125,6 +134,13 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
     handleChatSubmit(e, chatRequestOptions)
   }
 
+  const handleChatModelChange = (
+    e: ChangeEvent<HTMLSelectElement>,
+  ) => {
+    e.preventDefault()
+    setChatModel(e.target.value as ChatModel)
+  }
+
   return (
     <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
       <ChatTabs chatId={chat.id} />
@@ -165,6 +181,9 @@ const ChatClient: React.FC<ChatClientProps> = ({ chat }) => {
           onSubmit={handleSubmit}
           isLoading={isLoading}
           btnDisabled={btnDisabled}
+          chatModel={chatModel}
+          setChatModel={setChatModel}
+          isPremium={isPremium}
         />
       </div>
     </div>

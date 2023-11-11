@@ -64,7 +64,7 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
           <div
             key={id}
             className={cn(
-              'group px-3 py-5 md:py-2.5 text-xs md:text-sm  text-center font-semibold cursor-pointer flex items-center justify-between',
+              'group px-3 py-5 md:py-2.5 text-sm text-center font-semibold cursor-pointer flex items-center justify-between',
               id === tabsState.activeChatTab?.id
                 ? 'text-foreground bg-secondary border-foreground border-b'
                 : 'text-muted-foreground border-l border-r border-black bg-background/40 hover:bg-secondary/60',
