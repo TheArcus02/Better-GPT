@@ -37,14 +37,10 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Missing fields', { status: 400 })
     }
 
-    let promptMessage = `Translate the following text to 
-    ${translateLanguage}:\n
-    ${prompt}`
+    let systemMessage = `You will be provided with a sentence, and you will have to translate it to ${translateLanguage}.`
 
     if (originalLanguage) {
-      promptMessage = `Translate the following text from ${originalLanguage}
-       to ${translateLanguage}:\n
-      ${prompt}`
+      systemMessage = `You will be provided with a sentence in ${originalLanguage}, and you will have to translate it to ${translateLanguage}.`
     }
 
     const response = await openai.chat.completions.create({
@@ -52,8 +48,12 @@ export async function POST(req: NextRequest) {
       stream: true,
       messages: [
         {
+          role: 'system',
+          content: systemMessage,
+        },
+        {
           role: 'user',
-          content: promptMessage,
+          content: prompt,
         },
       ],
     })
