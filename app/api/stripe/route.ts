@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import prismadb from '@/lib/prismadb'
 import { stripe } from '@/lib/stripe'
 import { absoluteUrl } from '@/lib/utils'
+import { checkSubscription } from '@/lib/subscription'
 
 const afterUrl = absoluteUrl('/app/settings')
 
@@ -20,7 +21,11 @@ export async function GET() {
         where: { userId },
       })
 
-    if (userSubscription && userSubscription.stripeCustomerId) {
+    if (
+      userSubscription &&
+      userSubscription.stripeCustomerId &&
+      (await checkSubscription())
+    ) {
       const stripeSession =
         await stripe.billingPortal.sessions.create({
           customer: userSubscription.stripeCustomerId,
@@ -33,12 +38,15 @@ export async function GET() {
     }
 
     const stripeSession = await stripe.checkout.sessions.create({
+      customer: userSubscription?.stripeCustomerId ?? undefined,
       success_url: afterUrl,
       cancel_url: afterUrl,
       payment_method_types: ['card'],
       mode: 'subscription',
       billing_address_collection: 'auto',
-      customer_email: user.emailAddresses[0].emailAddress,
+      customer_email: !userSubscription?.stripeCustomerId
+        ? user.emailAddresses[0].emailAddress
+        : undefined,
       line_items: [
         {
           price_data: {
