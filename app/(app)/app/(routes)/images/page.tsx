@@ -9,7 +9,8 @@ import Link from 'next/link'
 interface ImagePageProps {
   searchParams: {
     query: string
-    filter: string
+    sizeFilter: string
+    modelFilter: string
   }
 }
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 }
 
 const ImagesPage: React.FC<ImagePageProps> = async ({
-  searchParams: { query, filter },
+  searchParams: { query, sizeFilter, modelFilter },
 }) => {
   const { userId } = auth()
 
@@ -31,7 +32,7 @@ const ImagesPage: React.FC<ImagePageProps> = async ({
       createdAt: 'desc',
     },
     where:
-      query || filter
+      query || sizeFilter || modelFilter
         ? {
             AND: [
               {
@@ -51,7 +52,10 @@ const ImagesPage: React.FC<ImagePageProps> = async ({
                 ],
               },
               {
-                size: filter ? filter : undefined,
+                size: sizeFilter ? sizeFilter : undefined,
+              },
+              {
+                model: modelFilter ? modelFilter : undefined,
               },
             ],
             shared: true,

@@ -70,6 +70,7 @@ model Image {
   publicId       String
   shared         Boolean     @default(false)
   size           String
+  model          String
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt

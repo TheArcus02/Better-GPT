@@ -19,10 +19,13 @@ const SearchBar = () => {
   const searchParams = useSearchParams()
 
   const query = searchParams.get('query')
-  const filter = searchParams.get('filter')
+  const sizeFilter = searchParams.get('filter')
+  const modelFilter = searchParams.get('model')
 
   const [searchValue, setSearchValue] = useState(query || '')
-  const [size, setSize] = useState(filter || '')
+  const [size, setSize] = useState(sizeFilter || '')
+  const [model, setModel] = useState(modelFilter || '')
+
   const debouncedValue = useDebounce<string>(searchValue, 500)
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +35,8 @@ const SearchBar = () => {
   useEffect(() => {
     const searchQuery = {
       query: debouncedValue,
-      filter: size,
+      sizeFilter: size,
+      modelFilter: model,
     }
 
     const url = qs.stringifyUrl(
@@ -44,7 +48,7 @@ const SearchBar = () => {
     )
 
     router.push(url)
-  }, [debouncedValue, router, size])
+  }, [debouncedValue, router, size, model])
 
   return (
     <div className='flex flex-col md:flex-row gap-4'>
@@ -72,6 +76,18 @@ const SearchBar = () => {
             <SelectItem value='1024x1024'>1024x1024</SelectItem>
             <SelectItem value='1024x1792'>1024x1792</SelectItem>
             <SelectItem value='1792x1024'>1792x1024</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Select onValueChange={setModel}>
+          <SelectTrigger className='w-[180px]'>
+            <SelectValue placeholder='Model' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value=''>Model</SelectItem>
+            <SelectItem value='dall-e-2'>DALL-E 2</SelectItem>
+            <SelectItem value='dall-e-3'>DALL-E 3</SelectItem>
           </SelectContent>
         </Select>
       </div>

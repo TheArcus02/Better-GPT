@@ -11,7 +11,8 @@ interface UserGaleryProps {
   }
   searchParams: {
     query: string
-    filter: string
+    sizeFilter: string
+    modelFilter: string
   }
 }
 
@@ -74,7 +75,7 @@ export async function generateMetadata({
 
 const UserGaleryPage: React.FC<UserGaleryProps> = async ({
   params: { userId },
-  searchParams: { query, filter },
+  searchParams: { query, sizeFilter, modelFilter },
 }) => {
   const userData = await getUserData(userId)
 
@@ -84,7 +85,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
 
   const images = await prismadb.image.findMany({
     where:
-      query || filter
+      query || sizeFilter || modelFilter
         ? {
             AND: [
               {
@@ -104,7 +105,10 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
                 ],
               },
               {
-                size: filter ? filter : undefined,
+                size: sizeFilter ? sizeFilter : undefined,
+              },
+              {
+                model: modelFilter ? modelFilter : undefined,
               },
             ],
 

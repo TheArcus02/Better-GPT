@@ -79,6 +79,7 @@ export async function POST(req: Request) {
         profilePicture: user.imageUrl,
         username: username,
         size,
+        model,
       },
     })
 

@@ -21,4 +21,6 @@ declare global {
   }
 
   type ChatModel = 'gpt-3.5-turbo' | 'gpt-4'
+
+  type ImageModel = 'dall-e-2' | 'dall-e-3'
 }
