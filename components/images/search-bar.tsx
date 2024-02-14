@@ -67,9 +67,11 @@ const SearchBar = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value=''>Size</SelectItem>
-            <SelectItem value='256'>256x256</SelectItem>
-            <SelectItem value='512'>512x512</SelectItem>
-            <SelectItem value='1024'>1024x1024</SelectItem>
+            <SelectItem value='256x256'>256x256</SelectItem>
+            <SelectItem value='512x512'>512x512</SelectItem>
+            <SelectItem value='1024x1024'>1024x1024</SelectItem>
+            <SelectItem value='1024x1792'>1024x1792</SelectItem>
+            <SelectItem value='1792x1024'>1792x1024</SelectItem>
           </SelectContent>
         </Select>
       </div>

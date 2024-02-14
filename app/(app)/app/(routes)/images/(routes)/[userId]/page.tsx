@@ -104,7 +104,7 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
                 ],
               },
               {
-                size: filter ? parseInt(filter) : undefined,
+                size: filter ? filter : undefined,
               },
             ],
 

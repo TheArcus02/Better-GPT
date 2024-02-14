@@ -34,7 +34,7 @@ import { Badge } from '../ui/badge'
 
 const generateImageFormSchema = z.object({
   model: z.enum(['dall-e-2', 'dall-e-3']),
-  prompt: z.string().min(3).max(200),
+  prompt: z.string().min(3).max(2000),
   size: z.enum([
     '256x256',
     '512x512',
@@ -44,7 +44,9 @@ const generateImageFormSchema = z.object({
   ]),
 })
 
-type GenerateImageFormType = z.infer<typeof generateImageFormSchema>
+export type GenerateImageFormType = z.infer<
+  typeof generateImageFormSchema
+>
 
 interface Photo {
   id?: number

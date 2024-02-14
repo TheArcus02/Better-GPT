@@ -1,3 +1,4 @@
+import { GenerateImageFormType } from '@/components/images/generate-form'
 import { checkCreatedImages } from '@/lib/restrictions'
 import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
@@ -12,10 +13,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { prompt, size } = body as {
-      prompt: string
-      size: '256x256' | '512x512' | '1024x1024' | null
-    }
+    const { prompt, size, model } = body as GenerateImageFormType
 
     if (
       !user ||
@@ -45,9 +43,15 @@ export async function POST(req: Request) {
     const isPremium = await checkSubscription()
 
     if (!isPremium) {
-      if (size !== '256x256') {
+      const validSizes = ['256x256', '512x512']
+      const validModels = ['dall-e-2']
+
+      if (
+        !validSizes.includes(size) ||
+        !validModels.includes(model)
+      ) {
         return new NextResponse(
-          'Only 256x256 images are available in the free tier.',
+          'This model or size is not available in the free tier. Please upgrade to premium.',
           { status: 403 },
         )
       }
@@ -59,7 +63,23 @@ export async function POST(req: Request) {
       }
     }
 
+    const dalle2Sizes = ['256x256', '512x512', '1024x1024']
+    const dalle3Sizes = ['1024x1024', '1792x1024', '1024x1792']
+
+    if (model === 'dall-e-2' && !dalle2Sizes.includes(size)) {
+      return new NextResponse('Invalid size for DALL-E 2', {
+        status: 400,
+      })
+    }
+
+    if (model === 'dall-e-3' && !dalle3Sizes.includes(size)) {
+      return new NextResponse('Invalid size for DALL-E 3', {
+        status: 400,
+      })
+    }
+
     const response = await openai.images.generate({
+      model: model,
       prompt,
       size: size,
       response_format: 'b64_json',

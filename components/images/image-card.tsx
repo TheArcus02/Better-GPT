@@ -32,12 +32,15 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
   const downloadImage = async (id: string, photo: string) => {
     FileSaver.saveAs(photo, `download-${id}.jpg`)
   }
+
+  const imageHeight = parseInt(image.size.split('x')[1])
+
   return (
     <div className='rounded-xl group relative card max-w-fit'>
       <CldImage
         src={image.publicId}
         alt={image.prompt}
-        height={image.size}
+        height={imageHeight}
         width={528}
         crop='fill'
         sizes='100vw, (min-width: 768px) 33vw, (min-width: 1024px) 25vw'

@@ -51,7 +51,7 @@ const ImagesPage: React.FC<ImagePageProps> = async ({
                 ],
               },
               {
-                size: filter ? parseInt(filter) : undefined,
+                size: filter ? filter : undefined,
               },
             ],
             shared: true,

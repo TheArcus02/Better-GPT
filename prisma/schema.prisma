@@ -69,7 +69,7 @@ model Image {
   url            String
   publicId       String
   shared         Boolean     @default(false)
-  size           Int
+  size           String
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt

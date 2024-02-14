@@ -4,6 +4,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedImages } from '@/lib/restrictions'
+import { GenerateImageFormType } from '@/components/images/generate-form'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -11,22 +12,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const sizeMapping = {
-  '256x256': 256,
-  '512x512': 512,
-  '1024x1024': 1024,
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { prompt, photo, shared, size } = body as {
-      prompt: string
-      photo: string
-      shared: boolean
-      size: '256x256' | '512x512' | '1024x1024'
-    }
+    const { prompt, photo, shared, size, model } =
+      body as GenerateImageFormType & {
+        photo: string
+        shared: boolean
+      }
 
     if (
       !user ||
@@ -58,9 +52,10 @@ export async function POST(req: Request) {
     const isPremium = await checkSubscription()
 
     if (!isPremium) {
-      if (size !== '256x256') {
+      const validSizes = ['256x256', '512x512']
+      if (validSizes.includes(size)) {
         return new NextResponse(
-          'Only 256x256 images are available in the free tier.',
+          'This size is not available in the free tier. Please upgrade to premium.',
           { status: 403 },
         )
       }
@@ -74,8 +69,6 @@ export async function POST(req: Request) {
 
     const result = await cloudinary.uploader.upload(photo)
 
-    const mappedSize = sizeMapping[size]
-
     const image = await prismadb.image.create({
       data: {
         prompt,
@@ -85,7 +78,7 @@ export async function POST(req: Request) {
         shared: shared || false,
         profilePicture: user.imageUrl,
         username: username,
-        size: mappedSize,
+        size,
       },
     })
 
