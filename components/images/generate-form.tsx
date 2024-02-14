@@ -29,10 +29,19 @@ import { toast } from '../ui/use-toast'
 import { Group, Share2, Wand2 } from 'lucide-react'
 import { useWindowWidth } from '@/hooks/use-window-width'
 import { tailwindBreakpoints } from '@/lib/breakpoints'
+import { RiOpenaiFill } from 'react-icons/ri'
+import { Badge } from '../ui/badge'
 
 const generateImageFormSchema = z.object({
-  prompt: z.string().min(1).max(1000),
-  size: z.enum(['256x256', '512x512', '1024x1024']),
+  model: z.enum(['dall-e-2', 'dall-e-3']),
+  prompt: z.string().min(3).max(200),
+  size: z.enum([
+    '256x256',
+    '512x512',
+    '1024x1024',
+    '1792x1024',
+    '1024x1792',
+  ]),
 })
 
 type GenerateImageFormType = z.infer<typeof generateImageFormSchema>
@@ -57,10 +66,13 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
   const form = useForm<GenerateImageFormType>({
     resolver: zodResolver(generateImageFormSchema),
     defaultValues: {
+      model: 'dall-e-2',
       prompt: '',
       size: '256x256',
     },
   })
+
+  const modelWatcher = form.watch('model')
 
   const onSubmit = async (data: GenerateImageFormType) => {
     try {
@@ -205,6 +217,54 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
         <div className='w-full space-y-6 md:ml-6 md:h-96 flex flex-col'>
           <FormField
             control={form.control}
+            name='model'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Model</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    const sizeDefaultValue =
+                      value === 'dall-e-2' ? '256x256' : '1024x1024'
+                    form.setValue('size', sizeDefaultValue, {
+                      shouldValidate: true,
+                    })
+                    field.onChange(value)
+                  }}
+                  defaultValue={field.value}
+                  disabled={isGenerating || isLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select model' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='dall-e-2'>
+                      <div className='flex items-center'>
+                        <RiOpenaiFill className='mr-2 h-5 w-5' />
+                        DALL-E 2
+                      </div>
+                    </SelectItem>
+                    <SelectItem
+                      value='dall-e-3'
+                      disabled={!isPremium}
+                    >
+                      <div className='flex items-center'>
+                        <RiOpenaiFill className='mr-2 h-5 w-5' />
+                        DALL-E 3
+                        {!isPremium && (
+                          <Badge className='ml-2'>Premium</Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name='prompt'
             render={({ field }) => (
               <FormItem>
@@ -231,6 +291,7 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   disabled={isGenerating || isLoading}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -238,16 +299,40 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='256x256'>256x256</SelectItem>
-                    <SelectItem value='512x512' disabled={!isPremium}>
-                      512x512
-                    </SelectItem>
-                    <SelectItem
-                      value='1024x1024'
-                      disabled={!isPremium}
-                    >
-                      1024x1024
-                    </SelectItem>
+                    {modelWatcher === 'dall-e-2' && (
+                      <>
+                        <SelectItem value='256x256'>
+                          256x256
+                        </SelectItem>
+                        <SelectItem value='512x512'>
+                          512x512
+                        </SelectItem>
+                        <SelectItem
+                          value='1024x1024'
+                          disabled={!isPremium}
+                        >
+                          <div className='flex items-center'>
+                            1024x1024
+                            {!isPremium && (
+                              <Badge className='ml-2'>Premium</Badge>
+                            )}
+                          </div>
+                        </SelectItem>
+                      </>
+                    )}
+                    {modelWatcher === 'dall-e-3' && (
+                      <>
+                        <SelectItem value='1024x1024'>
+                          1024x1024
+                        </SelectItem>
+                        <SelectItem value='1792x1024'>
+                          1792x1024
+                        </SelectItem>
+                        <SelectItem value='1024x1792'>
+                          1024x1792
+                        </SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -290,7 +375,7 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
                 onClick={onShare}
               >
                 <Share2 size={20} className='mr-2' />
-                {isLoading ? 'Sharing...' : 'Share'}
+                {isLoading ? 'Sharing...' : 'Share with community'}
               </Button>
             )}
           </div>
