@@ -5,6 +5,7 @@ import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedMessages } from '@/lib/restrictions'
 import { getAuth } from '@clerk/nextjs/server'
+import { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
 
 export const runtime = 'edge'
 
@@ -25,7 +26,7 @@ export async function POST(
 
     const body = await req.json()
     const { messages, model } = body as {
-      messages: Message[]
+      messages: ChatCompletionMessageParam[]
       model: ChatModel
     }
 
@@ -69,7 +70,7 @@ export async function POST(
       data: {
         messages: {
           create: {
-            content: lastUserMessage,
+            content: lastUserMessage as string,
             role: 'user',
             userId: userId,
           },
