@@ -84,6 +84,9 @@ const UserGaleryPage: React.FC<UserGaleryProps> = async ({
   const { isOwner, username } = userData
 
   const images = await prismadb.image.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
     where:
       query || sizeFilter || modelFilter
         ? {

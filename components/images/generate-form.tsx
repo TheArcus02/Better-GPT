@@ -20,21 +20,17 @@ import {
   SelectValue,
 } from '../ui/select'
 import { useState } from 'react'
-import Image from 'next/image'
-import { RingLoader } from 'react-spinners'
-import { useTheme } from 'next-themes'
 import { Button } from '../ui/button'
 import axios, { AxiosError } from 'axios'
 import { toast } from '../ui/use-toast'
 import { Group, Share2, Wand2 } from 'lucide-react'
-import { useWindowWidth } from '@/hooks/use-window-width'
-import { tailwindBreakpoints } from '@/lib/breakpoints'
 import { RiOpenaiFill } from 'react-icons/ri'
 import { Badge } from '../ui/badge'
+import GeneratedImage from './generated-image'
 
 const generateImageFormSchema = z.object({
   model: z.enum(['dall-e-2', 'dall-e-3']),
-  prompt: z.string().min(3).max(2000),
+  prompt: z.string().min(3).max(1000),
   size: z.enum([
     '256x256',
     '512x512',
@@ -48,22 +44,19 @@ export type GenerateImageFormType = z.infer<
   typeof generateImageFormSchema
 >
 
-interface Photo {
+export interface GeneratedPhoto {
   id?: number
   src: string
   prompt: string
   size: string
+  model: ImageModel
 }
 
 const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
-  const [photo, setPhoto] = useState<Photo | null>(null)
+  const [photo, setPhoto] = useState<GeneratedPhoto | null>(null)
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  const { theme } = useTheme()
-
-  const width = useWindowWidth()
 
   const form = useForm<GenerateImageFormType>({
     resolver: zodResolver(generateImageFormSchema),
@@ -85,6 +78,7 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
         src: `data:image/jpeg;base64,${response.data.image}`,
         prompt: data.prompt,
         size: data.size,
+        model: data.model,
       })
       toast({
         description: 'Image generated successfully',
@@ -121,6 +115,7 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
         prompt: photo.prompt,
         shared: false,
         size: photo.size,
+        model: photo.model,
       })
 
       const imageId = response.data.id
@@ -185,38 +180,14 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='max-w-3xl w-full flex flex-col items-center md:items mb-8 md:mb-0 md:flex-row gap-6 md:gap-0'
+        className='max-w-5xl w-full flex flex-col items-center mb-8 md:mb-0 md:flex-row gap-6 md:gap-0'
       >
-        <div className='flex-shrink-0 relative bg-secondary/30 border border-secondary text-sm rounded-lg w-60 h-60 md:w-96 md:h-96 p-3 flex justify-center items-center'>
-          {photo ? (
-            <Image
-              alt={form.getValues('prompt')}
-              src={photo.src}
-              layout='fill'
-              className='p-2'
-            />
-          ) : !isGenerating ? (
-            <Image
-              alt='preview'
-              src={
-                theme === 'light'
-                  ? '/assets/PreviewBlack.png'
-                  : '/assets/PreviewWhite.png'
-              }
-              width={width < tailwindBreakpoints.md ? 128 : 256}
-              height={width < tailwindBreakpoints.md ? 128 : 256}
-              className='object-contain opacity-30'
-            />
-          ) : (
-            <div className='absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg'>
-              <RingLoader
-                color={theme === 'light' ? 'black' : 'white'}
-                size={width < tailwindBreakpoints.md ? 128 : 256}
-              />
-            </div>
-          )}
-        </div>
-        <div className='w-full space-y-6 md:ml-6 md:h-96 flex flex-col'>
+        <GeneratedImage
+          photo={photo}
+          isGenerating={isGenerating}
+          alt={form.getValues('prompt')}
+        />
+        <div className='w-full space-y-6 md:ml-6 flex flex-col'>
           <FormField
             control={form.control}
             name='model'
@@ -274,7 +245,7 @@ const GenerateImageForm = ({ isPremium }: { isPremium: boolean }) => {
                 <FormControl>
                   <Textarea
                     disabled={isGenerating || isLoading}
-                    className='resize-none'
+                    className='resize-none md:h-32 lg:h-52'
                     placeholder='Futuristic cityscape at night with towering skyscrapers, neon lights, and flying cars, all in a cyberpunk aesthetic.'
                     {...field}
                   />
