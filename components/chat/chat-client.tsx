@@ -144,7 +144,7 @@ const ChatClient: React.FC<ChatClientProps> = ({
   return (
     <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
       <ChatTabs chatId={chat.id} />
-      <div className='flex flex-col h-full max-w-4xl w-full overflow-auto'>
+      <div className='flex flex-col h-full max-w-6xl w-full overflow-auto'>
         <ScrollArea className='flex-1'>
           <ChatMessages messages={messages} />
         </ScrollArea>

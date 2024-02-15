@@ -37,7 +37,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 }) => {
   const { theme } = useTheme()
 
-  const onCopy = () => {
+  const onCopy = (content: string) => {
     if (!content) {
       return
     }
@@ -49,14 +49,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     })
   }
 
-  const onSavePrompt = () => {
-    if (!content) {
-      return
-    }
-
-    // TODO: add function to save prompt to database
-  }
-
   return (
     <div
       className={cn(
@@ -64,28 +56,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         role === 'user' && 'justify-end',
       )}
     >
-      {role !== 'user' ? (
+      {role !== 'user' && (
         <Avatar className='hidden sm:block'>
           <AvatarImage src='https://github.com/shadcn.png' />
         </Avatar>
-      ) : (
-        <Tooltip>
-          <TooltipTrigger>
-            <Button
-              onClick={onSavePrompt}
-              className='hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition '
-              size='icon'
-              variant='ghost'
-            >
-              <Save className='w-5 h-5' />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Save prompt</TooltipContent>
-        </Tooltip>
       )}
       <div
         className={cn(
-          'rounded-md px-4 py-2 max-w-sm text-sm ',
+          'rounded-md px-4 py-2 max-w-sm lg:max-w-lg text-sm ',
           role !== 'user'
             ? 'bg-foreground/10'
             : 'bg-primary/70 text-primary-foreground',
@@ -100,8 +78,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           <ReactMarkdown
             components={{
               pre: ({ node, ...props }) => (
-                <div className=' w-full my-2 p-2 rounded-lg bg-black/10'>
-                  <pre {...props} className='whitespace-pre-wrap ' />
+                <div className=' w-full my-2 '>
+                  <pre
+                    {...props}
+                    className='whitespace-pre-wrap rounded-md'
+                  />
                 </div>
               ),
               code: ({
@@ -113,26 +94,57 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               }) => {
                 const match = /language-(\w+)/.exec(className || '')
                 return !inline && match ? (
-                  <SyntaxHighlighter
-                    {...props}
-                    // eslint-disable-next-line react/no-children-prop
-                    children={String(children).replace(/\n$/, '')}
-                    style={theme === 'light' ? oneLight : atomDark}
-                    language={match[1]}
-                    PreTag='div'
-                    wrapLines={true}
-                    wrapLongLines={true}
-                  />
+                  <>
+                    <div className='py-2 rounded-t-md w-full bg-secondary flex items-center justify-between'>
+                      <span className='ml-3 text-muted-foreground text-sm'>
+                        {className?.split('-')[1]}
+                      </span>
+                      <button
+                        className='flex items-center text-sm text-muted-foreground mr-3 hover:text-primary-foreground transition'
+                        onClick={() =>
+                          onCopy(String(children).replace(/\n$/, ''))
+                        }
+                      >
+                        <Save className='w-4 h-4 mr-1' />
+                        Copy code
+                      </button>
+                    </div>
+
+                    <SyntaxHighlighter
+                      {...props}
+                      // eslint-disable-next-line react/no-children-prop
+                      children={String(children).replace(/\n$/, '')}
+                      style={theme === 'light' ? oneLight : atomDark}
+                      language={match[1]}
+                      PreTag='div'
+                      customStyle={{
+                        margin: '0',
+                        borderRadius: '0',
+                        borderBottomLeftRadius:
+                          'calc(var(--radius) - 2px)',
+                        borderBottomRightRadius:
+                          'calc(var(--radius) - 2px)',
+                      }}
+                    />
+                  </>
                 ) : (
-                  <code
-                    // className='rounded-lg p-1 bg-black/10'
-                    className={className}
-                    {...props}
-                  >
+                  <code className={className} {...props}>
                     {children}
                   </code>
                 )
               },
+              ul: ({ node, ordered, className, ...props }) => (
+                <ul className='list-disc space-y-2 py-2' {...props} />
+              ),
+              ol: ({ node, ordered, className, ...props }) => (
+                <ol
+                  className='list-decimal space-y-2 py-2'
+                  {...props}
+                />
+              ),
+              li: ({ node, className, ...props }) => (
+                <li className='ml-4' {...props} />
+              ),
             }}
           >
             {content}
@@ -143,7 +155,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         <Tooltip>
           <TooltipTrigger>
             <Button
-              onClick={onCopy}
+              onClick={() => onCopy(content)}
               className='hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition '
               size='icon'
               variant='ghost'
