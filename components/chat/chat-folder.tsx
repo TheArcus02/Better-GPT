@@ -15,17 +15,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import ChatFile from './chat-file'
 import { Chat } from '@prisma/client'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '../ui/alert-dialog'
+import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
@@ -43,6 +33,7 @@ interface ChatFolderProps {
       messages: number
     }
   })[]
+  isPremium: boolean
 }
 
 const ChatFolder: React.FC<ChatFolderProps> = ({
@@ -50,6 +41,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
   chatsCount,
   chats,
   id,
+  isPremium,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -154,7 +146,6 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      {/* Folder Name */}
       <Dialog>
         <AlertDialog>
           <ContextMenu>
@@ -215,7 +206,10 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 folder and all chats inside from our server.'
             handleDelete={handleDelete}
           />
-          <NewChatDialog folders={[{ id, name }]} />
+          <NewChatDialog
+            folders={[{ id, name }]}
+            isPremium={isPremium}
+          />
         </AlertDialog>
       </Dialog>
 
@@ -228,6 +222,7 @@ folder and all chats inside from our server.'
             id={chat.id}
             name={chat.name}
             count={chat._count.messages}
+            model={chat.model as ChatModel}
           />
         ))}
     </div>

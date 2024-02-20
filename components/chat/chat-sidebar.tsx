@@ -84,7 +84,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                     New Chat
                   </Button>
                 </DialogTrigger>
-                <NewChatDialog folders={folders} />
+                <NewChatDialog
+                  folders={folders}
+                  isPremium={isPremium}
+                />
               </Dialog>
             )}
 
@@ -109,7 +112,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
           <div className='bg-background h-[inherit] flex flex-col justify-between overflow-auto'>
             <ScrollArea className='min-h-[150px]'>
-              <ChatFolders folders={folders} />
+              <ChatFolders folders={folders} isPremium={isPremium} />
             </ScrollArea>
 
             {!isPremium && (

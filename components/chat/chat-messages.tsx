@@ -1,13 +1,18 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import ChatMessage, { ChatMessageProps } from './chat-message'
+import ChatMessage from './chat-message'
+import { Message } from 'ai'
 
 interface ChatMessagesProps {
-  messages: ChatMessageProps[]
+  messages: Message[]
+  model: ChatModel
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({
+  messages,
+  model,
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [fakeLoading, setFakeLoading] = useState(
     messages.length === 0 ? true : false,
@@ -38,12 +43,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
         isLoading={fakeLoading}
         role='system'
         content='Hi, Im your AI assistant. How can I help you?'
+        model={model}
       />
       {messages.map((message, index) => (
         <ChatMessage
           key={message.id ? message.id : message.content + index}
           role={message.role}
           content={message.content}
+          model={model}
         />
       ))}
       <div ref={scrollRef} />

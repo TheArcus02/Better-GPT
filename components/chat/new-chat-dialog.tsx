@@ -33,9 +33,12 @@ import axios, { AxiosError } from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { RiOpenaiFill } from 'react-icons/ri'
+import { Badge } from '../ui/badge'
 
 const NewChatFormValidator = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
+  model: z.enum(['gpt-3.5-turbo', 'gpt-4']),
   folder: z.string({ required_error: 'Specify folder' }),
 })
 
@@ -48,9 +51,13 @@ interface NewChatDialogProps {
     id: string
     name: string
   }[]
+  isPremium: boolean
 }
 
-const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
+const NewChatDialog: React.FC<NewChatDialogProps> = ({
+  folders,
+  isPremium,
+}) => {
   const [isAdding, setIsAdding] = useState(false)
 
   const router = useRouter()
@@ -58,6 +65,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
     resolver: zodResolver(NewChatFormValidator),
     defaultValues: {
       name: 'New Chat',
+      model: 'gpt-3.5-turbo',
       folder: folders.length === 1 ? folders[0].id : undefined,
     },
   })
@@ -67,6 +75,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
     try {
       await axios.post('/api/chat', {
         name: data.name,
+        model: data.model,
         folderId: data.folder,
       })
       toast({
@@ -114,6 +123,43 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({ folders }) => {
                   <FormControl className='col-span-3'>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage className='col-span-4 text-center' />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='model'
+              render={({ field }) => (
+                <FormItem className='grid grid-cols-4 items-center gap-4'>
+                  <FormLabel className='text-right'>Model</FormLabel>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl className='col-span-3'>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select model' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='gpt-3.5-turbo'>
+                        <div className='flex items-center'>
+                          <RiOpenaiFill className='mr-2 h-5 w-5' />
+                          GPT-3.5
+                        </div>
+                      </SelectItem>
+                      <SelectItem value='gpt-4' disabled={!isPremium}>
+                        <div className='flex items-center'>
+                          <RiOpenaiFill className='mr-2 h-5 w-5' />
+                          GPT-4
+                          {!isPremium && (
+                            <Badge className='ml-2'>Premium</Badge>
+                          )}
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage className='col-span-4 text-center' />
                 </FormItem>
               )}

@@ -48,8 +48,6 @@ const ChatClient: React.FC<ChatClientProps> = ({
     Array<Command>
   >([])
   const [usedCommand, setUsedCommand] = useState<Command | null>(null)
-  const [chatModel, setChatModel] =
-    useState<ChatModel>('gpt-3.5-turbo')
 
   const {
     input,
@@ -76,7 +74,7 @@ const ChatClient: React.FC<ChatClientProps> = ({
       })
     },
     body: {
-      model: chatModel,
+      model: chat.model,
     },
   })
 
@@ -134,19 +132,15 @@ const ChatClient: React.FC<ChatClientProps> = ({
     handleChatSubmit(e, chatRequestOptions)
   }
 
-  const handleChatModelChange = (
-    e: ChangeEvent<HTMLSelectElement>,
-  ) => {
-    e.preventDefault()
-    setChatModel(e.target.value as ChatModel)
-  }
-
   return (
     <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
       <ChatTabs chatId={chat.id} />
       <div className='flex flex-col h-full max-w-6xl w-full overflow-auto'>
         <ScrollArea className='flex-1'>
-          <ChatMessages messages={messages} />
+          <ChatMessages
+            messages={messages}
+            model={chat.model as ChatModel}
+          />
         </ScrollArea>
         <Popover
           open={popoverOpen && !usedCommand}
@@ -181,9 +175,8 @@ const ChatClient: React.FC<ChatClientProps> = ({
           onSubmit={handleSubmit}
           isLoading={isLoading}
           btnDisabled={btnDisabled}
-          chatModel={chatModel}
-          setChatModel={setChatModel}
           isPremium={isPremium}
+          chatModel={chat.model as ChatModel}
         />
       </div>
     </div>

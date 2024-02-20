@@ -8,7 +8,11 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { folderId, name } = body
+    const { folderId, name, model } = body as {
+      folderId: string
+      name: string
+      model: ChatModel
+    }
 
     if (
       !user ||
@@ -23,7 +27,7 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    if (!name || !folderId) {
+    if (!name || !folderId || !model) {
       return new NextResponse('Fields are required', { status: 400 })
     }
 
@@ -36,11 +40,21 @@ export async function POST(req: Request) {
           { status: 403 },
         )
       }
+
+      const freeModels = ['gpt-3.5-turbo']
+
+      if (!freeModels.includes(model)) {
+        return new NextResponse(
+          'This model is only available for premium users. Upgrade your plan to use it.',
+          { status: 403 },
+        )
+      }
     }
 
     const chat = await prismadb.chat.create({
       data: {
         name,
+        model,
         folderId: folderId ?? null,
         userId: user.id,
       },

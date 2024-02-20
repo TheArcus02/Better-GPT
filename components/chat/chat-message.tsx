@@ -23,6 +23,7 @@ export interface ChatMessageProps {
   chatId?: string
   createdAt?: Date
   updatedAt?: Date
+  model: ChatModel
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -34,8 +35,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   chatId,
   createdAt,
   updatedAt,
+  model,
 }) => {
   const { theme } = useTheme()
+
+  const getImagePath = (model: ChatModel) => {
+    switch (model) {
+      case 'gpt-4':
+      case 'gpt-3.5-turbo':
+        return '/assets/icons/ChatGPT_logo.svg'
+      default:
+        return '/assets/icons/ChatGPT_logo.svg'
+    }
+  }
 
   const onCopy = (content: string) => {
     if (!content) {
@@ -58,7 +70,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     >
       {role !== 'user' && (
         <Avatar className='hidden sm:block'>
-          <AvatarImage src='https://github.com/shadcn.png' />
+          <AvatarImage src={getImagePath(model)} />
         </Avatar>
       )}
       <div

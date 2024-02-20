@@ -25,9 +25,13 @@ interface ChatFoldersProps {
       chats: number
     }
   } & Folder)[]
+  isPremium: boolean
 }
 
-const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
+const ChatFolders: React.FC<ChatFoldersProps> = ({
+  folders,
+  isPremium,
+}) => {
   const [dialogType, setDialogType] = useState<
     null | 'chat' | 'folder'
   >(null)
@@ -50,6 +54,7 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
                     name={folder.name}
                     chatsCount={folder._count.chats}
                     chats={folder.chats}
+                    isPremium={isPremium}
                   />
                 ))
               ) : (
@@ -76,7 +81,7 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({ folders }) => {
         </ContextMenuContent>
       </ContextMenu>
       {dialogType === 'chat' ? (
-        <NewChatDialog folders={folders} />
+        <NewChatDialog folders={folders} isPremium={isPremium} />
       ) : (
         <NewFolderDialog />
       )}

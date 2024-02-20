@@ -5,7 +5,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '../ui/context-menu'
-import { MessageSquare, PencilLine, XCircle } from 'lucide-react'
+import { PencilLine, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from '../ui/use-toast'
 import axios from 'axios'
@@ -14,14 +14,21 @@ import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import CustomAlertDialog from './custom-alert-dialog'
 import { useTabsStore } from '@/hooks/use-tabs'
 import useStore from '@/hooks/use-store'
+import { ChatIcon } from './chat-icon'
 
 interface ChatFileProps {
   id: string
   name: string
   count: number
+  model: ChatModel
 }
 
-const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
+const ChatFile: React.FC<ChatFileProps> = ({
+  id,
+  name,
+  count,
+  model,
+}) => {
   const router = useRouter()
   const cilckableRef = useRef<HTMLDivElement>(null)
 
@@ -145,7 +152,7 @@ const ChatFile: React.FC<ChatFileProps> = ({ id, name, count }) => {
             ref={cilckableRef}
             onClick={handleNavigate}
           >
-            <MessageSquare size={24} />
+            <ChatIcon model={model} />
             {isEditMode ? (
               <input
                 type='text'
