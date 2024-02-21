@@ -96,13 +96,13 @@ export const InfiniteMovingCards = ({
         )}
       >
         {items.map((item, idx) => (
-          <Card className='w-[350px]' key={item.name}>
+          <Card className='w-[200px] md:w-[350px]' key={item.name}>
             <CardHeader>
               <CardTitle>{item.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <blockquote>
-                <span className='text-sm leading-[1.6] text-gray-100 font-normal'>
+                <span className='text-sm leading-[1.6] text-card-foreground font-normal'>
                   {item.quote}
                 </span>
                 <div className='mt-6 flex flex-row items-center'>

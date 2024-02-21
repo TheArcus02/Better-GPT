@@ -1,5 +1,6 @@
 'use client'
 import { cn } from '@/lib/utils'
+import { useTheme } from 'next-themes'
 import React, { useEffect, useRef } from 'react'
 import { createNoise3D } from 'simplex-noise'
 
@@ -26,7 +27,10 @@ export const WavyBackground = ({
   waveOpacity?: number
   [key: string]: any
 }) => {
+  const { theme } = useTheme()
+
   const noise = createNoise3D()
+
   let w: number,
     h: number,
     nt: number,
@@ -34,7 +38,9 @@ export const WavyBackground = ({
     x: number,
     ctx: any,
     canvas: any
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
   const getSpeed = () => {
     switch (speed) {
       case 'slow':
@@ -49,7 +55,24 @@ export const WavyBackground = ({
   const init = () => {
     canvas = canvasRef.current
     ctx = canvas.getContext('2d')
-    w = ctx.canvas.width = window.innerWidth
+
+    const getScrollbarWidth = () => {
+      const outer = document.createElement('div')
+      outer.style.visibility = 'hidden'
+      outer.style.overflow = 'scroll'
+      document.body.appendChild(outer)
+
+      const inner = document.createElement('div')
+      outer.appendChild(inner)
+
+      const scrollbarWidth = outer.offsetWidth - inner.offsetWidth
+
+      outer!.parentNode!.removeChild(outer)
+
+      return scrollbarWidth
+    }
+
+    w = ctx.canvas.width = window.innerWidth - getScrollbarWidth()
     h = ctx.canvas.height = window.innerHeight
     ctx.filter = `blur(${blur}px)`
     nt = 0
@@ -85,7 +108,8 @@ export const WavyBackground = ({
 
   let animationId: number
   const render = () => {
-    ctx.fillStyle = backgroundFill || 'black'
+    ctx.fillStyle =
+      backgroundFill || theme === 'dark' ? '#030712' : '#FFFFFF'
     ctx.globalAlpha = waveOpacity || 0.5
     ctx.fillRect(0, 0, w, h)
     drawWave(5)
@@ -97,7 +121,7 @@ export const WavyBackground = ({
     return () => {
       cancelAnimationFrame(animationId)
     }
-  }, [])
+  }, [theme])
 
   return (
     <div

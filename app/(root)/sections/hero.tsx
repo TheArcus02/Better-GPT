@@ -4,22 +4,13 @@ import Link from 'next/link'
 
 const Hero = () => {
   return (
-    <WavyBackground
-      className='mx-auto pb-40'
-      backgroundFill='#030712'
-    >
+    <WavyBackground className='mx-auto pb-40'>
       <div className='text-center'>
         <h1 className='text-3xl md:text-6xl uppercase font-extrabold leading-snug'>
           Revolutionize your <br />
-          <span
-            className='text-primary
-            '
-          >
-            creativity
-          </span>{' '}
-          with AI.
+          <span className='text-foreground'>creativity</span> with AI.
         </h1>
-        <p className='text-sm md:text-lg max-w-sm mt-6 text-muted-foreground mx-auto '>
+        <p className='text-sm md:text-lg max-w-sm mt-6 text-foreground/80 mx-auto '>
           Explore endless creative possibilities with BetterGPT, your
           AI-powered companion for chat, image generation, and
           seamless translation.
