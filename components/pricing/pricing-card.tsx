@@ -14,6 +14,7 @@ interface PricingCardProps
   price: string
   features: string[]
   isPremium: boolean
+  isYearly?: boolean
 }
 
 const PricingCard = ({
@@ -22,6 +23,7 @@ const PricingCard = ({
   price,
   title,
   isPremium,
+  isYearly,
   className,
   ...props
 }: PricingCardProps) => {
@@ -49,7 +51,11 @@ const PricingCard = ({
       </div>
       <div className='text-4xl mt-4'>
         <span className='font-light'>$ </span>
-        {price}
+        {price.split('.')[0]}
+        <span className='text-lg font-normal'>
+          .{price.split('.')[1]}
+          {isYearly ? '/yr' : '/mo'}
+        </span>
       </div>
       <div>
         <ul className='mt-8 space-y-3'>

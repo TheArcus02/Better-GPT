@@ -98,7 +98,7 @@ export const InfiniteMovingCards = ({
         {items.map((item, idx) => (
           <Card className='w-[350px]' key={item.name}>
             <CardHeader>
-              <CardTitle className='ml-3'>{item.name}</CardTitle>
+              <CardTitle>{item.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <blockquote>
