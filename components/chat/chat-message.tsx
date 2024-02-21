@@ -77,8 +77,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         className={cn(
           'rounded-md px-4 py-2 max-w-sm lg:max-w-lg text-sm ',
           role !== 'user'
-            ? 'bg-foreground/10'
-            : 'bg-primary/70 text-primary-foreground',
+            ? 'bg-secondary text-secondary-foreground'
+            : 'bg-primary text-primary-foreground',
         )}
       >
         {isLoading && role !== 'user' ? (

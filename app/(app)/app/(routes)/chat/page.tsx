@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const ChatsPage = async () => {
   return (
-    <div className='flex items-center bg-secondary/50 justify-center w-full flex-col gap-5'>
+    <div className='flex items-center justify-center w-full flex-col gap-5'>
       <Image
         src='/assets/Messaging.svg'
         alt='begin chat'

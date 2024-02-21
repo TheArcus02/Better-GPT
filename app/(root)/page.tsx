@@ -13,18 +13,52 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { InfiniteMovingCards } from '@/components/ui/infinite-moving-cards'
 import { Separator } from '@/components/ui/separator'
+import { WavyBackground } from '@/components/ui/wavy-background'
 import { checkSubscription } from '@/lib/subscription'
 import Image from 'next/image'
 import Link from 'next/link'
+
+const testimonials = [
+  {
+    quote:
+      'It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair.',
+    name: 'Charles Dickens',
+    title: 'A Tale of Two Cities',
+  },
+  {
+    quote:
+      "To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, Or to take Arms against a Sea of troubles, And by opposing end them: to die, to sleep.",
+    name: 'William Shakespeare',
+    title: 'Hamlet',
+  },
+  {
+    quote: 'All that we see or seem is but a dream within a dream.',
+    name: 'Edgar Allan Poe',
+    title: 'A Dream Within a Dream',
+  },
+  {
+    quote:
+      'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+    name: 'Jane Austen',
+    title: 'Pride and Prejudice',
+  },
+  {
+    quote:
+      'Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.',
+    name: 'Herman Melville',
+    title: 'Moby-Dick',
+  },
+]
 
 const RootPage = async () => {
   const isPremium = await checkSubscription()
 
   return (
-    <div className='h-full mt-16 px-6 '>
+    <div className='h-full mt-16 px-6'>
       {/* hero */}
-      <section className='max-w-6xl mx-auto md:flex justify-between items-center'>
+      {/* <section className='max-w-6xl mx-auto md:flex justify-between items-center'>
         <div className='text-center md:text-left'>
           <h1 className='text-5xl uppercase font-extrabold leading-snug'>
             Revolutionize <br />
@@ -56,9 +90,45 @@ const RootPage = async () => {
           width='500'
           height='500'
         />
+      </section> */}
+      <section>
+        <WavyBackground
+          className='mx-auto pb-40'
+          backgroundFill='#030712'
+        >
+          <div className='text-center'>
+            <h1 className='text-5xl uppercase font-extrabold leading-snug'>
+              Revolutionize your <br />
+              <span
+                className='text-primary
+            '
+              >
+                creativity
+              </span>{' '}
+              with AI.
+            </h1>
+            <p className='max-w-sm mt-6 text-muted-foreground mx-auto '>
+              Explore endless creative possibilities with BetterGPT,
+              your AI-powered companion for chat, image generation,
+              and seamless translation.
+            </p>
+            <div className='mt-6'>
+              <Link href='/app'>
+                <Button size='lg'>Get Started</Button>
+              </Link>
+            </div>
+          </div>
+        </WavyBackground>
       </section>
+      {/* <section className='mt-24'>
+        <InfiniteMovingCards
+          items={testimonials}
+          direction='right'
+          speed='slow'
+        />
+      </section> */}
       {/* Cards */}
-      <section className='mt-40 max-w-6xl flex flex-col md:flex-row mx-auto gap-8 px-16'>
+      <section className='max-w-6xl flex flex-col md:flex-row mx-auto gap-8 px-16'>
         <Card className='w-full'>
           <CardHeader>
             <Image

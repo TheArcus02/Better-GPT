@@ -6,7 +6,7 @@ const ChatLayout = async ({
   children: React.ReactNode
 }) => {
   return (
-    <div className='flex h-full w-full bg-secondary/50'>
+    <div className='flex h-full w-full border-t'>
       <aside className='hidden md:flex'>
         <Sidebar />
       </aside>

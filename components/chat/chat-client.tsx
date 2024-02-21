@@ -133,7 +133,7 @@ const ChatClient: React.FC<ChatClientProps> = ({
   }
 
   return (
-    <div className='flex flex-col w-full bg-secondary/50 items-center border-l'>
+    <div className='flex flex-col w-full items-center border-b'>
       <ChatTabs chatId={chat.id} />
       <div className='flex flex-col h-full max-w-6xl w-full overflow-auto'>
         <ScrollArea className='flex-1'>

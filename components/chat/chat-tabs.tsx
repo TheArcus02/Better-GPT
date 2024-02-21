@@ -38,19 +38,14 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
     if (!tabsState) return
     if (tabsState.chatTabs.length > 0) {
       if (!tabsState.activeChatTab) {
-        // console.log(
-        //   'no active chat tab. Setting last tab as active...',
-        // )
         tabsState.setActiveChatTab(
           tabsState.chatTabs[tabsState.chatTabs.length - 1],
         )
       } else {
         if (chatId === tabsState.activeChatTab.id) return
-        // console.log('active chat tab found. Pushing to route...')
         router.push(`/app/chat/${tabsState.activeChatTab.id}`)
       }
     } else {
-      // console.log('no chat tabs')
       router.push('/app/chat')
     }
   }, [tabsState, router, chatId])
@@ -58,7 +53,7 @@ const ChatTabs: React.FC<ChatTabsProps> = ({ chatId }) => {
   if (!tabsState || !sidebarState) return null
 
   return (
-    <div className='flex justify-between w-full border-b-2 bg-background/60'>
+    <div className='flex justify-between w-full border-b bg-background/60'>
       <div className='flex overflow-x-auto'>
         {tabsState.chatTabs.map(({ id, name }) => (
           <div

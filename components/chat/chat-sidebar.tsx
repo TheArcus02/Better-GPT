@@ -61,7 +61,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   }
 
   return (
-    <div className='flex flex-col gap-4 h-full bg-secondary pt-6'>
+    <div className='flex flex-col gap-4 h-full pt-6 border-r'>
       <div className='flex gap-2 items-center px-4'>
         <Button
           variant='ghost'
@@ -110,7 +110,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </Tooltip>
           </div>
 
-          <div className='bg-background h-[inherit] flex flex-col justify-between overflow-auto'>
+          <div className='bg-background h-[inherit] flex flex-col justify-between overflow-auto border-t'>
             <ScrollArea className='min-h-[150px]'>
               <ChatFolders folders={folders} isPremium={isPremium} />
             </ScrollArea>
