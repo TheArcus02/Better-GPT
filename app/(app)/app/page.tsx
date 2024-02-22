@@ -1,15 +1,15 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import {
   MessagesSquare,
   Languages,
   Settings,
-  Image,
+  ImageIcon,
   LucideIcon,
 } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
-
 interface Route {
   icon: LucideIcon
   href: string
@@ -25,7 +25,7 @@ const routes: Array<Route> = [
     description: 'Chat with advanced AI bot.',
   },
   {
-    icon: Image,
+    icon: ImageIcon,
     href: '/app/images',
     label: 'Images',
     description:
@@ -63,10 +63,18 @@ const AppPage = () => {
           features that are available to you.
         </p>
       </div>
-      <div className='mt-6 space-y-8'>
-        {routes.map((route) => (
-          <Link key={route.href} href={route.href} className='block'>
-            <Card className='bg-secondary/70'>
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-3 gap-3'>
+        {routes.map((route, idx) => (
+          <Link
+            key={route.href}
+            href={route.href}
+            className={cn(
+              'block',
+              idx === 0 && 'col-span-2',
+              idx === 1 && 'row-span-2',
+            )}
+          >
+            <Card className='bg-secondary w-full h-full transition-colors ease-in-out duration-500 hover:border-accent'>
               <CardHeader className='flex flex-row space-x-2 text-accent'>
                 {route.icon && (
                   <route.icon className='w-6 h-6 mr-2' />
@@ -74,7 +82,7 @@ const AppPage = () => {
                 {route.label}
               </CardHeader>
               <CardContent className='text-secondary-foreground'>
-                {route.description}
+                <p>{route.description}</p>
               </CardContent>
             </Card>
           </Link>
