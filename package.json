@@ -46,7 +46,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^11.0.5",
     "languagedetect": "^2.0.0",
-    "lucide-react": "^0.264.0",
+    "lucide-react": "^0.338.0",
     "mini-svg-data-uri": "^1.4.4",
     "next": "13.4.12",
     "next-cloudinary": "^4.18.1",
