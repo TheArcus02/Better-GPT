@@ -29,3 +29,16 @@ export function getUsername(user: User) {
     return user.emailAddresses[0].emailAddress
   }
 }
+
+export function handleError(reason: string, error: unknown) {
+  if (error instanceof Error) {
+    console.log(error.message)
+    throw new Error(`${reason}: ${error.message}`)
+  } else if (typeof error === 'string') {
+    console.log(error)
+    throw new Error(`${reason}: ${error}`)
+  } else {
+    console.log(error)
+    throw new Error(`${reason}: ${JSON.stringify(error)}`)
+  }
+}

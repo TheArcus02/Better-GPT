@@ -75,7 +75,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
         '/api/assistants',
         values,
       )
-      router.push(`/assistants/config/${res.data.id}`)
+      router.push(`app/assistants/config/${res.data.id}`)
     } catch (error) {
       console.log(error)
       toast({
@@ -158,7 +158,12 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             </FormItem>
           )}
         />
-        <Button variant='default' className='mt-8' type='submit'>
+        <Button
+          variant='default'
+          className='mt-8'
+          type='submit'
+          disabled={isSubmitting}
+        >
           Create Assistant
         </Button>
       </form>

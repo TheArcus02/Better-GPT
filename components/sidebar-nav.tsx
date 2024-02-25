@@ -23,7 +23,7 @@ const SidebarNav = ({
   return (
     <nav
       className={cn(
-        'flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1',
+        'flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-2',
         className,
       )}
       {...props}
@@ -34,9 +34,7 @@ const SidebarNav = ({
           href={item.href}
           className={cn(
             buttonVariants({ variant: 'ghost' }),
-            pathname === item.href
-              ? 'bg-muted'
-              : 'hover:bg-transparent hover:underline',
+            pathname === item.href ? 'bg-muted' : 'hover:underline',
             'justify-start',
           )}
         >

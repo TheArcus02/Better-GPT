@@ -1,5 +1,7 @@
-import prisma from '@/lib/prismadb'
-import { notFound } from 'next/navigation'
+import { toast } from '@/components/ui/use-toast'
+import { getAssistantById } from '@/lib/actions/assistant.action'
+import { redirect } from 'next/navigation'
+import OpenAI from 'openai'
 
 const AssistantConfigInfoPage = async ({
   params,
@@ -8,17 +10,27 @@ const AssistantConfigInfoPage = async ({
     assistantId: string
   }
 }) => {
-  const assistant = await prisma.assistant.findUnique({
-    where: {
-      id: params.assistantId,
-    },
-  })
-
-  if (!assistant) {
-    notFound()
+  let assistant
+  try {
+    assistant = (await getAssistantById(
+      params.assistantId,
+    )) as OpenAI.Beta.Assistants.Assistant
+  } catch (error: any) {
+    toast({
+      title: 'Error',
+      description: error,
+      variant: 'destructive',
+    })
+    redirect('/app/assistants')
   }
 
-  return <div>AssistantConfigInfoPage</div>
+  return (
+    <div>
+      <h1>{assistant.name}</h1>
+      <p>{assistant.description}</p>
+      <p>{assistant.instructions}</p>
+    </div>
+  )
 }
 
 export default AssistantConfigInfoPage

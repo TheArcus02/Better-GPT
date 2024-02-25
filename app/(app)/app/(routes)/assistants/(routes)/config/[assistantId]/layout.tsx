@@ -5,21 +5,6 @@ import prisma from '@/lib/prismadb'
 import { auth } from '@clerk/nextjs'
 import { notFound, redirect } from 'next/navigation'
 
-const sidebarNavItems = [
-  {
-    href: '/assistants/config',
-    label: 'Info',
-  },
-  {
-    href: '/assistants/config/general',
-    label: 'General',
-  },
-  {
-    href: '/assistants/config/files',
-    label: 'files',
-  },
-]
-
 interface AssistantConfigLayoutProps {
   children: React.ReactNode
   params: {
@@ -39,6 +24,8 @@ const AssistantConfigLayout = async ({
     },
   })
 
+  console.log(assistant)
+
   if (!assistant) {
     notFound()
   }
@@ -49,15 +36,30 @@ const AssistantConfigLayout = async ({
       description: 'Only the owner can access this page',
       duration: 3000,
     })
-    redirect('/assistants')
+    redirect('/app/assistants')
   }
 
+  const sidebarNavItems = [
+    {
+      href: `/app/assistants/config/${params.assistantId}`,
+      label: 'Info',
+    },
+    {
+      href: `/app/assistants/config/${params.assistantId}/settings`,
+      label: 'General',
+    },
+    {
+      href: `/app/assistants/config/${params.assistantId}/files`,
+      label: 'Files',
+    },
+  ]
+
   return (
-    <>
-      <div className='hidden space-y-6 p-10 pb-16 md:block'>
+    <div className='max-w-7xl mx-auto'>
+      <div className='space-y-6 p-10 pb-16'>
         <div className='space-y-0.5'>
           <h2 className='text-2xl font-bold tracking-tight'>
-            {assistant.name} Configuration
+            {assistant.name} Assistant Configuration
           </h2>
           <p className='text-muted-foreground'>
             Configure the assistant settings
@@ -71,7 +73,7 @@ const AssistantConfigLayout = async ({
           <div className='flex-1 lg:max-w-2xl'>{children}</div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
