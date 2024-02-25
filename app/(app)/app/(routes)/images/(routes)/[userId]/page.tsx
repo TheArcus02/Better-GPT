@@ -1,6 +1,7 @@
 import Galery from '@/components/images/galery'
 import { toast } from '@/components/ui/use-toast'
 import prismadb from '@/lib/prismadb'
+import { getUsername } from '@/lib/utils'
 import { auth, clerkClient } from '@clerk/nextjs'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
@@ -22,13 +23,7 @@ const getUserData = async (userId: string) => {
     const isOwner = loggedUserId === userId
     const user = await clerkClient.users.getUser(userId)
 
-    let username = user.username
-
-    if (user.firstName || user.lastName) {
-      username = `${user.firstName} ${user.lastName}`
-    } else {
-      username = user.emailAddresses[0].emailAddress
-    }
+    const username = getUsername(user)
 
     return {
       user,

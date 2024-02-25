@@ -1,4 +1,5 @@
 import prismadb from '@/lib/prismadb'
+import { isInvalidUsername } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 
@@ -11,16 +12,7 @@ export async function PATCH(
     const user = await currentUser()
     const { shared } = body as { shared: boolean }
 
-    if (
-      !user ||
-      !user.id ||
-      !(
-        user.firstName ||
-        user.lastName ||
-        user.username ||
-        user.emailAddresses[0].emailAddress
-      )
-    ) {
+    if (!user || isInvalidUsername(user)) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

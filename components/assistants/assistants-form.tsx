@@ -16,21 +16,31 @@ import { useState } from 'react'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
+import { Assistant } from '@prisma/client'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
-  data: any // TODO: define type in prisma
+  data: Assistant | null
 }
 
 const assistantsFormSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  instructions: z.string(),
+  name: z.string().min(3, {
+    message: 'Name must be at least 3 characters long',
+  }),
+  description: z.string().min(10, {
+    message: 'Description must be at least 10 characters long',
+  }),
+  instructions: z.string().min(200, {
+    message: 'Instructions must be at least 200 characters long',
+  }),
   imagePublicId: z.string().optional(),
 })
 
+export type AssistantsFormType = z.infer<typeof assistantsFormSchema>
+
 const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
   const [image, setImage] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const initialValues =
     data && action === 'update'
@@ -52,10 +62,9 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
     defaultValues: initialValues,
   })
 
-  const onSubmit = async (
-    values: z.infer<typeof assistantsFormSchema>,
-  ) => {
+  const onSubmit = async (values: AssistantsFormType) => {
     console.log(values)
+    // Call the API to create or update the assistant
   }
 
   return (
@@ -71,6 +80,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             <FormItem>
               <FormControl>
                 <ImageUploader
+                  disabled={true}
                   onValueChange={field.onChange}
                   setImage={setImage}
                   publicId={field.value}
@@ -102,7 +112,6 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  className='resize-none'
                   placeholder={
                     'This AI assistant is designed to mimic Elon Musk. It can answer questions, provide information, and engage in casual conversation.'
                   }
@@ -121,7 +130,6 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
               <FormLabel>Instructions</FormLabel>
               <FormControl>
                 <Textarea
-                  className='resize-none'
                   placeholder={`Familiarize yourself with Elon Musk's mannerisms, speech patterns, and notable characteristics through interviews, speeches, and articles.Aim to replicate Musk's casual yet articulate communication style. Use a mix of technical jargon and layman's terms to convey complex ideas simply...`}
                   {...field}
                 />

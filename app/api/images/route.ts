@@ -5,6 +5,7 @@ import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedImages } from '@/lib/restrictions'
 import { GenerateImageFormType } from '@/components/images/generate-form'
+import { getUsername, isInvalidUsername } from '@/lib/utils'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -22,16 +23,7 @@ export async function POST(req: Request) {
         shared: boolean
       }
 
-    if (
-      !user ||
-      !user.id ||
-      !(
-        user.firstName ||
-        user.lastName ||
-        user.username ||
-        user.emailAddresses[0].emailAddress
-      )
-    ) {
+    if (!user || isInvalidUsername(user)) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -41,13 +33,7 @@ export async function POST(req: Request) {
       })
     }
 
-    let username = user.username
-
-    if (user.firstName || user.lastName) {
-      username = `${user.firstName} ${user.lastName}`
-    } else {
-      username = user.emailAddresses[0].emailAddress
-    }
+    const username = getUsername(user)
 
     const isPremium = await checkSubscription()
 
