@@ -3,21 +3,21 @@
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { buttonVariants } from '../ui/button'
-import { CreditCard } from 'lucide-react'
+import { buttonVariants } from './ui/button'
 
-const items: NavRoute[] = [
-  {
-    icon: CreditCard,
-    label: 'Subscriptions',
-    href: '/app/settings',
-  },
-]
+interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
+  items: {
+    label: string
+    href: string
+    icon?: React.ReactNode
+  }[]
+}
 
 const SidebarNav = ({
   className,
+  items,
   ...props
-}: React.HTMLAttributes<HTMLElement>) => {
+}: SidebarNavProps) => {
   const pathname = usePathname()
 
   return (
@@ -40,7 +40,7 @@ const SidebarNav = ({
             'justify-start',
           )}
         >
-          {item.icon && <item.icon className='w-4 h-4 mr-2' />}
+          {item.icon && <div className='mr-2'>{item.icon}</div>}
 
           {item.label}
         </Link>

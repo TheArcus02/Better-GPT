@@ -1,10 +1,18 @@
-import SidebarNav from '@/components/settings/sidebar-nav'
+import SidebarNav from '@/components/sidebar-nav'
 import { Separator } from '@/components/ui/separator'
-import { Sparkle } from 'lucide-react'
+import { CreditCard } from 'lucide-react'
 
 interface SettingsLayoutProps {
   children: React.ReactNode
 }
+
+const items = [
+  {
+    icon: <CreditCard />,
+    label: 'Subscriptions',
+    href: '/app/settings',
+  },
+]
 
 export default function SettingsLayout({
   children,
@@ -23,7 +31,7 @@ export default function SettingsLayout({
         <Separator className='my-6' />
         <div className='flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0'>
           <aside className='-mx-4 lg:w-1/5'>
-            <SidebarNav />
+            <SidebarNav items={items} />
           </aside>
           <div className='flex-1 lg:max-w-2xl'>{children}</div>
         </div>

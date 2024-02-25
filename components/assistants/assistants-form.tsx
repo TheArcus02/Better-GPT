@@ -17,6 +17,9 @@ import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { Assistant } from '@prisma/client'
+import axios from 'axios'
+import { toast } from '../ui/use-toast'
+import { useRouter } from 'next/navigation'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
@@ -42,6 +45,8 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
   const [image, setImage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const router = useRouter()
+
   const initialValues =
     data && action === 'update'
       ? {
@@ -64,7 +69,22 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
 
   const onSubmit = async (values: AssistantsFormType) => {
     console.log(values)
-    // Call the API to create or update the assistant
+    setIsSubmitting(true)
+    try {
+      const res = await axios.post<Assistant>(
+        '/api/assistants',
+        values,
+      )
+      router.push(`/assistants/config/${res.data.id}`)
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: 'Error creating assistant',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
