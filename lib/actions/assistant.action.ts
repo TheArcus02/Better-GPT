@@ -31,7 +31,7 @@ export async function getAssistantById(id: string) {
       dbAssistant.openAiID,
     )
 
-    return JSON.parse(JSON.stringify(assistant))
+    return assistant
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }

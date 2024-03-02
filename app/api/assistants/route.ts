@@ -45,6 +45,11 @@ export async function POST(req: Request) {
       description,
       name,
       tools: [{ type: 'retrieval' }],
+      metadata: {
+        imagePublicId: imagePublicId || placeholderImagePublicId,
+        userId: user.id,
+        shared: false,
+      },
     })
 
     const username = getUsername(user)
