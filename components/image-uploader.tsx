@@ -20,7 +20,6 @@ const ImageUploader = ({
   disabled,
 }: ImageUploaderProps) => {
   const handleUploadSuccess = (result: any) => {
-    console.log(result)
     setImage((prev: any) => ({
       ...prev,
       publicId: result?.info?.public_id,
@@ -55,7 +54,10 @@ const ImageUploader = ({
     >
       {({ open }) =>
         publicId ? (
-          <div className='aspect-square relative mx-auto max-w-xs rounded-xl'>
+          <div
+            onClick={() => open()}
+            className='aspect-square cursor-pointer relative mx-auto max-w-xs rounded-xl'
+          >
             <CldImage
               fill
               alt='image'
@@ -68,10 +70,10 @@ const ImageUploader = ({
             onClick={() => open()}
             className='aspect-square cursor-pointer mx-auto max-w-xs rounded-xl border bg-secondary shadow-inner'
           >
-            <div className='flex items-center justify-center flex-col h-full rounded-xl shadow-sm shadow-secondary'>
+            <div className='flex items-center group justify-center flex-col h-full rounded-xl shadow-sm shadow-secondary'>
               <PlusSquare
                 size={48}
-                className='text-muted-foreground'
+                className='text-muted-foreground group-hover:animate-bounce'
               />
               <p className='text-muted-foreground text-sm mt-2'>
                 Click here to upload image

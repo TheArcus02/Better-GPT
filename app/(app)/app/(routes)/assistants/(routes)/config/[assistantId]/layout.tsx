@@ -24,8 +24,6 @@ const AssistantConfigLayout = async ({
     },
   })
 
-  console.log(assistant)
-
   if (!assistant) {
     notFound()
   }
@@ -46,7 +44,7 @@ const AssistantConfigLayout = async ({
     },
     {
       href: `/app/assistants/config/${params.assistantId}/settings`,
-      label: 'General',
+      label: 'Settings',
     },
     {
       href: `/app/assistants/config/${params.assistantId}/files`,
@@ -70,7 +68,7 @@ const AssistantConfigLayout = async ({
           <aside className='lg:w-1/5'>
             <SidebarNav items={sidebarNavItems} />
           </aside>
-          <div className='flex-1 '>{children}</div>
+          <div className='flex-1 max-w-3xl'>{children}</div>
         </div>
       </div>
     </div>

@@ -68,18 +68,36 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
   })
 
   const onSubmit = async (values: AssistantsFormType) => {
-    console.log(values)
     setIsSubmitting(true)
     try {
-      const res = await axios.post<Assistant>(
-        '/api/assistants',
-        values,
-      )
-      router.push(`app/assistants/config/${res.data.id}`)
+      if (action === 'create') {
+        const res = await axios.post<Assistant>(
+          '/api/assistants',
+          values,
+        )
+        toast({
+          title: `Assistant created`,
+        })
+        router.push(`app/assistants/config/${res.data.id}`)
+      } else if (action === 'update' && data) {
+        const res = await axios.patch<Assistant>(
+          `/api/assistants/${data.id}`,
+          {
+            ...values,
+            openAiID: data.openAiID,
+          },
+        )
+        toast({
+          title: `Assistant updated`,
+        })
+        router.push(`/app/assistants/config/${res.data.id}`)
+      }
     } catch (error) {
       console.log(error)
       toast({
-        title: 'Error creating assistant',
+        title: `Error ${
+          action === 'create' ? 'creating' : 'updating'
+        } assistant`,
         variant: 'destructive',
       })
     } finally {
@@ -164,7 +182,9 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
           type='submit'
           disabled={isSubmitting}
         >
-          Create Assistant
+          {action === 'create'
+            ? 'Create Assistant'
+            : 'Update Assistant'}
         </Button>
       </form>
     </Form>
