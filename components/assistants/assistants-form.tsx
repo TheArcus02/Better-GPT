@@ -16,14 +16,13 @@ import { useState } from 'react'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
-import { Assistant } from '@prisma/client'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
-  data: Assistant | null
+  data: OpenAiAssistant | null
 }
 
 const assistantsFormSchema = z.object({
@@ -50,10 +49,10 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
   const initialValues =
     data && action === 'update'
       ? {
-          name: data.name,
-          description: data.description,
-          instructions: data.instructions,
-          imagePublicId: data.imagePublicId,
+          name: data.name!,
+          description: data.description!,
+          instructions: data.instructions!,
+          imagePublicId: data.metadata.imagePublicId!,
         }
       : {
           name: '',
@@ -71,21 +70,18 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
     setIsSubmitting(true)
     try {
       if (action === 'create') {
-        const res = await axios.post<Assistant>(
+        const res = await axios.post<OpenAiAssistant>(
           '/api/assistants',
           values,
         )
         toast({
           title: `Assistant created`,
         })
-        router.push(`app/assistants/config/${res.data.id}`)
+        router.push(`/app/assistants/config/${res.data.id}`)
       } else if (action === 'update' && data) {
-        const res = await axios.patch<Assistant>(
+        const res = await axios.patch<OpenAiAssistant>(
           `/api/assistants/${data.id}`,
-          {
-            ...values,
-            openAiID: data.openAiID,
-          },
+          values,
         )
         toast({
           title: `Assistant updated`,

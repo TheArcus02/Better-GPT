@@ -1,6 +1,7 @@
 import SidebarNav from '@/components/sidebar-nav'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
+import { getAssistantById } from '@/lib/actions/assistant.action'
 import prisma from '@/lib/prismadb'
 import { auth } from '@clerk/nextjs'
 import { notFound, redirect } from 'next/navigation'
@@ -18,17 +19,13 @@ const AssistantConfigLayout = async ({
 }: AssistantConfigLayoutProps) => {
   const { userId } = auth()
 
-  const assistant = await prisma.assistant.findUnique({
-    where: {
-      id: params.assistantId,
-    },
-  })
+  const assistant = await getAssistantById(params.assistantId)
 
   if (!assistant) {
     notFound()
   }
 
-  if (assistant.userId !== userId) {
+  if (assistant.metadata.userId !== userId) {
     toast({
       variant: 'destructive',
       description: 'Only the owner can access this page',

@@ -1,6 +1,7 @@
 import AssistantsForm from '@/components/assistants/assistants-form'
 import { Separator } from '@/components/ui/separator'
-import prisma from '@/lib/prismadb'
+import { getAssistantById } from '@/lib/actions/assistant.action'
+import { notFound } from 'next/navigation'
 import React from 'react'
 
 const AssistantSettingsPage = async ({
@@ -10,11 +11,11 @@ const AssistantSettingsPage = async ({
     assistantId: string
   }
 }) => {
-  const assistant = await prisma.assistant.findUnique({
-    where: {
-      id: params.assistantId,
-    },
-  })
+  const assistant = await getAssistantById(params.assistantId)
+
+  if (!assistant) {
+    notFound()
+  }
 
   return (
     <div className='space-y-6'>

@@ -1,7 +1,5 @@
 import { AssistantsFormType } from '@/components/assistants/assistants-form'
-import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
-import { getUsername, isInvalidUsername } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
@@ -20,7 +18,7 @@ export async function POST(req: Request) {
     const { name, description, instructions, imagePublicId } =
       body as AssistantsFormType
 
-    if (!user || isInvalidUsername(user)) {
+    if (!user) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -52,23 +50,7 @@ export async function POST(req: Request) {
       },
     })
 
-    const username = getUsername(user)
-
-    const dbAssistant = await prisma.assistant.create({
-      data: {
-        name,
-        description,
-        instructions,
-        imagePublicId: imagePublicId || placeholderImagePublicId,
-        model,
-        userId: user.id,
-        profilePicture: user.imageUrl,
-        username: username,
-        openAiID: assistant.id,
-      },
-    })
-
-    return NextResponse.json(dbAssistant)
+    return NextResponse.json(assistant, { status: 201 })
   } catch (error) {
     console.log('[ASSISTANT_ERROR]', error)
     return new NextResponse('Internal error', { status: 500 })

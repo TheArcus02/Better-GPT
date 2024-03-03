@@ -3,7 +3,6 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import { getAssistantById } from '@/lib/actions/assistant.action'
-import prisma from '@/lib/prismadb'
 import {
   Braces,
   FileJson,
@@ -20,9 +19,9 @@ const AssistantConfigInfoPage = async ({
     assistantId: string
   }
 }) => {
-  let openAiAssistant
+  let assistant
   try {
-    openAiAssistant = await getAssistantById(params.assistantId)
+    assistant = await getAssistantById(params.assistantId)
   } catch (error: any) {
     toast({
       title: 'Error',
@@ -32,18 +31,7 @@ const AssistantConfigInfoPage = async ({
     redirect('/app/assistants')
   }
 
-  if (!openAiAssistant) {
-    notFound()
-  }
-
-  const dbAssistant = await prisma.assistant.findUnique({
-    where: {
-      openAiID: openAiAssistant.id,
-      id: params.assistantId,
-    },
-  })
-
-  if (!dbAssistant) {
+  if (!assistant) {
     notFound()
   }
 
@@ -59,8 +47,12 @@ const AssistantConfigInfoPage = async ({
       <div className='mx-auto'>
         <div className='aspect-square relative mx-auto max-w-[256px] rounded-xl'>
           <CldImage
-            src={dbAssistant.imagePublicId}
-            alt={dbAssistant.name}
+            src={assistant.metadata.imagePublicId}
+            alt={
+              assistant.name ||
+              assistant.description ||
+              'OpenAi assistant'
+            }
             fill
             className='w-full h-5 object-cover rounded-lg'
           />
@@ -68,30 +60,26 @@ const AssistantConfigInfoPage = async ({
 
         <div>
           <h2 className='font-bold text-2xl my-5 text-center'>
-            {openAiAssistant.name || dbAssistant.name}
+            {assistant.name}
           </h2>
           <h2 className='flex items-center mb-1 font-semibold'>
             <NotepadText className='w-5 h-5 mr-1' />
             Description
           </h2>
-          <p>
-            {openAiAssistant.description || dbAssistant.description}
-          </p>
+          <p>{assistant.description}</p>
           <h2 className='mt-5 flex items-center mb-1 font-semibold'>
             <Scroll className='w-5 h-5 mr-1' />
             Instructions
           </h2>
-          <p>
-            {openAiAssistant.instructions || dbAssistant.instructions}
-          </p>
+          <p>{assistant.instructions}</p>
 
           <h2 className='mt-5 flex items-center mb-1 font-semibold'>
             <Hammer className='w-5 h-5 mr-1' />
             Tools
           </h2>
           <div className='flex items-center space-x-2'>
-            {openAiAssistant.tools.length
-              ? openAiAssistant.tools.map((tool, i) => (
+            {assistant.tools.length
+              ? assistant.tools.map((tool, i) => (
                   <Badge key={tool.type + i}>{tool.type}</Badge>
                 ))
               : 'No assigned tools...'}
@@ -101,8 +89,8 @@ const AssistantConfigInfoPage = async ({
             Files
           </h2>
           <p>
-            {openAiAssistant.file_ids.length
-              ? openAiAssistant.file_ids.map((file, i) => (
+            {assistant.file_ids.length
+              ? assistant.file_ids.map((file, i) => (
                   <Badge key={file}>{file}</Badge>
                 ))
               : 'No assigned files...'}
@@ -111,7 +99,7 @@ const AssistantConfigInfoPage = async ({
             <Braces className='w-5 h-5 mr-1' />
             Metadata
           </h2>
-          <p>{JSON.stringify(openAiAssistant.metadata, null, 2)}</p>
+          <p>{JSON.stringify(assistant.metadata, null, 2)}</p>
         </div>
       </div>
     </div>

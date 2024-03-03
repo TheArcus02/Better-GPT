@@ -1,7 +1,6 @@
 'use server'
 
 import { currentUser } from '@clerk/nextjs'
-import prisma from '../prismadb'
 import { handleError } from '../utils'
 import OpenAI from 'openai'
 
@@ -17,19 +16,9 @@ export async function getAssistantById(id: string) {
       throw new Error('Unauthorized')
     }
 
-    const dbAssistant = await prisma.assistant.findUniqueOrThrow({
-      where: {
-        id,
-      },
-    })
-
-    if (dbAssistant.userId !== user.id) {
-      throw new Error('Unauthorized')
-    }
-
-    const assistant = await openai.beta.assistants.retrieve(
-      dbAssistant.openAiID,
-    )
+    const assistant = (await openai.beta.assistants.retrieve(
+      id,
+    )) as OpenAiAssistant
 
     return assistant
   } catch (error) {

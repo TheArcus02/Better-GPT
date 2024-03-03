@@ -86,21 +86,3 @@ model UserSubscription{
   stripePriceId           String?      @unique @map(name: "stripe_price_id")
   stripeCurrentPeriodEnd  DateTime?      @unique @map(name: "stripe_current_period_end")
 }
-
-model Assistant {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  openAiID       String      @unique
-  userId         String
-  username       String
-  profilePicture String
-
-  name           String
-  description    String
-  instructions   String
-  imagePublicId  String
-  shared         Boolean     @default(false)
-  model          String
-
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-}

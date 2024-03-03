@@ -1,8 +1,19 @@
 import { LucideIcon } from 'lucide-react'
+import { OpenAI } from 'openai'
 
 export {}
 
 declare global {
+  type AssistantMetadata = {
+    imagePublicId: string
+    userId: string
+    shared: boolean
+  }
+
+  type OpenAiAssistant = OpenAI.Beta.Assistants.Assistant & {
+    metadata: AssistantMetadata
+  }
+
   type NavRoute = {
     icon: LucideIcon | null
     href: string
