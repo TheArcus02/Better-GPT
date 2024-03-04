@@ -2,7 +2,7 @@
 
 import { currentUser } from '@clerk/nextjs'
 import { handleError } from '../utils'
-import OpenAI from 'openai'
+import OpenAI, { NotFoundError } from 'openai'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -22,6 +22,9 @@ export async function getAssistantById(id: string) {
 
     return assistant
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      return null
+    }
     handleError('[ASSISTANT_ERROR]', error)
   }
 }

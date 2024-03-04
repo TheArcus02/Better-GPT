@@ -1,6 +1,11 @@
 'use client'
 
-import { PlusSquare } from 'lucide-react'
+import {
+  FilePen,
+  PanelTopOpen,
+  PlusSquare,
+  Replace,
+} from 'lucide-react'
 import { CldImage, CldUploadWidget } from 'next-cloudinary'
 import { toast } from './ui/use-toast'
 
@@ -56,13 +61,19 @@ const ImageUploader = ({
         publicId ? (
           <div
             onClick={() => open()}
-            className='aspect-square cursor-pointer relative mx-auto max-w-xs rounded-xl'
+            className='aspect-square cursor-pointer relative mx-auto max-w-xs rounded-xl group'
           >
+            <div className='opacity-0 group-hover:opacity-100 transition-opacity ease-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center flex-col'>
+              <Replace className='text-foreground' />
+              <p className='text-xs text-foreground mt-2'>
+                Change photo
+              </p>
+            </div>
             <CldImage
               fill
               alt='image'
               src={publicId}
-              className='w-full h-64 object-cover rounded-lg mb-4'
+              className='w-full h-64 object-cover rounded-lg mb-4 group-hover:opacity-30 transition-opacity ease-in'
             />
           </div>
         ) : (
