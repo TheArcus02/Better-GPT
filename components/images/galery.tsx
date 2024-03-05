@@ -4,7 +4,7 @@ import ImageCard from './image-card'
 import SearchBar from './search-bar'
 import { useWindowWidth } from '@/hooks/use-window-width'
 import { useEffect, useState } from 'react'
-import { tailwindBreakpoints } from '@/lib/breakpoints'
+import { tailwindBreakpoints } from '@/lib/constants/breakpoints'
 interface GaleryProps {
   images: Image[]
 }

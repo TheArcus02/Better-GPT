@@ -49,11 +49,8 @@ export async function POST(
       return new NextResponse('Missing file', { status: 400 })
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const stream = createReadStream(buffer)
-
     const openAiFile = await openai.files.create({
-      file: stream,
+      file,
       purpose: 'assistants',
     })
 

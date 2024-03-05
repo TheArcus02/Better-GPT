@@ -1,6 +1,6 @@
 import GetPremiumAlert from '@/components/get-premium-alert'
 import Translator from '@/components/translation/translator'
-import languages from '@/lib/languages'
+import languages from '@/lib/constants/languages'
 import { checkSubscription } from '@/lib/subscription'
 import { Metadata } from 'next'
 

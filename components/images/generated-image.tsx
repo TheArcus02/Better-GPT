@@ -1,5 +1,5 @@
 import { useWindowWidth } from '@/hooks/use-window-width'
-import { tailwindBreakpoints } from '@/lib/breakpoints'
+import { tailwindBreakpoints } from '@/lib/constants/breakpoints'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import RingLoader from 'react-spinners/RingLoader'

@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  FilePen,
-  PanelTopOpen,
-  PlusSquare,
-  Replace,
-} from 'lucide-react'
+import { PlusSquare, Replace } from 'lucide-react'
 import { CldImage, CldUploadWidget } from 'next-cloudinary'
 import { toast } from './ui/use-toast'
 

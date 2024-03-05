@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import { getAssistantById } from '@/lib/actions/assistant.action'
 import {
+  Bot,
   Braces,
   FileJson,
   Hammer,
@@ -38,7 +39,10 @@ const AssistantConfigInfoPage = async ({
   return (
     <div className='space-y-6'>
       <div>
-        <h2 className='text-lg font-medium'>Assistant Info</h2>
+        <div className='flex items-center'>
+          <Bot className='w-6 h-6 mr-2' />
+          <h2 className='text-lg font-medium'>Assistant Info</h2>
+        </div>
         <p className='text-sm mt-2 text-secondary-foreground/60'>
           Overview of your assistant.
         </p>
