@@ -4,6 +4,11 @@ import { OpenAI } from 'openai'
 export {}
 
 declare global {
+  type UserMetadata = {
+    assistants?: string[]
+    threads?: string[]
+  }
+
   type AssistantMetadata = {
     imagePublicId: string
     userId: string

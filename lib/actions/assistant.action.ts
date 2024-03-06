@@ -1,6 +1,6 @@
 'use server'
 
-import { currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs'
 import { handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
 
@@ -62,6 +62,41 @@ export async function getFilesDetailsList(fileIds: string[]) {
     if (error instanceof NotFoundError) {
       return null
     }
+    handleError('[ASSISTANT_ERROR]', error)
+  }
+}
+
+export async function getUserAssistants(
+  userId: string,
+  shared = false,
+) {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      throw new Error('Unauthorized')
+    }
+
+    const requestedUser = await clerkClient.users.getUser(userId)
+
+    const metadata = requestedUser.privateMetadata as UserMetadata
+
+    if (!metadata?.assistants) {
+      return []
+    }
+
+    const assistants = (await Promise.all(
+      metadata.assistants.map((assistantId) =>
+        openai.beta.assistants.retrieve(assistantId),
+      ),
+    )) as OpenAiAssistant[]
+
+    return shared
+      ? assistants.filter(
+          (assistant) => assistant.metadata.shared === false,
+        )
+      : assistants
+  } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }
 }

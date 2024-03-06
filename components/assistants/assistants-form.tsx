@@ -19,6 +19,8 @@ import { Button } from '../ui/button'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
+import CustomAlertDialog from '../custom-alert-dialog'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
@@ -101,6 +103,29 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
     }
   }
 
+  const onDelete = async () => {
+    setIsSubmitting(true)
+    try {
+      if (action === 'update' && data) {
+        await axios.delete(`/api/assistants/${data.id}`)
+        toast({
+          title: 'Assistant deleted',
+        })
+        router.push('/app/assistants')
+      } else {
+        throw new Error('Assistant not found')
+      }
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: 'Error deleting assistant',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <Form {...form}>
       <form
@@ -172,16 +197,35 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             </FormItem>
           )}
         />
-        <Button
-          variant='default'
-          className='mt-8'
-          type='submit'
-          disabled={isSubmitting}
-        >
-          {action === 'create'
-            ? 'Create Assistant'
-            : 'Update Assistant'}
-        </Button>
+        <div className='flex justify-between'>
+          <Button
+            variant='default'
+            type='submit'
+            disabled={isSubmitting}
+          >
+            {action === 'create'
+              ? 'Create Assistant'
+              : 'Update Assistant'}
+          </Button>
+          {action === 'update' && (
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Button
+                  type='button'
+                  variant='destructive'
+                  disabled={isSubmitting}
+                >
+                  Delete Assistant
+                </Button>
+              </AlertDialogTrigger>
+              <CustomAlertDialog
+                title='Are you absolutely sure?'
+                description='This action cannot be undone. This will permanently delete the assistant and all its data from our server.'
+                handleDelete={onDelete}
+              />
+            </AlertDialog>
+          )}
+        </div>
       </form>
     </Form>
   )

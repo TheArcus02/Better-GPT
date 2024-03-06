@@ -28,7 +28,6 @@ const AssistantFilesList = ({
         <li
           key={file.id}
           className='group flex justify-between rounded-sm px-2 py-2 hover:bg-secondary/40 hover:cursor-pointer'
-          onClick={() => console.log('open file')}
         >
           <div className='flex items-center'>
             <File className='w-4 h-4 mr-2' />

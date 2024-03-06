@@ -1,6 +1,6 @@
 import { AssistantsFormType } from '@/components/assistants/assistants-form'
 import { checkSubscription } from '@/lib/subscription'
-import { currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -47,6 +47,15 @@ export async function POST(req: Request) {
         imagePublicId: imagePublicId || placeholderImagePublicId,
         userId: user.id,
         shared: false,
+      },
+    })
+
+    await clerkClient.users.updateUserMetadata(user.id, {
+      privateMetadata: {
+        assistants: [
+          ...((user.privateMetadata?.assistants as String[]) || []),
+          assistant.id,
+        ],
       },
     })
 

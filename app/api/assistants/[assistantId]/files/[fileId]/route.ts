@@ -1,20 +1,23 @@
 import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function DELETE({
-  params: { assistantId, fileId },
-}: {
-  params: {
-    assistantId: string
-    fileId: string
-  }
-}) {
+export async function DELETE(
+  req: NextRequest,
+  {
+    params: { assistantId, fileId },
+  }: {
+    params: {
+      assistantId: string
+      fileId: string
+    }
+  },
+) {
   try {
     const user = await currentUser()
 
@@ -39,10 +42,9 @@ export async function DELETE({
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const res = await openai.beta.assistants.files.del(
-      assistantId,
-      fileId,
-    )
+    await openai.beta.assistants.files.del(assistantId, fileId)
+
+    const res = await openai.files.del(fileId)
 
     return NextResponse.json(res, { status: 200 })
   } catch (error) {

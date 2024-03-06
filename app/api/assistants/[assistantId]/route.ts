@@ -1,7 +1,7 @@
 import { AssistantsFormType } from '@/components/assistants/assistants-form'
 import { checkSubscription } from '@/lib/subscription'
 import { isInvalidUsername } from '@/lib/utils'
-import { currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -114,13 +114,16 @@ export async function PATCH(
   }
 }
 
-export async function DELETE({
-  params,
-}: {
-  params: {
-    assistantId: string
-  }
-}) {
+export async function DELETE(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: {
+      assistantId: string
+    }
+  },
+) {
   try {
     const user = await currentUser()
 
@@ -153,6 +156,10 @@ export async function DELETE({
       return new NextResponse('Assistant not found', { status: 404 })
     }
 
+    await Promise.all(
+      assistant.file_ids.map((file) => openai.files.del(file)),
+    )
+
     if (assistant.metadata.userId !== user.id) {
       return new NextResponse(
         'Assistant can only be modified by the owner',
@@ -160,9 +167,17 @@ export async function DELETE({
       )
     }
 
-    await openai.beta.assistants.del(assistantId)
+    const res = await openai.beta.assistants.del(assistantId)
 
-    return new NextResponse('Assistant deleted', { status: 204 })
+    await clerkClient.users.updateUserMetadata(user.id, {
+      privateMetadata: {
+        assistants: (
+          user.privateMetadata as UserMetadata
+        )?.assistants?.filter((id) => id !== assistantId),
+      },
+    })
+
+    return NextResponse.json(res)
   } catch (error) {
     console.log('[ASSISTANT_ERROR]', error)
     return new NextResponse('Internal error', { status: 500 })
