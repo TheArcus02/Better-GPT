@@ -1,22 +1,20 @@
 import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function POST(
-  req: NextRequest,
-  {
-    params,
-  }: {
-    params: {
-      assistantId: string
-    }
-  },
-) {
+export async function DELETE({
+  params: { assistantId, fileId },
+}: {
+  params: {
+    assistantId: string
+    fileId: string
+  }
+}) {
   try {
     const user = await currentUser()
 
@@ -34,30 +32,19 @@ export async function POST(
     }
 
     const assistant = (await openai.beta.assistants.retrieve(
-      params.assistantId,
+      assistantId,
     )) as OpenAiAssistant
 
     if (assistant.metadata.userId !== user.id) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const formData = await req.formData()
-    const file = formData.get('file') as unknown as File
+    const res = await openai.beta.assistants.files.del(
+      assistantId,
+      fileId,
+    )
 
-    if (!file) {
-      return new NextResponse('Missing file', { status: 400 })
-    }
-
-    const openAiFile = await openai.files.create({
-      file,
-      purpose: 'assistants',
-    })
-
-    await openai.beta.assistants.files.create(params.assistantId, {
-      file_id: openAiFile.id,
-    })
-
-    return NextResponse.json(openAiFile, { status: 201 })
+    return NextResponse.json(res, { status: 200 })
   } catch (error) {
     console.log('[ASSISTANT_ERROR]', error)
     return new NextResponse('Internal error', { status: 500 })

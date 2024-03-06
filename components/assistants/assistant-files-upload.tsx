@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, memo, useState } from 'react'
 import FileUploader from '../file-uploader'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
@@ -64,4 +64,4 @@ const AssistantFilesUpload = ({
   )
 }
 
-export default AssistantFilesUpload
+export default memo(AssistantFilesUpload)
