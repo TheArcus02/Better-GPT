@@ -1,3 +1,4 @@
+import AssistantList from '@/components/assistants/assistant-list'
 import { getUserAssistants } from '@/lib/actions/assistant.action'
 import { getUsername } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs'
@@ -26,17 +27,17 @@ const UserAssistantsPage = async ({
       <div>
         <h1 className='text-3xl font-extrabold'>
           {isOwner ? 'Your ' : username + "'s "}
-          Assistant&apos;s
+          Assistants
         </h1>
         <p className='mt-2'>
-          Assistant&apos;s created by {isOwner ? 'you' : username}
+          Assistants created by {isOwner ? 'you' : username}
         </p>
       </div>
 
       <div className='mt-16 h-full'>
         {userAssistants ? (
           <div>
-            <p>Assistants found</p>
+            <AssistantList assistants={userAssistants} />
           </div>
         ) : (
           <div>

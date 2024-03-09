@@ -1,7 +1,7 @@
 'use server'
 
 import { clerkClient, currentUser } from '@clerk/nextjs'
-import { handleError } from '../utils'
+import { getUsername, handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
 
 const openai = new OpenAI({
@@ -91,11 +91,18 @@ export async function getUserAssistants(
       ),
     )) as OpenAiAssistant[]
 
+    const username = getUsername(requestedUser)
+
+    const assistantsWithUsername = assistants.map((assistant) => ({
+      ...assistant,
+      username,
+    }))
+
     return shared
-      ? assistants.filter(
+      ? assistantsWithUsername.filter(
           (assistant) => assistant.metadata.shared === false,
         )
-      : assistants
+      : assistantsWithUsername
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }
