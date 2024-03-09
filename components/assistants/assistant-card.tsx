@@ -104,7 +104,7 @@ const AssistantCard = ({
                 <NotepadText className='w-5 h-5 mr-1' />
                 Description
               </div>
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-foreground text-left'>
                 {description}
               </p>
             </div>
@@ -113,7 +113,7 @@ const AssistantCard = ({
                 <Scroll className='w-5 h-5 mr-1' />
                 Instructions
               </div>
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-foreground text-left'>
                 {instructions}
               </p>
             </div>
@@ -122,7 +122,7 @@ const AssistantCard = ({
                 <Hammer className='w-5 h-5 mr-1' />
                 Tools
               </div>
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-foreground text-left'>
                 {assistant.tools.length
                   ? assistant.tools.map((tool, i) => (
                       <Badge key={tool.type + i}>{tool.type}</Badge>
@@ -135,7 +135,9 @@ const AssistantCard = ({
                 <Brain className='w-5 h-5 mr-1' />
                 Model
               </div>
-              <p className='text-sm text-muted-foreground'>{model}</p>
+              <p className='text-sm text-muted-foreground text-left'>
+                {model}
+              </p>
             </div>
             <div>
               <div className='flex items-center mb-1'>
@@ -144,9 +146,9 @@ const AssistantCard = ({
               </div>
               <Link
                 href={`app/assistants/${metadata.userId}`}
-                className='text-sm text-muted-foreground hover:underline'
+                className='text-sm text-muted-foreground hover:underline '
               >
-                @{username}
+                <p className='text-left'>@{username}</p>
               </Link>
             </div>
             <div>
@@ -154,7 +156,7 @@ const AssistantCard = ({
                 <Calendar className='w-5 h-5 mr-1' />
                 Created at
               </div>
-              <p className='text-sm text-muted-foreground'>
+              <p className='text-sm text-muted-foreground text-left'>
                 {convertUnixTimestamp(created_at)}
               </p>
             </div>
@@ -164,13 +166,13 @@ const AssistantCard = ({
                   <Share2 className='w-5 h-5 mr-1' />
                   Shared
                 </div>
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-sm text-muted-foreground text-left'>
                   {metadata.shared}
                 </p>
               </div>
             )}
           </div>
-          <DialogFooter className='flex justify-between items-center'>
+          <DialogFooter className='flex gap-2 sm:gap-0 sm:items-center'>
             {isOwner && (
               <Link
                 className={buttonVariants({
