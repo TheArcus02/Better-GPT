@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/nextjs'
 import { User } from '@clerk/nextjs/server'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -30,6 +31,15 @@ export function getUsername(user: User) {
   }
 }
 
+export async function getUsernameById(userId: string) {
+  try {
+    const user = await clerkClient.users.getUser(userId)
+    return getUsername(user)
+  } catch (error) {
+    handleError('[GET_USERNAME_BY_ID_ERROR]', error)
+  }
+}
+
 export function handleError(reason: string, error: unknown) {
   if (error instanceof Error) {
     console.log(error.message)
@@ -51,4 +61,11 @@ export function formatFileSize(bytes: number) {
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${
     sizes[i]
   }`
+}
+
+export function convertUnixTimestamp(timestamp: number) {
+  return new Date(timestamp * 1000).toLocaleString(undefined, {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
 }

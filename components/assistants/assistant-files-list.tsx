@@ -1,6 +1,6 @@
 import { ExternalLink, File, XCircle } from 'lucide-react'
 import { FileObject } from 'openai/resources/files.mjs'
-import { cn, formatFileSize } from '@/lib/utils'
+import { cn, convertUnixTimestamp, formatFileSize } from '@/lib/utils'
 import { Button } from '../ui/button'
 import {
   Tooltip,
@@ -36,13 +36,7 @@ const AssistantFilesList = ({
           </div>
           <div className='flex items-center space-x-4'>
             <span className='text-secondary-foreground/60'>
-              {new Date(file.created_at * 1000).toLocaleString(
-                undefined,
-                {
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                },
-              )}
+              {convertUnixTimestamp(file.created_at)}
             </span>
             <span className='text-secondary-foreground/60'>
               {formatFileSize(file.bytes)}

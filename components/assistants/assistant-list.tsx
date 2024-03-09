@@ -5,7 +5,7 @@ interface AssistantListProps {
 }
 
 const AssistantList = ({ assistants }: AssistantListProps) => {
-  return assistants.map(async (assistant) => (
+  return assistants.map((assistant) => (
     <AssistantCard key={assistant.id} assistant={assistant} />
   ))
 }
