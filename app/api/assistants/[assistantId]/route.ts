@@ -1,4 +1,5 @@
 import { AssistantsFormType } from '@/components/assistants/assistants-form'
+import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { isInvalidUsername } from '@/lib/utils'
 import { clerkClient, currentUser } from '@clerk/nextjs'
@@ -29,16 +30,17 @@ export async function GET({
       return new NextResponse('Missing assistantId', { status: 400 })
     }
 
-    const assistant = (await openai.beta.assistants.retrieve(
-      params.assistantId,
-    )) as OpenAI.Beta.Assistants.Assistant & {
-      metadata: AssistantMetadata
+    const assistant = await prisma.assistant.findUnique({
+      where: {
+        id: params.assistantId,
+      },
+    })
+
+    if (!assistant) {
+      return new NextResponse('Assistant not found', { status: 404 })
     }
 
-    if (
-      !assistant.metadata.shared &&
-      assistant.metadata.userId !== user.id
-    ) {
+    if (!assistant.shared && assistant.userId !== user.id) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -86,23 +88,42 @@ export async function PATCH(
       )
     }
 
-    const assistant = (await openai.beta.assistants.retrieve(
-      assistantId,
-    )) as OpenAiAssistant
+    const assistant = await prisma.assistant.findUnique({
+      where: {
+        id: assistantId,
+      },
+    })
 
-    if (assistant.metadata.userId !== user.id) {
+    if (!assistant) {
+      return new NextResponse('Assistant not found', { status: 404 })
+    }
+
+    if (assistant.userId !== user.id) {
       return new NextResponse(
         'Assistant can only be modified by the owner',
         { status: 401 },
       )
     }
 
-    await openai.beta.assistants.update(assistantId, {
+    await openai.beta.assistants.update(assistant.openaiId, {
       instructions,
       model,
       description,
       name,
       metadata: {
+        imagePublicId,
+      },
+    })
+
+    await prisma.assistant.update({
+      where: {
+        id: assistantId,
+        openaiId: assistant.openaiId,
+      },
+      data: {
+        name,
+        description,
+        instructions,
         imagePublicId,
       },
     })
@@ -148,26 +169,34 @@ export async function DELETE(
       )
     }
 
-    const assistant = (await openai.beta.assistants.retrieve(
-      assistantId,
-    )) as OpenAiAssistant
+    const assistant = await prisma.assistant.findUnique({
+      where: {
+        id: assistantId,
+      },
+    })
 
     if (!assistant) {
       return new NextResponse('Assistant not found', { status: 404 })
     }
 
     await Promise.all(
-      assistant.file_ids.map((file) => openai.files.del(file)),
+      assistant.fileIds.map((file) => openai.files.del(file)),
     )
 
-    if (assistant.metadata.userId !== user.id) {
+    if (assistant.userId !== user.id) {
       return new NextResponse(
         'Assistant can only be modified by the owner',
         { status: 401 },
       )
     }
 
-    const res = await openai.beta.assistants.del(assistantId)
+    const res = await openai.beta.assistants.del(assistant.openaiId)
+
+    await prisma.assistant.delete({
+      where: {
+        id: assistantId,
+      },
+    })
 
     await clerkClient.users.updateUserMetadata(user.id, {
       privateMetadata: {

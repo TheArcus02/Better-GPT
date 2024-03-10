@@ -19,7 +19,24 @@ const AssistantConfigLayout = async ({
 }: AssistantConfigLayoutProps) => {
   const { userId } = auth()
 
-  const assistant = await getAssistantById(params.assistantId)
+  let assistant
+
+  try {
+    const dbAssistant = await prisma.assistant.findUniqueOrThrow({
+      where: {
+        id: params.assistantId,
+      },
+    })
+
+    assistant = await getAssistantById(dbAssistant.openaiId)
+  } catch (error: any) {
+    toast({
+      title: 'Error',
+      description: error,
+      variant: 'destructive',
+    })
+    redirect('/app/assistants')
+  }
 
   if (!assistant) {
     notFound()

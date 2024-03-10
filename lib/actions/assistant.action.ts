@@ -3,6 +3,7 @@
 import { clerkClient, currentUser } from '@clerk/nextjs'
 import { getUsername, handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
+import prisma from '../prismadb'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

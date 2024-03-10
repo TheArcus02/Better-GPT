@@ -1,3 +1,4 @@
+import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
 import { NextRequest, NextResponse } from 'next/server'
@@ -33,11 +34,17 @@ export async function POST(
       )
     }
 
-    const assistant = (await openai.beta.assistants.retrieve(
-      params.assistantId,
-    )) as OpenAiAssistant
+    const assistant = await prisma.assistant.findUnique({
+      where: {
+        id: params.assistantId,
+      },
+    })
 
-    if (assistant.metadata.userId !== user.id) {
+    if (!assistant) {
+      return new NextResponse('Assistant not found', { status: 404 })
+    }
+
+    if (assistant.userId !== user.id) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -53,8 +60,19 @@ export async function POST(
       purpose: 'assistants',
     })
 
-    await openai.beta.assistants.files.create(params.assistantId, {
+    await openai.beta.assistants.files.create(assistant.openaiId, {
       file_id: openAiFile.id,
+    })
+
+    await prisma.assistant.update({
+      where: {
+        id: assistant.id,
+      },
+      data: {
+        fileIds: {
+          push: openAiFile.id,
+        },
+      },
     })
 
     return NextResponse.json(openAiFile, { status: 201 })

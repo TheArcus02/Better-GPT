@@ -1,12 +1,14 @@
 import AssistantFilesLayout from '@/components/assistants/assistant-files-layout'
 import AssistantFilesUpload from '@/components/assistants/assistant-files-upload'
 import { Separator } from '@/components/ui/separator'
+import { toast } from '@/components/ui/use-toast'
 import {
   getAssistantFiles,
   getFilesDetailsList,
 } from '@/lib/actions/assistant.action'
+import prisma from '@/lib/prismadb'
 import { FileBarChart } from 'lucide-react'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 const AssistantFilesPage = async ({
   params,
@@ -15,7 +17,23 @@ const AssistantFilesPage = async ({
     assistantId: string
   }
 }) => {
-  const assistantFiles = await getAssistantFiles(params.assistantId)
+  let assistantFiles
+  try {
+    const assistant = await prisma.assistant.findUniqueOrThrow({
+      where: {
+        id: params.assistantId,
+      },
+    })
+
+    assistantFiles = await getAssistantFiles(assistant.openaiId)
+  } catch (error: any) {
+    toast({
+      title: 'Error',
+      description: error,
+      variant: 'destructive',
+    })
+    redirect('/app/assistants')
+  }
 
   if (!assistantFiles) {
     return notFound()

@@ -1,3 +1,4 @@
+import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { currentUser } from '@clerk/nextjs'
 import { NextRequest, NextResponse } from 'next/server'
@@ -34,17 +35,34 @@ export async function DELETE(
       )
     }
 
-    const assistant = (await openai.beta.assistants.retrieve(
-      assistantId,
-    )) as OpenAiAssistant
+    const assistant = await prisma.assistant.findUnique({
+      where: {
+        id: assistantId,
+      },
+    })
 
-    if (assistant.metadata.userId !== user.id) {
+    if (!assistant) {
+      return new NextResponse('Assistant not found', { status: 404 })
+    }
+
+    if (assistant.userId !== user.id) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    await openai.beta.assistants.files.del(assistantId, fileId)
+    await openai.beta.assistants.files.del(assistant.openaiId, fileId)
 
     const res = await openai.files.del(fileId)
+
+    await prisma.assistant.update({
+      where: {
+        id: assistantId,
+      },
+      data: {
+        fileIds: {
+          set: assistant.fileIds.filter((id) => id !== fileId),
+        },
+      },
+    })
 
     return NextResponse.json(res, { status: 200 })
   } catch (error) {

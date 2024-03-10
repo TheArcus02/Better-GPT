@@ -1,6 +1,6 @@
 import AssistantsForm from '@/components/assistants/assistants-form'
 import { Separator } from '@/components/ui/separator'
-import { getAssistantById } from '@/lib/actions/assistant.action'
+import prisma from '@/lib/prismadb'
 import { Sliders } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import React from 'react'
@@ -12,7 +12,11 @@ const AssistantSettingsPage = async ({
     assistantId: string
   }
 }) => {
-  const assistant = await getAssistantById(params.assistantId)
+  const assistant = await prisma.assistant.findUnique({
+    where: {
+      id: params.assistantId,
+    },
+  })
 
   if (!assistant) {
     notFound()

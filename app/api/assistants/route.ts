@@ -1,4 +1,5 @@
 import { AssistantsFormType } from '@/components/assistants/assistants-form'
+import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { clerkClient, currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
@@ -37,13 +38,26 @@ export async function POST(req: Request) {
       )
     }
 
-    const assistant = await openai.beta.assistants.create({
+    const openaiAssistant = await openai.beta.assistants.create({
       instructions,
       model,
       description,
       name,
       tools: [{ type: 'retrieval' }],
       metadata: {
+        imagePublicId: imagePublicId || placeholderImagePublicId,
+        userId: user.id,
+        shared: false,
+      },
+    })
+
+    const assistant = await prisma.assistant.create({
+      data: {
+        openaiId: openaiAssistant.id,
+        name: name,
+        description: description,
+        instructions: instructions,
+        model,
         imagePublicId: imagePublicId || placeholderImagePublicId,
         userId: user.id,
         shared: false,

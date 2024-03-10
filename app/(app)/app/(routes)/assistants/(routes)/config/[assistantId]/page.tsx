@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import { getAssistantById } from '@/lib/actions/assistant.action'
+import prisma from '@/lib/prismadb'
 import {
   Bot,
   Braces,
@@ -22,7 +23,12 @@ const AssistantConfigInfoPage = async ({
 }) => {
   let assistant
   try {
-    assistant = await getAssistantById(params.assistantId)
+    const dbAssistant = await prisma.assistant.findUniqueOrThrow({
+      where: {
+        id: params.assistantId,
+      },
+    })
+    assistant = await getAssistantById(dbAssistant.openaiId)
   } catch (error: any) {
     toast({
       title: 'Error',

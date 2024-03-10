@@ -21,10 +21,11 @@ import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import CustomAlertDialog from '../custom-alert-dialog'
+import { Assistant } from '@prisma/client'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
-  data: OpenAiAssistant | null
+  data: Assistant | null
 }
 
 const assistantsFormSchema = z.object({
@@ -52,9 +53,9 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
     data && action === 'update'
       ? {
           name: data.name!,
-          description: data.description!,
-          instructions: data.instructions!,
-          imagePublicId: data.metadata.imagePublicId!,
+          description: data.description,
+          instructions: data.instructions,
+          imagePublicId: data.imagePublicId,
         }
       : {
           name: '',
@@ -72,7 +73,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
     setIsSubmitting(true)
     try {
       if (action === 'create') {
-        const res = await axios.post<OpenAiAssistant>(
+        const res = await axios.post<Assistant>(
           '/api/assistants',
           values,
         )
@@ -81,7 +82,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
         })
         router.push(`/app/assistants/config/${res.data.id}`)
       } else if (action === 'update' && data) {
-        const res = await axios.patch<OpenAiAssistant>(
+        const res = await axios.patch<Assistant>(
           `/api/assistants/${data.id}`,
           values,
         )

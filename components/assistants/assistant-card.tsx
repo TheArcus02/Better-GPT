@@ -75,7 +75,7 @@ const AssistantCard = ({
         </CardHeader>
         <CardContent className='flex justify-between items-center'>
           <Link
-            href={`app/assistants/${metadata.userId}`}
+            href={`/app/assistants/${metadata.userId}`}
             className='text-sm text-muted-foreground hover:underline'
           >
             @{username}
@@ -145,7 +145,7 @@ const AssistantCard = ({
                 Created by
               </div>
               <Link
-                href={`app/assistants/${metadata.userId}`}
+                href={`/app/assistants/${metadata.userId}`}
                 className='text-sm text-muted-foreground hover:underline '
               >
                 <p className='text-left'>@{username}</p>
