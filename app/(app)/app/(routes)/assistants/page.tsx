@@ -20,8 +20,8 @@ const AssistantsPage = () => {
           <Link href='/app/assistants/create'>
             <Button>Create Assistant</Button>
           </Link>
-          <Link href={`/app/assistants/${userId}`}>
-            <Button variant='outline'>Manage Assistant&apos;s</Button>
+          <Link href={`/app/assistants/user/${userId}`}>
+            <Button variant='outline'>Manage Assistants</Button>
           </Link>
         </div>
       </div>

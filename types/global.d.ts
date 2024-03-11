@@ -6,7 +6,7 @@ export {}
 declare global {
   type UserMetadata = {
     assistants?: string[]
-    threads?: string[]
+    threadId?: string
   }
 
   type AssistantMetadata = {

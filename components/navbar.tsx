@@ -106,7 +106,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
         },
         {
           icon: null,
-          href: `/app/assistants/${user?.id}`,
+          href: `/app/assistants/user/${user?.id}`,
           label: 'Your Assistants',
           description: 'View and manage your AI assistants.',
         },

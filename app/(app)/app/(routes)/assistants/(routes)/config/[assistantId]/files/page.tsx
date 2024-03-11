@@ -1,5 +1,4 @@
 import AssistantFilesLayout from '@/components/assistants/assistant-files-layout'
-import AssistantFilesUpload from '@/components/assistants/assistant-files-upload'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import {

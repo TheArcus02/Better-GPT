@@ -58,8 +58,11 @@ const AssistantCard = ({
   const isOwner = userId === metadata.userId
   return (
     <Dialog>
-      <Card className={cn('max-w-xs', className)} {...props}>
-        <CardHeader>
+      <Card
+        className={cn('max-w-xs flex flex-col', className)}
+        {...props}
+      >
+        <CardHeader className='flex-1'>
           <div className='aspect-square relative h-40 w-40 mx-auto mb-5'>
             <CldImage
               alt={name || 'Assistant'}
@@ -69,13 +72,13 @@ const AssistantCard = ({
             />
           </div>
           <CardTitle className='text-center'>{name}</CardTitle>
-          <CardDescription className='text-center'>
+          <CardDescription className='text-center overflow-hidden text-ellipsis'>
             {description}
           </CardDescription>
         </CardHeader>
         <CardContent className='flex justify-between items-center'>
           <Link
-            href={`/app/assistants/${metadata.userId}`}
+            href={`/app/assistants/user/${metadata.userId}`}
             className='text-sm text-muted-foreground hover:underline'
           >
             @{username}
@@ -98,7 +101,7 @@ const AssistantCard = ({
             />
           </div>
           <DialogTitle className='text-center'>{name}</DialogTitle>
-          <div className='flex flex-col space-y-4'>
+          <div className='flex flex-col space-y-4 max-w-md'>
             <div>
               <div className='flex items-center mb-1'>
                 <NotepadText className='w-5 h-5 mr-1' />
@@ -113,9 +116,11 @@ const AssistantCard = ({
                 <Scroll className='w-5 h-5 mr-1' />
                 Instructions
               </div>
-              <p className='text-sm text-muted-foreground text-left'>
-                {instructions}
-              </p>
+              <div className='overflow-hidden'>
+                <p className='text-sm text-muted-foreground text-left'>
+                  {instructions}
+                </p>
+              </div>
             </div>
             <div>
               <div className='flex items-center mb-1'>
@@ -145,7 +150,7 @@ const AssistantCard = ({
                 Created by
               </div>
               <Link
-                href={`/app/assistants/${metadata.userId}`}
+                href={`/app/assistants/user/${metadata.userId}`}
                 className='text-sm text-muted-foreground hover:underline '
               >
                 <p className='text-left'>@{username}</p>
@@ -184,10 +189,15 @@ const AssistantCard = ({
                 Config
               </Link>
             )}
-            <Button>
+            <Link
+              className={buttonVariants({
+                variant: 'default',
+              })}
+              href={`/app/assistants/chat/${assistant.id}`}
+            >
               <MessagesSquare className='w-5 h-5 mr-2' />
               Chat
-            </Button>
+            </Link>
           </DialogFooter>
         </DialogHeader>
       </DialogContent>

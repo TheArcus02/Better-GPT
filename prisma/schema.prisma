@@ -129,8 +129,6 @@ model AssistantThread {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
   openaiId       String      @unique
   userId         String
-  name           String
-  model          String
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt

@@ -108,3 +108,44 @@ export async function getUserAssistants(
     handleError('[ASSISTANT_ERROR]', error)
   }
 }
+
+export async function getOrCreateThread() {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      throw new Error('Unauthorized')
+    }
+
+    if (user.privateMetadata?.threadId) {
+      const thread = await openai.beta.threads.retrieve(
+        user.privateMetadata.threadId as string,
+      )
+      return thread
+    }
+
+    const thread = await openai.beta.threads.create({
+      metadata: {
+        userId: user.id,
+      },
+    })
+
+    await prisma.assistantThread.create({
+      data: {
+        openaiId: thread.id,
+        userId: user.id,
+      },
+    })
+
+    await clerkClient.users.updateUser(user.id, {
+      privateMetadata: {
+        ...user.privateMetadata,
+        threadId: thread.id,
+      },
+    })
+
+    return thread
+  } catch (error) {
+    handleError('[ASSISTANT_ERROR]', error)
+  }
+}

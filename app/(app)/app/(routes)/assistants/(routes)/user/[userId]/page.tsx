@@ -36,12 +36,10 @@ const UserAssistantsPage = async ({
 
       <div className='mt-16 h-full'>
         {userAssistants ? (
-          <div>
-            <AssistantList assistants={userAssistants} />
-          </div>
+          <AssistantList assistants={userAssistants} />
         ) : (
           <div>
-            <p>No assistant&apos;s found</p>
+            <p>No assistants found</p>
           </div>
         )}
       </div>

@@ -5,9 +5,13 @@ interface AssistantListProps {
 }
 
 const AssistantList = ({ assistants }: AssistantListProps) => {
-  return assistants.map((assistant) => (
-    <AssistantCard key={assistant.id} assistant={assistant} />
-  ))
+  return (
+    <div className='flex gap-4 flex-wrap'>
+      {assistants.map((assistant) => (
+        <AssistantCard key={assistant.id} assistant={assistant} />
+      ))}
+    </div>
+  )
 }
 
 export default AssistantList
