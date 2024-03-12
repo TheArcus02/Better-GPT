@@ -7,11 +7,15 @@ import { Message } from 'ai'
 interface ChatMessagesProps {
   messages: Message[]
   model: ChatModel
+  avatarSrc?: string
+  welcomeMessage?: string
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   model,
+  avatarSrc,
+  welcomeMessage,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [fakeLoading, setFakeLoading] = useState(
@@ -42,8 +46,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
       <ChatMessage
         isLoading={fakeLoading}
         role='system'
-        content='Hi, Im your AI assistant. How can I help you?'
+        content={
+          welcomeMessage ||
+          'Hi, Im your AI assistant. How can I help you?'
+        }
         model={model}
+        avatarSrc={avatarSrc}
       />
       {messages.map((message, index) => (
         <ChatMessage
@@ -51,6 +59,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           role={message.role}
           content={message.content}
           model={model}
+          avatarSrc={avatarSrc}
         />
       ))}
       <div ref={scrollRef} />

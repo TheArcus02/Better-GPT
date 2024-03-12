@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
 import { Copy, Save } from 'lucide-react'
@@ -24,6 +26,7 @@ export interface ChatMessageProps {
   createdAt?: Date
   updatedAt?: Date
   model: ChatModel
+  avatarSrc?: string
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -36,6 +39,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   createdAt,
   updatedAt,
   model,
+  avatarSrc,
 }) => {
   const { theme } = useTheme()
 
@@ -70,7 +74,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     >
       {role !== 'user' && (
         <Avatar className='hidden sm:block'>
-          <AvatarImage src={getImagePath(model)} />
+          <AvatarImage src={avatarSrc || getImagePath(model)} />
         </Avatar>
       )}
       <div

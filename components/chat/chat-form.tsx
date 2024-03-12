@@ -20,7 +20,7 @@ interface ChatFormProps {
   isLoading: boolean
   btnDisabled: boolean
   chatModel: ChatModel
-  isPremium: boolean
+  showModel?: boolean
 }
 
 const ChatForm: React.FC<ChatFormProps> = ({
@@ -30,15 +30,18 @@ const ChatForm: React.FC<ChatFormProps> = ({
   isLoading,
   btnDisabled,
   chatModel,
+  showModel = true,
 }) => {
   return (
     <form
       className='border-t border-b border-primary/10 py-4 flex items-center gap-x-2 ml-1'
       onSubmit={onSubmit}
     >
-      <div className='w-max mx-2'>
-        <ChatIconWithLabel model={chatModel} />
-      </div>
+      {showModel && (
+        <div className='w-max mx-2'>
+          <ChatIconWithLabel model={chatModel} />
+        </div>
+      )}
       <Input
         disabled={isLoading}
         value={input}

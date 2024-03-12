@@ -117,7 +117,18 @@ export async function getOrCreateThread() {
       throw new Error('Unauthorized')
     }
 
-    if (user.privateMetadata?.threadId) {
+    const dbThread = await prisma.assistantThread.findFirst({
+      where: {
+        userId: user.id,
+      },
+    })
+
+    if (dbThread) {
+      const thread = await openai.beta.threads.retrieve(
+        dbThread.openaiId,
+      )
+      return thread
+    } else if (user.privateMetadata?.threadId) {
       const thread = await openai.beta.threads.retrieve(
         user.privateMetadata.threadId as string,
       )
