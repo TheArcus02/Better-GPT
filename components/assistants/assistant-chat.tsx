@@ -8,10 +8,8 @@ import { getCldImageUrl } from 'next-cloudinary'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import ChatForm from '../chat/chat-form'
-import {
-  Message,
-  experimental_useAssistant as useAssistant,
-} from 'ai/react'
+import { experimental_useAssistant as useAssistant } from 'ai/react'
+import { toast } from '../ui/use-toast'
 
 interface AssistantChatProps {
   assistant: OpenAiAssistant
@@ -37,7 +35,16 @@ const AssistantChat = ({
     submitMessage,
     handleInputChange,
   } = useAssistant({
-    api: '',
+    api: `/api/assistants/${assistant.id}/chat`,
+    threadId,
+    onError: (err) => {
+      console.log(err.message)
+      toast({
+        variant: 'destructive',
+        title: 'An error occurred',
+        description: err.message,
+      })
+    },
   })
 
   return (
@@ -73,15 +80,17 @@ const AssistantChat = ({
           welcomeMessage={`Hi, I'm ${assistant.name}. How can I help you?`}
         />
       </ScrollArea>
-      <ChatForm
-        input={input}
-        handleInputChange={handleInputChange}
-        onSubmit={submitMessage}
-        isLoading={status !== 'awaiting_message'}
-        btnDisabled={false}
-        chatModel='gpt-4'
-        showModel={false}
-      />
+      <div className='px-4'>
+        <ChatForm
+          input={input}
+          handleInputChange={handleInputChange}
+          onSubmit={submitMessage}
+          isLoading={status !== 'awaiting_message'}
+          btnDisabled={false}
+          chatModel='gpt-4'
+          showModel={false}
+        />
+      </div>
     </div>
   )
 }
