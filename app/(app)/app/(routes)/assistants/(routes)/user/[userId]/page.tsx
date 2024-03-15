@@ -18,7 +18,11 @@ const UserAssistantsPage = async ({
   }
   const isOwner = user.id === userId
 
-  const userAssistants = await getUserAssistants(userId, !isOwner)
+  const userAssistants = await getUserAssistants(
+    userId,
+    !isOwner,
+    true,
+  )
 
   const username = getUsername(user)
 

@@ -15,7 +15,7 @@ import {
 import { notFound, redirect } from 'next/navigation'
 
 const AssistantConfigInfoPage = async ({
-  params,
+  params: { assistantId },
 }: {
   params: {
     assistantId: string
@@ -23,12 +23,7 @@ const AssistantConfigInfoPage = async ({
 }) => {
   let assistant
   try {
-    const dbAssistant = await prisma.assistant.findUniqueOrThrow({
-      where: {
-        id: params.assistantId,
-      },
-    })
-    assistant = await getAssistantById(dbAssistant.openaiId)
+    assistant = await getAssistantById(assistantId)
   } catch (error: any) {
     toast({
       title: 'Error',

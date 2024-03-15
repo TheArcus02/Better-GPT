@@ -1,9 +1,10 @@
 'use server'
 
 import { clerkClient, currentUser } from '@clerk/nextjs'
-import { getUsername, handleError } from '../utils'
+import { getUsername, getUsernameById, handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
 import prisma from '../prismadb'
+import { Assistant, AssistantMessage } from '@prisma/client'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -17,8 +18,18 @@ export async function getAssistantById(id: string) {
       throw new Error('Unauthorized')
     }
 
+    const dbAssistant = await prisma.assistant.findFirst({
+      where: {
+        id,
+      },
+    })
+
+    if (!dbAssistant) {
+      throw new Error('Assistant not found')
+    }
+
     const assistant = (await openai.beta.assistants.retrieve(
-      id,
+      dbAssistant.openaiId,
     )) as OpenAiAssistant
 
     return assistant
@@ -38,7 +49,19 @@ export async function getAssistantFiles(assistantId: string) {
       throw new Error('Unauthorized')
     }
 
-    const files = await openai.beta.assistants.files.list(assistantId)
+    const dbAssistant = await prisma.assistant.findFirst({
+      where: {
+        id: assistantId,
+      },
+    })
+
+    if (!dbAssistant) {
+      throw new Error('Assistant not found')
+    }
+
+    const files = await openai.beta.assistants.files.list(
+      dbAssistant.openaiId,
+    )
 
     return files
   } catch (error) {
@@ -70,6 +93,7 @@ export async function getFilesDetailsList(fileIds: string[]) {
 export async function getUserAssistants(
   userId: string,
   shared = false,
+  includeOpenAiObj = false,
 ) {
   try {
     const user = await currentUser()
@@ -78,32 +102,33 @@ export async function getUserAssistants(
       throw new Error('Unauthorized')
     }
 
-    const requestedUser = await clerkClient.users.getUser(userId)
+    const assistants = await prisma.assistant.findMany({
+      where: {
+        userId,
+      },
+    })
 
-    const metadata = requestedUser.privateMetadata as UserMetadata
+    let openAiObj: OpenAiAssistant[] | null = null
 
-    if (!metadata?.assistants) {
-      return []
+    if (includeOpenAiObj) {
+      openAiObj = (await Promise.all(
+        assistants.map((a) =>
+          openai.beta.assistants.retrieve(a.openaiId),
+        ),
+      )) as OpenAiAssistant[]
     }
 
-    const assistants = (await Promise.all(
-      metadata.assistants.map((assistantId) =>
-        openai.beta.assistants.retrieve(assistantId),
-      ),
-    )) as OpenAiAssistant[]
+    const username = await getUsernameById(userId)
 
-    const username = getUsername(requestedUser)
-
-    const assistantsWithUsername = assistants.map((assistant) => ({
-      ...assistant,
+    const responseObj = assistants.map((a, i) => ({
+      openAiObj: includeOpenAiObj ? openAiObj![i] : null,
       username,
-    }))
+      ...a,
+    })) as AssistantWithAdditionalData[]
 
     return shared
-      ? assistantsWithUsername.filter(
-          (assistant) => assistant.metadata.shared === false,
-        )
-      : assistantsWithUsername
+      ? responseObj.filter((assistant) => assistant.shared === false)
+      : responseObj
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }
@@ -156,6 +181,65 @@ export async function getOrCreateThread() {
     })
 
     return thread
+  } catch (error) {
+    handleError('[ASSISTANT_ERROR]', error)
+  }
+}
+
+type StoreMessageInDbProps = Omit<
+  AssistantMessage,
+  'createdAt' | 'updatedAt' | 'id'
+>
+
+export async function storeMessageInDb({
+  assistantId,
+  content,
+  openaiId,
+  role,
+  threadId,
+  userId,
+}: StoreMessageInDbProps) {
+  try {
+    const thread = await prisma.assistantThread.findFirst({
+      where: {
+        openaiId: threadId,
+      },
+    })
+
+    if (!thread) {
+      throw new Error('Thread not found')
+    }
+
+    const assistant = await prisma.assistant.findFirst({
+      where: {
+        openaiId: assistantId,
+      },
+    })
+
+    if (!assistant) {
+      throw new Error('Assistant not found')
+    }
+
+    const createdMessage = await prisma.assistantMessage.create({
+      data: {
+        thread: {
+          connect: {
+            id: thread.id,
+          },
+        },
+        assistant: {
+          connect: {
+            id: assistant.id,
+          },
+        },
+        openaiId,
+        content,
+        role,
+        userId,
+      },
+    })
+
+    return createdMessage
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }

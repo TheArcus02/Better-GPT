@@ -5,12 +5,11 @@ import {
   getAssistantFiles,
   getFilesDetailsList,
 } from '@/lib/actions/assistant.action'
-import prisma from '@/lib/prismadb'
 import { FileBarChart } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 
 const AssistantFilesPage = async ({
-  params,
+  params: { assistantId },
 }: {
   params: {
     assistantId: string
@@ -18,13 +17,7 @@ const AssistantFilesPage = async ({
 }) => {
   let assistantFiles
   try {
-    const assistant = await prisma.assistant.findUniqueOrThrow({
-      where: {
-        id: params.assistantId,
-      },
-    })
-
-    assistantFiles = await getAssistantFiles(assistant.openaiId)
+    assistantFiles = await getAssistantFiles(assistantId)
   } catch (error: any) {
     toast({
       title: 'Error',
@@ -60,7 +53,7 @@ const AssistantFilesPage = async ({
       <Separator />
       <AssistantFilesLayout
         initialFiles={files}
-        assistantId={params.assistantId}
+        assistantId={assistantId}
       />
     </div>
   )

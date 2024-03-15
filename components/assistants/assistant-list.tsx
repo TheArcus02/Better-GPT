@@ -1,7 +1,7 @@
 import AssistantCard from './assistant-card'
 
 interface AssistantListProps {
-  assistants: OpenAiAssistant[]
+  assistants: AssistantWithAdditionalData[]
 }
 
 const AssistantList = ({ assistants }: AssistantListProps) => {

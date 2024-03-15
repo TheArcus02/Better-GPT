@@ -1,8 +1,9 @@
+import { storeMessageInDb } from '@/lib/actions/assistant.action'
+import prisma from '@/lib/prismadb'
 import { getAuth } from '@clerk/nextjs/server'
 import { experimental_AssistantResponse } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { MessageContentText } from 'openai/resources/beta/threads/messages/messages.mjs'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -48,84 +49,63 @@ export async function POST(
       },
     )
 
+    await storeMessageInDb({
+      assistantId,
+      threadId,
+      openaiId: createdMessage.id,
+      role: 'user',
+      content: message,
+      userId,
+    })
+
     return experimental_AssistantResponse(
       { threadId, messageId: createdMessage.id },
-      async ({ threadId, sendMessage, sendDataMessage }) => {
-        const run = await openai.beta.threads.runs.create(threadId, {
-          assistant_id: assistantId,
-        })
-
-        async function waitForRun(run: OpenAI.Beta.Threads.Runs.Run) {
-          // Poll for status change
-          while (
-            run.status === 'queued' ||
-            run.status === 'in_progress'
-          ) {
-            // delay 500ms
-            await new Promise((resolve) => setTimeout(resolve, 500))
-
-            run = await openai.beta.threads.runs.retrieve(
+      async ({ forwardStream, sendDataMessage }) => {
+        // Run assistant on the thread
+        const runStream = openai.beta.threads.runs
+          .createAndStream(threadId, {
+            assistant_id: assistantId,
+          })
+          .on('messageDone', async (message) => {
+            await storeMessageInDb({
+              assistantId,
               threadId,
-              run.id,
-            )
-          }
+              openaiId: message.id,
+              role: message.role,
+              content: message.content.join(' '),
+              userId,
+            })
+          })
 
-          // Check the run status
-          if (
-            run.status === 'cancelled' ||
-            run.status === 'cancelling' ||
-            run.status === 'failed' ||
-            run.status === 'expired'
-          ) {
-            throw new Error(`Run failed with status: ${run.status}`)
-          }
+        let runResult = await forwardStream(runStream)
 
-          // Managing actions
-          if (run.status === 'requires_action') {
-            if (run.required_action?.type === 'submit_tool_outputs') {
-              const tool_outputs =
-                run.required_action.submit_tool_outputs.tool_calls.map(
-                  (toolCall) => {
-                    const parameters = JSON.parse(
-                      toolCall.function.arguments,
-                    )
-
-                    switch (toolCall.function.name) {
-                      default:
-                        throw new Error(
-                          `Unknown tool call: ${toolCall.function.name}`,
-                        )
-                    }
-                  },
+        while (
+          runResult.status === 'requires_action' &&
+          runResult.required_action?.type === 'submit_tool_outputs'
+        ) {
+          const tool_outputs =
+            runResult.required_action.submit_tool_outputs.tool_calls.map(
+              (toolCall: any) => {
+                const parameters = JSON.parse(
+                  toolCall.function.arguments,
                 )
-              run = await openai.beta.threads.runs.submitToolOutputs(
-                threadId,
-                run.id,
-                { tool_outputs },
-              )
 
-              await waitForRun(run)
-            }
-          }
-        }
-        await waitForRun(run)
-
-        const responseMessages = (
-          await openai.beta.threads.messages.list(threadId, {
-            after: createdMessage.id,
-            order: 'asc',
-          })
-        ).data
-
-        // Send the messages
-        for (const message of responseMessages) {
-          sendMessage({
-            id: message.id,
-            role: 'assistant',
-            content: message.content.filter(
-              (content) => content.type === 'text',
-            ) as Array<MessageContentText>,
-          })
+                switch (toolCall.function.name) {
+                  // Add your tool calls here
+                  default:
+                    throw new Error(
+                      `Unknown tool call: ${toolCall.function.name}`,
+                    )
+                }
+              },
+            )
+          runResult = await forwardStream(
+            openai.beta.threads.runs.submitToolOutputsStream(
+              threadId,
+              runResult.id,
+              { tool_outputs },
+            ),
+          )
         }
       },
     )

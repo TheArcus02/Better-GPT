@@ -1,3 +1,5 @@
+import { User } from '@clerk/nextjs/server'
+import { Assistant } from '@prisma/client'
 import { LucideIcon } from 'lucide-react'
 import { OpenAI } from 'openai'
 
@@ -18,6 +20,14 @@ declare global {
   type OpenAiAssistant = OpenAI.Beta.Assistants.Assistant & {
     metadata: AssistantMetadata
   }
+
+  type AdditionalAssistantData = {
+    openAiObj?: OpenAiAssistant
+    username?: string
+  }
+
+  type AssistantWithAdditionalData = Assistant &
+    AdditionalAssistantData
 
   type NavRoute = {
     icon: LucideIcon | null

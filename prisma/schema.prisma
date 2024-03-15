@@ -42,6 +42,7 @@ model Chat {
 enum Role {
   user
   system
+  assistant
 }
 
 model Message {
@@ -114,13 +115,13 @@ model AssistantMessage {
   
   userId         String
   assistantId    String      @db.ObjectId
-  threadID       String      @db.ObjectId
+  threadId       String      @db.ObjectId
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   assistant      Assistant   @relation(fields: [assistantId], references: [id], onDelete: Cascade)
-  thread         AssistantThread      @relation(fields: [threadID], references: [id], onDelete: Cascade)
+  thread         AssistantThread      @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@index([assistantId])
 }

@@ -13,7 +13,7 @@ const openai = new OpenAI({
 const model = 'gpt-3.5-turbo-0125'
 
 export async function GET({
-  params,
+  params: { assistantId },
 }: {
   params: {
     assistantId: string
@@ -26,13 +26,13 @@ export async function GET({
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    if (!params.assistantId) {
+    if (!assistantId) {
       return new NextResponse('Missing assistantId', { status: 400 })
     }
 
     const assistant = await prisma.assistant.findUnique({
       where: {
-        id: params.assistantId,
+        id: assistantId,
       },
     })
 
@@ -179,16 +179,16 @@ export async function DELETE(
       return new NextResponse('Assistant not found', { status: 404 })
     }
 
-    await Promise.all(
-      assistant.fileIds.map((file) => openai.files.del(file)),
-    )
-
     if (assistant.userId !== user.id) {
       return new NextResponse(
         'Assistant can only be modified by the owner',
         { status: 401 },
       )
     }
+
+    await Promise.all(
+      assistant.fileIds.map((file) => openai.files.del(file)),
+    )
 
     const res = await openai.beta.assistants.del(assistant.openaiId)
 

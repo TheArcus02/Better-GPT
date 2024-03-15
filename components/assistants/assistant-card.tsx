@@ -37,7 +37,7 @@ import { auth } from '@clerk/nextjs'
 
 interface AssistantCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  assistant: OpenAiAssistant
+  assistant: AssistantWithAdditionalData
 }
 
 const AssistantCard = ({
@@ -48,14 +48,16 @@ const AssistantCard = ({
   const {
     name,
     description,
-    metadata,
     instructions,
     model,
-    created_at,
+    userId,
+    imagePublicId,
+    shared,
+    id,
   } = assistant
-  const username = getUsernameById(metadata.userId)
-  const { userId } = auth()
-  const isOwner = userId === metadata.userId
+  const username = getUsernameById(userId)
+  const { userId: currentUserId } = auth()
+  const isOwner = currentUserId === userId
   return (
     <Dialog>
       <Card
@@ -66,7 +68,7 @@ const AssistantCard = ({
           <div className='aspect-square relative h-40 w-40 mx-auto mb-5'>
             <CldImage
               alt={name || 'Assistant'}
-              src={metadata.imagePublicId}
+              src={imagePublicId}
               fill
               className='object-cover rounded-xl'
             />
@@ -78,7 +80,7 @@ const AssistantCard = ({
         </CardHeader>
         <CardContent className='flex justify-between items-center'>
           <Link
-            href={`/app/assistants/user/${metadata.userId}`}
+            href={`/app/assistants/user/${userId}`}
             className='text-sm text-muted-foreground hover:underline'
           >
             @{username}
@@ -95,7 +97,7 @@ const AssistantCard = ({
           <div className='aspect-square relative h-40 w-40 mx-auto mb-5'>
             <CldImage
               alt={name || 'Assistant'}
-              src={metadata.imagePublicId}
+              src={imagePublicId}
               fill
               className='object-cover rounded-xl'
             />
@@ -128,8 +130,8 @@ const AssistantCard = ({
                 Tools
               </div>
               <p className='text-sm text-muted-foreground text-left'>
-                {assistant.tools.length
-                  ? assistant.tools.map((tool, i) => (
+                {assistant?.openAiObj?.tools.length
+                  ? assistant.openAiObj.tools.map((tool, i) => (
                       <Badge key={tool.type + i}>{tool.type}</Badge>
                     ))
                   : 'No assigned tools...'}
@@ -150,7 +152,7 @@ const AssistantCard = ({
                 Created by
               </div>
               <Link
-                href={`/app/assistants/user/${metadata.userId}`}
+                href={`/app/assistants/user/${userId}`}
                 className='text-sm text-muted-foreground hover:underline '
               >
                 <p className='text-left'>@{username}</p>
@@ -162,7 +164,9 @@ const AssistantCard = ({
                 Created at
               </div>
               <p className='text-sm text-muted-foreground text-left'>
-                {convertUnixTimestamp(created_at)}
+                {convertUnixTimestamp(
+                  assistant?.openAiObj?.created_at || 0,
+                )}
               </p>
             </div>
             {isOwner && (
@@ -172,7 +176,7 @@ const AssistantCard = ({
                   Shared
                 </div>
                 <p className='text-sm text-muted-foreground text-left'>
-                  {metadata.shared}
+                  {shared}
                 </p>
               </div>
             )}
@@ -183,7 +187,7 @@ const AssistantCard = ({
                 className={buttonVariants({
                   variant: 'outline',
                 })}
-                href={`/app/assistants/config/${assistant.id}`}
+                href={`/app/assistants/config/${id}`}
               >
                 <Wrench className='w-5 h-5 mr-2' />
                 Config
@@ -193,7 +197,7 @@ const AssistantCard = ({
               className={buttonVariants({
                 variant: 'default',
               })}
-              href={`/app/assistants/chat/${assistant.id}`}
+              href={`/app/assistants/chat/${id}`}
             >
               <MessagesSquare className='w-5 h-5 mr-2' />
               Chat

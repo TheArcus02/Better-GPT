@@ -4,7 +4,6 @@ import {
   getOrCreateThread,
 } from '@/lib/actions/assistant.action'
 import { getUsernameById } from '@/lib/utils'
-import { clerkClient } from '@clerk/nextjs'
 import { notFound } from 'next/navigation'
 
 const AssistantChatPage = async ({

@@ -15,20 +15,14 @@ interface AssistantConfigLayoutProps {
 
 const AssistantConfigLayout = async ({
   children,
-  params,
+  params: { assistantId },
 }: AssistantConfigLayoutProps) => {
   const { userId } = auth()
 
   let assistant
 
   try {
-    const dbAssistant = await prisma.assistant.findUniqueOrThrow({
-      where: {
-        id: params.assistantId,
-      },
-    })
-
-    assistant = await getAssistantById(dbAssistant.openaiId)
+    assistant = await getAssistantById(assistantId)
   } catch (error: any) {
     toast({
       title: 'Error',
@@ -53,15 +47,15 @@ const AssistantConfigLayout = async ({
 
   const sidebarNavItems = [
     {
-      href: `/app/assistants/config/${params.assistantId}`,
+      href: `/app/assistants/config/${assistantId}`,
       label: 'Info',
     },
     {
-      href: `/app/assistants/config/${params.assistantId}/settings`,
+      href: `/app/assistants/config/${assistantId}/settings`,
       label: 'Settings',
     },
     {
-      href: `/app/assistants/config/${params.assistantId}/files`,
+      href: `/app/assistants/config/${assistantId}/files`,
       label: 'Files',
     },
   ]

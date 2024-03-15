@@ -47,6 +47,8 @@ const AssistantChat = ({
     },
   })
 
+  console.log(messages)
+
   return (
     <div className='flex flex-col h-full max-w-6xl mx-auto w-full overflow-auto'>
       <div className='flex items-center space-x-3'>
