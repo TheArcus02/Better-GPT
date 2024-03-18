@@ -10,18 +10,24 @@ import Link from 'next/link'
 import ChatForm from '../chat/chat-form'
 import { experimental_useAssistant as useAssistant } from 'ai/react'
 import { toast } from '../ui/use-toast'
+import { Message } from 'ai'
+import { useEffect, useState } from 'react'
 
 interface AssistantChatProps {
   assistant: OpenAiAssistant
   threadId: string
   createdBy: string
+  initialMessages: Message[]
 }
 
 const AssistantChat = ({
   assistant,
   threadId,
   createdBy,
+  initialMessages,
 }: AssistantChatProps) => {
+  const [messages, setMessages] = useState(initialMessages)
+
   const imageUrl = getCldImageUrl({
     src: assistant.metadata.imagePublicId,
     width: 100,
@@ -30,7 +36,7 @@ const AssistantChat = ({
 
   const {
     status,
-    messages,
+    messages: newMessages,
     input,
     submitMessage,
     handleInputChange,
@@ -47,7 +53,11 @@ const AssistantChat = ({
     },
   })
 
-  console.log(messages)
+  useEffect(() => {
+    if (newMessages) {
+      setMessages([...initialMessages, ...newMessages])
+    }
+  }, [newMessages, initialMessages])
 
   return (
     <div className='flex flex-col h-full max-w-6xl mx-auto w-full overflow-auto'>

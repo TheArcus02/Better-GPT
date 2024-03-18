@@ -5,6 +5,7 @@ import { getUsername, getUsernameById, handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
 import prisma from '../prismadb'
 import { Assistant, AssistantMessage } from '@prisma/client'
+import { Message } from 'openai/resources/beta/threads/messages/messages.mjs'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -240,6 +241,53 @@ export async function storeMessageInDb({
     })
 
     return createdMessage
+  } catch (error) {
+    handleError('[ASSISTANT_ERROR]', error)
+  }
+}
+
+export async function getAssistantMessages(
+  assistantId: string,
+  threadId: string,
+) {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      throw new Error('Unauthorized')
+    }
+
+    const thread = await prisma.assistantThread.findFirst({
+      where: {
+        openaiId: threadId,
+      },
+    })
+
+    if (!thread) {
+      throw new Error('Thread not found')
+    }
+
+    const dbMessages = await prisma.assistantMessage.findMany({
+      where: {
+        threadId: thread.id,
+        assistantId,
+      },
+    })
+
+    if (!dbMessages.length) {
+      return []
+    }
+
+    const messages = await Promise.all(
+      dbMessages.map((message) =>
+        openai.beta.threads.messages.retrieve(
+          threadId,
+          message.openaiId,
+        ),
+      ),
+    )
+
+    return messages
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }

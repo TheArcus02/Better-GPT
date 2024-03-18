@@ -1,5 +1,4 @@
 import { storeMessageInDb } from '@/lib/actions/assistant.action'
-import prisma from '@/lib/prismadb'
 import { getAuth } from '@clerk/nextjs/server'
 import { experimental_AssistantResponse } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
@@ -67,16 +66,16 @@ export async function POST(
             assistant_id: assistantId,
           })
           .on('messageDone', async (message) => {
+            if (message.content[0].type !== 'text') return
             await storeMessageInDb({
               assistantId,
               threadId,
               openaiId: message.id,
               role: message.role,
-              content: message.content.join(' '),
+              content: message.content[0].text.value,
               userId,
             })
           })
-
         let runResult = await forwardStream(runStream)
 
         while (
