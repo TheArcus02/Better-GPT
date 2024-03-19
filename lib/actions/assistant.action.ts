@@ -10,13 +10,20 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function getAssistants(
-  take: number,
-  skip: number,
-  userId?: string,
-  shared = true,
+interface GetAssistantProps {
+  take: number
+  skip: number
+  userId?: string
+  shared?: boolean
+  includeOpenAiObj?: boolean
+}
+export async function getAssistants({
+  take,
+  skip,
+  userId,
+  shared,
   includeOpenAiObj = true,
-) {
+}: GetAssistantProps) {
   try {
     const user = await currentUser()
 

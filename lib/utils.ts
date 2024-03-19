@@ -24,7 +24,9 @@ export function isInvalidUsername(user: User) {
 }
 
 export function getUsername(user: User) {
-  if (user.firstName || user.lastName) {
+  if (user.username) {
+    return user.username
+  } else if (user.firstName || user.lastName) {
     return `${user.firstName} ${user.lastName}`
   } else {
     return user.emailAddresses[0].emailAddress

@@ -22,7 +22,11 @@ const AssistantsPage = async ({
 
   const skip = (Number(page) - 1) * Number(perPage)
 
-  const res = await getAssistants(Number(perPage), skip)
+  const res = await getAssistants({
+    take: Number(perPage),
+    skip,
+    shared: true,
+  })
 
   if (!res) return notFound()
 
@@ -49,11 +53,19 @@ const AssistantsPage = async ({
         </div>
       </div>
       <div className='mt-6 md:mt-16 h-full space-y-5'>
-        <AssistantList assistants={assistants} />
-        <AssistantPagination
-          hasNextPage={hasNextPage ?? false}
-          totalPages={totalPages}
-        />
+        {assistants.length ? (
+          <>
+            <AssistantList assistants={assistants} />
+            <AssistantPagination
+              hasNextPage={hasNextPage ?? false}
+              totalPages={totalPages}
+            />
+          </>
+        ) : (
+          <div>
+            <p>No assistants found</p>
+          </div>
+        )}
       </div>
     </section>
   )
