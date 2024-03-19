@@ -1,4 +1,4 @@
-import AssistantsForm from '@/components/assistants/assistants-form'
+import AssistantsForm from '@/components/assistants/assistant-form'
 import { checkSubscription } from '@/lib/subscription'
 const CreateAssistantPage = async () => {
   const isPremium = await checkSubscription()

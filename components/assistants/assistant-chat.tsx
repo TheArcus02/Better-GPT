@@ -12,6 +12,7 @@ import { experimental_useAssistant as useAssistant } from 'ai/react'
 import { toast } from '../ui/use-toast'
 import { Message } from 'ai'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface AssistantChatProps {
   assistant: OpenAiAssistant
@@ -33,6 +34,8 @@ const AssistantChat = ({
     width: 100,
     height: 100,
   })
+
+  const router = useRouter()
 
   const {
     status,
@@ -62,7 +65,11 @@ const AssistantChat = ({
   return (
     <div className='flex flex-col h-full max-w-6xl mx-auto w-full overflow-auto'>
       <div className='flex items-center space-x-3'>
-        <Button variant='ghost' size='icon'>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={() => router.back()}
+        >
           <ChevronLeft className='w-6 h-6' />
         </Button>
         <Avatar className='h-12 w-12'>

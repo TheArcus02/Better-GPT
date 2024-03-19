@@ -1,4 +1,4 @@
-import { AssistantsFormType } from '@/components/assistants/assistants-form'
+import { AssistantsFormType } from '@/components/assistants/assistant-form'
 import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { isInvalidUsername } from '@/lib/utils'

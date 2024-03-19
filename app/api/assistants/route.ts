@@ -1,4 +1,4 @@
-import { AssistantsFormType } from '@/components/assistants/assistants-form'
+import { AssistantsFormType } from '@/components/assistants/assistant-form'
 import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { clerkClient, currentUser } from '@clerk/nextjs'
@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const model = 'gpt-3.5-turbo-0125'
-const placeholderImagePublicId = 'frhhrd936xf1dd8lhrwg'
+const placeholderImagePublicId = 'BetterGPT/yyma2xuk3cqretcobda4'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

@@ -1,4 +1,4 @@
-import AssistantsForm from '@/components/assistants/assistants-form'
+import AssistantsForm from '@/components/assistants/assistant-form'
 import { Separator } from '@/components/ui/separator'
 import prisma from '@/lib/prismadb'
 import { Sliders } from 'lucide-react'

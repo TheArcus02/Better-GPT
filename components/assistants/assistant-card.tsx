@@ -176,7 +176,7 @@ const AssistantCard = ({
                   Shared
                 </div>
                 <p className='text-sm text-muted-foreground text-left'>
-                  {shared}
+                  {shared ? 'Yes' : 'No'}
                 </p>
               </div>
             )}

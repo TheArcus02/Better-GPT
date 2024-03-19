@@ -11,6 +11,9 @@ const openai = new OpenAI({
 })
 
 export async function getAssistants(
+  take: number,
+  skip: number,
+  userId?: string,
   shared = true,
   includeOpenAiObj = true,
 ) {
@@ -22,13 +25,28 @@ export async function getAssistants(
     }
 
     const assistants = await prisma.assistant.findMany({
+      take,
+      skip,
+      orderBy: {
+        createdAt: 'desc',
+      },
       where: {
         shared,
+        userId,
+      },
+    })
+
+    const total = await prisma.assistant.count({
+      where: {
+        shared,
+        userId,
       },
     })
 
     if (!assistants.length) {
-      return []
+      return {
+        data: [],
+      }
     }
 
     let openAiObj: OpenAiAssistant[]
@@ -41,17 +59,27 @@ export async function getAssistants(
       )) as OpenAiAssistant[]
     }
 
-    const username = await getUsernameById(user.id)
+    let username: string | undefined
 
-    const responseObj: AssistantWithAdditionalData[] = assistants.map(
-      (a, i) => ({
+    if (userId) {
+      username = await getUsernameById(userId)
+    }
+
+    const data: AssistantWithAdditionalData[] = await Promise.all(
+      assistants.map(async (a, i) => ({
         openAiObj: includeOpenAiObj ? openAiObj![i] : null,
-        username,
+        username: username
+          ? username
+          : await getUsernameById(a.userId),
         ...a,
-      }),
+      })),
     )
 
-    return responseObj
+    return {
+      data,
+      hasNextPage: skip + take < total,
+      totalPages: Math.ceil(total / take),
+    }
   } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }
