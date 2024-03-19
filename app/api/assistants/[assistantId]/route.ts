@@ -64,7 +64,7 @@ export async function PATCH(
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { name, description, instructions, imagePublicId } =
+    const { name, description, instructions, imagePublicId, shared } =
       body as AssistantsFormType
 
     const { assistantId } = params
@@ -73,7 +73,13 @@ export async function PATCH(
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    if (!name || !description || !instructions || !assistantId) {
+    if (
+      !name ||
+      !description ||
+      !instructions ||
+      !assistantId ||
+      !shared
+    ) {
       return new NextResponse('Missing fields', {
         status: 400,
       })
@@ -112,6 +118,7 @@ export async function PATCH(
       name,
       metadata: {
         imagePublicId,
+        shared,
       },
     })
 
@@ -125,6 +132,7 @@ export async function PATCH(
         description,
         instructions,
         imagePublicId,
+        shared,
       },
     })
 

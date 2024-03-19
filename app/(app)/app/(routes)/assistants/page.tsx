@@ -1,9 +1,18 @@
+import AssistantList from '@/components/assistants/assistant-list'
 import { Button } from '@/components/ui/button'
+import { getAssistants } from '@/lib/actions/assistant.action'
 import { auth } from '@clerk/nextjs'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
-const AssistantsPage = () => {
+const AssistantsPage = async () => {
   const { userId } = auth()
+
+  if (!userId) return notFound()
+
+  const assistants = await getAssistants()
+
+  if (!assistants) return notFound()
 
   return (
     <section className='mt-16 max-w-7xl mx-auto h-full px-10'>
@@ -26,7 +35,7 @@ const AssistantsPage = () => {
         </div>
       </div>
       <div className='mt-6 md:mt-16 h-full'>
-        {/* Public assistant's */}
+        <AssistantList assistants={assistants} />
       </div>
     </section>
   )

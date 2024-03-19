@@ -6,6 +6,7 @@ import * as z from 'zod'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,6 +23,7 @@ import { useRouter } from 'next/navigation'
 import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import CustomAlertDialog from '../custom-alert-dialog'
 import { Assistant } from '@prisma/client'
+import { Checkbox } from '../ui/checkbox'
 
 interface AssistantsFormProps {
   action: 'create' | 'update'
@@ -38,6 +40,7 @@ const assistantsFormSchema = z.object({
   instructions: z.string().min(200, {
     message: 'Instructions must be at least 200 characters long',
   }),
+  shared: z.boolean(),
   imagePublicId: z.string().optional(),
 })
 
@@ -52,16 +55,18 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
   const initialValues =
     data && action === 'update'
       ? {
-          name: data.name!,
+          name: data.name,
           description: data.description,
           instructions: data.instructions,
           imagePublicId: data.imagePublicId,
+          shared: data.shared,
         }
       : {
           name: '',
           description: '',
           instructions: '',
           imagePublicId: '',
+          shared: false,
         }
 
   const form = useForm({
@@ -164,6 +169,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             </FormItem>
           )}
         />
+
         <FormField
           name='description'
           control={form.control}
@@ -198,6 +204,31 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             </FormItem>
           )}
         />
+        <FormField
+          name='shared'
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className='space-y-1 leading-none'>
+                <FormLabel>
+                  Share this assistant with the community
+                </FormLabel>
+                <FormDescription>
+                  By enabling this option, you agree to share this
+                  assistant with the community. It will be available
+                  for others to use.
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+
         <div className='flex justify-between'>
           <Button
             variant='default'

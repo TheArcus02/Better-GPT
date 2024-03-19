@@ -1,15 +1,61 @@
 'use server'
 
 import { clerkClient, currentUser } from '@clerk/nextjs'
-import { getUsername, getUsernameById, handleError } from '../utils'
+import { getUsernameById, handleError } from '../utils'
 import OpenAI, { NotFoundError } from 'openai'
 import prisma from '../prismadb'
-import { Assistant, AssistantMessage } from '@prisma/client'
-import { Message } from 'openai/resources/beta/threads/messages/messages.mjs'
+import { AssistantMessage } from '@prisma/client'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
+
+export async function getAssistants(
+  shared = true,
+  includeOpenAiObj = true,
+) {
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      throw new Error('Unauthorized')
+    }
+
+    const assistants = await prisma.assistant.findMany({
+      where: {
+        shared,
+      },
+    })
+
+    if (!assistants.length) {
+      return []
+    }
+
+    let openAiObj: OpenAiAssistant[]
+
+    if (includeOpenAiObj) {
+      openAiObj = (await Promise.all(
+        assistants.map((assistant) =>
+          openai.beta.assistants.retrieve(assistant.openaiId),
+        ),
+      )) as OpenAiAssistant[]
+    }
+
+    const username = await getUsernameById(user.id)
+
+    const responseObj: AssistantWithAdditionalData[] = assistants.map(
+      (a, i) => ({
+        openAiObj: includeOpenAiObj ? openAiObj![i] : null,
+        username,
+        ...a,
+      }),
+    )
+
+    return responseObj
+  } catch (error) {
+    handleError('[ASSISTANT_ERROR]', error)
+  }
+}
 
 export async function getAssistantById(id: string) {
   try {

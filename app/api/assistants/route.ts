@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const user = await currentUser()
-    const { name, description, instructions, imagePublicId } =
+    const { name, description, instructions, imagePublicId, shared } =
       body as AssistantsFormType
 
     if (!user) {
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       metadata: {
         imagePublicId: imagePublicId || placeholderImagePublicId,
         userId: user.id,
-        shared: false,
+        shared,
       },
     })
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         model,
         imagePublicId: imagePublicId || placeholderImagePublicId,
         userId: user.id,
-        shared: false,
+        shared,
       },
     })
 

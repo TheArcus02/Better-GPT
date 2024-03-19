@@ -22,7 +22,7 @@ declare global {
   }
 
   type AdditionalAssistantData = {
-    openAiObj?: OpenAiAssistant
+    openAiObj?: OpenAiAssistant | null
     username?: string
   }
 
