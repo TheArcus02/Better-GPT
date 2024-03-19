@@ -27,7 +27,7 @@ const AssistantChatPage = async ({
     return notFound()
   }
 
-  const createdBy = await getUsernameById(assistant.metadata.userId)
+  const createdBy = await getUsernameById(assistant.userId)
 
   if (!createdBy) {
     return notFound()

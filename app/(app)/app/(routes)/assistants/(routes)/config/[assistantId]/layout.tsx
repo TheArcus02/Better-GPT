@@ -36,7 +36,7 @@ const AssistantConfigLayout = async ({
     notFound()
   }
 
-  if (assistant.metadata.userId !== userId) {
+  if (assistant.userId !== userId) {
     toast({
       variant: 'destructive',
       description: 'Only the owner can access this page',

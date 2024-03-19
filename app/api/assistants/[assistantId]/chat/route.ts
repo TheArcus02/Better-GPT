@@ -1,4 +1,5 @@
 import { storeMessageInDb } from '@/lib/actions/assistant.action'
+import prisma from '@/lib/prismadb'
 import { getAuth } from '@clerk/nextjs/server'
 import { experimental_AssistantResponse } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
@@ -40,6 +41,16 @@ export async function POST(
       return new NextResponse('Missing fields', { status: 400 })
     }
 
+    const dbAssistant = await prisma.assistant.findUnique({
+      where: {
+        id: assistantId,
+      },
+    })
+
+    if (!dbAssistant) {
+      return new NextResponse('Assistant not found', { status: 404 })
+    }
+
     const createdMessage = await openai.beta.threads.messages.create(
       threadId,
       {
@@ -63,7 +74,7 @@ export async function POST(
         // Run assistant on the thread
         const runStream = openai.beta.threads.runs
           .createAndStream(threadId, {
-            assistant_id: assistantId,
+            assistant_id: dbAssistant.openaiId,
           })
           .on('messageDone', async (message) => {
             if (message.content[0].type !== 'text') return

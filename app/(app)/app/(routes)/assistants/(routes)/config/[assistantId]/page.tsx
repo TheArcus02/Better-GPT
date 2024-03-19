@@ -21,7 +21,7 @@ const AssistantConfigInfoPage = async ({
     assistantId: string
   }
 }) => {
-  let assistant
+  let assistant: AssistantWithAdditionalData | null | undefined
   try {
     assistant = await getAssistantById(assistantId)
   } catch (error: any) {
@@ -33,7 +33,7 @@ const AssistantConfigInfoPage = async ({
     redirect('/app/assistants')
   }
 
-  if (!assistant) {
+  if (!assistant || !assistant.openAiObj) {
     notFound()
   }
 
@@ -52,7 +52,7 @@ const AssistantConfigInfoPage = async ({
       <div className='mx-auto'>
         <div className='aspect-square relative mx-auto max-w-[256px] rounded-xl'>
           <CldImage
-            src={assistant.metadata.imagePublicId}
+            src={assistant.imagePublicId}
             alt={
               assistant.name ||
               assistant.description ||
@@ -83,8 +83,8 @@ const AssistantConfigInfoPage = async ({
             Tools
           </h2>
           <div className='flex items-center space-x-2'>
-            {assistant.tools.length
-              ? assistant.tools.map((tool, i) => (
+            {assistant.openAiObj.tools.length
+              ? assistant.openAiObj.tools.map((tool, i) => (
                   <Badge key={tool.type + i}>{tool.type}</Badge>
                 ))
               : 'No assigned tools...'}
@@ -94,8 +94,8 @@ const AssistantConfigInfoPage = async ({
             Files
           </h2>
           <p>
-            {assistant.file_ids.length
-              ? assistant.file_ids.map((file, i) => (
+            {assistant.openAiObj.file_ids.length
+              ? assistant.openAiObj.file_ids.map((file, i) => (
                   <Badge key={file}>{file}</Badge>
                 ))
               : 'No assigned files...'}
@@ -104,7 +104,9 @@ const AssistantConfigInfoPage = async ({
             <Braces className='w-5 h-5 mr-1' />
             Metadata
           </h2>
-          <p>{JSON.stringify(assistant.metadata, null, 2)}</p>
+          <p>
+            {JSON.stringify(assistant.openAiObj.metadata, null, 2)}
+          </p>
         </div>
       </div>
     </div>

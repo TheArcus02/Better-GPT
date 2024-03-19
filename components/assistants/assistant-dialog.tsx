@@ -22,9 +22,13 @@ import { Badge } from '../ui/badge'
 
 interface AssistantDialogProps {
   assistant: AssistantWithAdditionalData
+  chatButton?: boolean
 }
 
-const AssistantDialog = ({ assistant }: AssistantDialogProps) => {
+const AssistantDialog = ({
+  assistant,
+  chatButton = true,
+}: AssistantDialogProps) => {
   const {
     name,
     description,
@@ -139,15 +143,17 @@ const AssistantDialog = ({ assistant }: AssistantDialogProps) => {
               Config
             </Link>
           )}
-          <Link
-            className={buttonVariants({
-              variant: 'default',
-            })}
-            href={`/app/assistants/chat/${id}`}
-          >
-            <MessagesSquare className='w-5 h-5 mr-2' />
-            Chat
-          </Link>
+          {chatButton && (
+            <Link
+              className={buttonVariants({
+                variant: 'default',
+              })}
+              href={`/app/assistants/chat/${id}`}
+            >
+              <MessagesSquare className='w-5 h-5 mr-2' />
+              Chat
+            </Link>
+          )}
         </DialogFooter>
       </DialogHeader>
     </DialogContent>

@@ -115,7 +115,14 @@ export async function getAssistantById(id: string) {
       dbAssistant.openaiId,
     )) as OpenAiAssistant
 
-    return assistant
+    const res: AssistantWithAdditionalData = {
+      ...dbAssistant,
+      openAiObj: assistant,
+      isOwner: dbAssistant.userId === user.id,
+      username: await getUsernameById(dbAssistant.userId),
+    }
+
+    return res
   } catch (error) {
     if (error instanceof NotFoundError) {
       return null
@@ -251,7 +258,7 @@ export async function storeMessageInDb({
 
     const assistant = await prisma.assistant.findFirst({
       where: {
-        openaiId: assistantId,
+        id: assistantId,
       },
     })
 
