@@ -79,6 +79,7 @@ export async function getAssistants({
           ? username
           : await getUsernameById(a.userId),
         ...a,
+        isOwner: a.userId === user.id,
       })),
     )
 
@@ -168,50 +169,6 @@ export async function getFilesDetailsList(fileIds: string[]) {
     if (error instanceof NotFoundError) {
       return null
     }
-    handleError('[ASSISTANT_ERROR]', error)
-  }
-}
-
-export async function getUserAssistants(
-  userId: string,
-  shared = false,
-  includeOpenAiObj = false,
-) {
-  try {
-    const user = await currentUser()
-
-    if (!user) {
-      throw new Error('Unauthorized')
-    }
-
-    const assistants = await prisma.assistant.findMany({
-      where: {
-        userId,
-      },
-    })
-
-    let openAiObj: OpenAiAssistant[] | null = null
-
-    if (includeOpenAiObj) {
-      openAiObj = (await Promise.all(
-        assistants.map((a) =>
-          openai.beta.assistants.retrieve(a.openaiId),
-        ),
-      )) as OpenAiAssistant[]
-    }
-
-    const username = await getUsernameById(userId)
-
-    const responseObj = assistants.map((a, i) => ({
-      openAiObj: includeOpenAiObj ? openAiObj![i] : null,
-      username,
-      ...a,
-    })) as AssistantWithAdditionalData[]
-
-    return shared
-      ? responseObj.filter((assistant) => assistant.shared === false)
-      : responseObj
-  } catch (error) {
     handleError('[ASSISTANT_ERROR]', error)
   }
 }

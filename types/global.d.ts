@@ -24,6 +24,7 @@ declare global {
   type AdditionalAssistantData = {
     openAiObj?: OpenAiAssistant | null
     username?: string
+    isOwner?: boolean
   }
 
   type AssistantWithAdditionalData = Assistant &
