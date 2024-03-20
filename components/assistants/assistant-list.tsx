@@ -6,7 +6,7 @@ interface AssistantListProps {
 
 const AssistantList = ({ assistants }: AssistantListProps) => {
   return (
-    <div className='flex gap-4 flex-wrap'>
+    <div className='flex gap-4 flex-wrap justify-center'>
       {assistants.map((assistant) => (
         <AssistantCard key={assistant.id} assistant={assistant} />
       ))}
