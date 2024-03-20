@@ -1,4 +1,5 @@
 import AssistantsForm from '@/components/assistants/assistant-form'
+import GetPremiumAlert from '@/components/get-premium-alert'
 import { checkSubscription } from '@/lib/subscription'
 const CreateAssistantPage = async () => {
   const isPremium = await checkSubscription()
@@ -10,8 +11,18 @@ const CreateAssistantPage = async () => {
         <p className=' mt-2 text-secondary-foreground/60'>
           Create your own custom AI assistant.
         </p>
+        {!isPremium && (
+          <GetPremiumAlert
+            className='mt-10'
+            text='Creating AI assistants is an exclusive feature available to our premium users. Upgrade your account today to unlock this powerful tool and supercharge your productivity!'
+          />
+        )}
       </div>
-      <AssistantsForm action='create' data={null} />
+      <AssistantsForm
+        action='create'
+        data={null}
+        isPremium={isPremium}
+      />
     </section>
   )
 }

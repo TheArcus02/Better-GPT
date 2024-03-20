@@ -3,6 +3,7 @@
 import { PlusSquare, Replace } from 'lucide-react'
 import { CldImage, CldUploadWidget } from 'next-cloudinary'
 import { toast } from './ui/use-toast'
+import { cn } from '@/lib/utils'
 
 interface ImageUploaderProps {
   onValueChange: (value: string) => void
@@ -56,7 +57,10 @@ const ImageUploader = ({
         publicId ? (
           <div
             onClick={() => open()}
-            className='aspect-square cursor-pointer relative mx-auto max-w-xs rounded-xl group'
+            className={cn(
+              'aspect-square cursor-pointer relative mx-auto max-w-xs rounded-xl group',
+              disabled && 'pointer-events-none',
+            )}
           >
             <div className='opacity-0 group-hover:opacity-100 transition-opacity ease-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center flex-col'>
               <Replace className='text-foreground' />
@@ -74,7 +78,10 @@ const ImageUploader = ({
         ) : (
           <div
             onClick={() => open()}
-            className='aspect-square cursor-pointer mx-auto max-w-xs rounded-xl border bg-secondary shadow-inner'
+            className={cn(
+              'aspect-square cursor-pointer mx-auto max-w-xs rounded-xl border bg-secondary shadow-inner',
+              disabled && 'pointer-events-none',
+            )}
           >
             <div className='flex items-center group justify-center flex-col h-full rounded-xl shadow-sm shadow-secondary'>
               <PlusSquare

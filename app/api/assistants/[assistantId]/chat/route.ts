@@ -1,5 +1,7 @@
 import { storeMessageInDb } from '@/lib/actions/assistant.action'
 import prisma from '@/lib/prismadb'
+import { checkCreatedAssistantMessages } from '@/lib/restrictions'
+import { checkSubscription } from '@/lib/subscription'
 import { getAuth } from '@clerk/nextjs/server'
 import { experimental_AssistantResponse } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
@@ -39,6 +41,16 @@ export async function POST(
 
     if (!threadId || !message) {
       return new NextResponse('Missing fields', { status: 400 })
+    }
+
+    if (
+      !(await checkSubscription(req)) &&
+      !(await checkCreatedAssistantMessages(req))
+    ) {
+      return new NextResponse(
+        'You have reached the limit of messages for your subscription',
+        { status: 403 },
+      )
     }
 
     const dbAssistant = await prisma.assistant.findUnique({

@@ -1,6 +1,7 @@
 import AssistantsForm from '@/components/assistants/assistant-form'
 import { Separator } from '@/components/ui/separator'
 import prisma from '@/lib/prismadb'
+import { checkSubscription } from '@/lib/subscription'
 import { Sliders } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import React from 'react'
@@ -22,6 +23,8 @@ const AssistantSettingsPage = async ({
     notFound()
   }
 
+  const isPremium = await checkSubscription()
+
   return (
     <div className='space-y-6'>
       <div>
@@ -34,7 +37,11 @@ const AssistantSettingsPage = async ({
         </p>
       </div>
       <Separator />
-      <AssistantsForm action='update' data={assistant} />
+      <AssistantsForm
+        action='update'
+        data={assistant}
+        isPremium={isPremium}
+      />
     </div>
   )
 }

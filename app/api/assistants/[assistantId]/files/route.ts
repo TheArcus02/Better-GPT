@@ -55,6 +55,12 @@ export async function POST(
       return new NextResponse('Missing file', { status: 400 })
     }
 
+    const maxFileSize = 10 * 1024 * 1024 // 10MB
+
+    if (file.size > maxFileSize) {
+      return new NextResponse('File is too large', { status: 400 })
+    }
+
     const openAiFile = await openai.files.create({
       file,
       purpose: 'assistants',

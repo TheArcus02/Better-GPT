@@ -28,6 +28,7 @@ import { Checkbox } from '../ui/checkbox'
 interface AssistantsFormProps {
   action: 'create' | 'update'
   data: Assistant | null
+  isPremium: boolean
 }
 
 const assistantsFormSchema = z.object({
@@ -46,7 +47,11 @@ const assistantsFormSchema = z.object({
 
 export type AssistantsFormType = z.infer<typeof assistantsFormSchema>
 
-const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
+const AssistantsForm = ({
+  action,
+  data,
+  isPremium,
+}: AssistantsFormProps) => {
   const [image, setImage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -145,7 +150,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             <FormItem>
               <FormControl>
                 <ImageUploader
-                  disabled={true}
+                  disabled={isSubmitting || !isPremium}
                   onValueChange={field.onChange}
                   setImage={setImage}
                   publicId={field.value}
@@ -163,7 +168,11 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder='Elon Musk' {...field} />
+                <Input
+                  placeholder='Elon Musk'
+                  {...field}
+                  disabled={isSubmitting || !isPremium}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -178,6 +187,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
+                  disabled={isSubmitting || !isPremium}
                   placeholder={
                     'This AI assistant is designed to mimic Elon Musk. It can answer questions, provide information, and engage in casual conversation.'
                   }
@@ -196,6 +206,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
               <FormLabel>Instructions</FormLabel>
               <FormControl>
                 <Textarea
+                  disabled={isSubmitting || !isPremium}
                   placeholder={`Familiarize yourself with Elon Musk's mannerisms, speech patterns, and notable characteristics through interviews, speeches, and articles.Aim to replicate Musk's casual yet articulate communication style. Use a mix of technical jargon and layman's terms to convey complex ideas simply...`}
                   {...field}
                 />
@@ -211,6 +222,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
             <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
               <FormControl>
                 <Checkbox
+                  disabled={isSubmitting || !isPremium}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -233,7 +245,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
           <Button
             variant='default'
             type='submit'
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isPremium}
           >
             {action === 'create'
               ? 'Create Assistant'
@@ -245,7 +257,7 @@ const AssistantsForm = ({ action, data }: AssistantsFormProps) => {
                 <Button
                   type='button'
                   variant='destructive'
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isPremium}
                 >
                   Delete Assistant
                 </Button>
