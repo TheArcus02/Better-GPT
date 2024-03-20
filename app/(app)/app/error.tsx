@@ -30,11 +30,12 @@ export default function Error({
         <CardHeader>
           <CardTitle>An unexpected error occurred.</CardTitle>
           <CardDescription>
-            {error.digest ? (
+            {error.digest && (
               <p>
                 Error ID: <strong>{error.digest}</strong>
               </p>
-            ) : null}
+            )}
+            {error.message || 'Something went wrong.'}
           </CardDescription>
         </CardHeader>
         <CardFooter className='space-x-3'>

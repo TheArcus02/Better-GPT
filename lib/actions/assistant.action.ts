@@ -2,9 +2,10 @@
 
 import { clerkClient, currentUser } from '@clerk/nextjs'
 import { getUsernameById, handleError } from '../utils'
-import OpenAI, { NotFoundError } from 'openai'
+import OpenAI, { NotFoundError as OpenAiNotFoundError } from 'openai'
 import prisma from '../prismadb'
 import { AssistantMessage } from '@prisma/client'
+import { NotFoundError, UnauthorizedError } from '../exceptions'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -28,7 +29,7 @@ export async function getAssistants({
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const assistants = await prisma.assistant.findMany({
@@ -98,7 +99,7 @@ export async function getAssistantById(id: string) {
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const dbAssistant = await prisma.assistant.findFirst({
@@ -108,7 +109,7 @@ export async function getAssistantById(id: string) {
     })
 
     if (!dbAssistant) {
-      throw new Error('Assistant not found')
+      throw new NotFoundError('Assistant not found')
     }
 
     const assistant = (await openai.beta.assistants.retrieve(
@@ -124,7 +125,10 @@ export async function getAssistantById(id: string) {
 
     return res
   } catch (error) {
-    if (error instanceof NotFoundError) {
+    if (
+      error instanceof OpenAiNotFoundError ||
+      error instanceof NotFoundError
+    ) {
       return null
     }
     handleError('[ASSISTANT_ERROR]', error)
@@ -136,7 +140,7 @@ export async function getAssistantFiles(assistantId: string) {
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const dbAssistant = await prisma.assistant.findFirst({
@@ -146,7 +150,7 @@ export async function getAssistantFiles(assistantId: string) {
     })
 
     if (!dbAssistant) {
-      throw new Error('Assistant not found')
+      throw new NotFoundError('Assistant not found')
     }
 
     const files = await openai.beta.assistants.files.list(
@@ -155,6 +159,12 @@ export async function getAssistantFiles(assistantId: string) {
 
     return files
   } catch (error) {
+    if (
+      error instanceof OpenAiNotFoundError ||
+      error instanceof NotFoundError
+    ) {
+      return null
+    }
     handleError('[ASSISTANT_ERROR]', error)
   }
 }
@@ -164,7 +174,7 @@ export async function getFilesDetailsList(fileIds: string[]) {
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const files = await Promise.all(
@@ -173,7 +183,7 @@ export async function getFilesDetailsList(fileIds: string[]) {
 
     return files
   } catch (error) {
-    if (error instanceof NotFoundError) {
+    if (error instanceof OpenAiNotFoundError) {
       return null
     }
     handleError('[ASSISTANT_ERROR]', error)
@@ -185,7 +195,7 @@ export async function getOrCreateThread() {
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const dbThread = await prisma.assistantThread.findFirst({
@@ -253,7 +263,7 @@ export async function storeMessageInDb({
     })
 
     if (!thread) {
-      throw new Error('Thread not found')
+      throw new NotFoundError('Thread not found')
     }
 
     const assistant = await prisma.assistant.findFirst({
@@ -263,7 +273,7 @@ export async function storeMessageInDb({
     })
 
     if (!assistant) {
-      throw new Error('Assistant not found')
+      throw new NotFoundError('Assistant not found')
     }
 
     const createdMessage = await prisma.assistantMessage.create({
@@ -287,6 +297,12 @@ export async function storeMessageInDb({
 
     return createdMessage
   } catch (error) {
+    if (
+      error instanceof NotFoundError ||
+      error instanceof OpenAiNotFoundError
+    ) {
+      return null
+    }
     handleError('[ASSISTANT_ERROR]', error)
   }
 }
@@ -299,7 +315,7 @@ export async function getAssistantMessages(
     const user = await currentUser()
 
     if (!user) {
-      throw new Error('Unauthorized')
+      throw new UnauthorizedError('Unauthorized')
     }
 
     const thread = await prisma.assistantThread.findFirst({
@@ -309,7 +325,7 @@ export async function getAssistantMessages(
     })
 
     if (!thread) {
-      throw new Error('Thread not found')
+      throw new NotFoundError('Thread not found')
     }
 
     const dbMessages = await prisma.assistantMessage.findMany({
@@ -334,6 +350,12 @@ export async function getAssistantMessages(
 
     return messages
   } catch (error) {
+    if (
+      error instanceof NotFoundError ||
+      error instanceof OpenAiNotFoundError
+    ) {
+      return null
+    }
     handleError('[ASSISTANT_ERROR]', error)
   }
 }
