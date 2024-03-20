@@ -66,8 +66,8 @@ const AssistantChat = ({
 
   return (
     <Dialog>
-      <div className='flex flex-col h-full max-w-6xl mx-auto w-full overflow-auto'>
-        <div className='flex items-center justify-between'>
+      <div className='flex flex-col h-full max-w-6xl mx-auto w-full overflow-auto border-x'>
+        <div className='flex items-center justify-between border-b py-4 px-2'>
           <div className='flex items-center space-x-3'>
             <Button
               variant='ghost'

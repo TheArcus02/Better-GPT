@@ -53,12 +53,14 @@ const AssistantChatPage = async ({
   }))
 
   return (
-    <AssistantChat
-      assistant={assistant}
-      threadId={thread.id}
-      createdBy={createdBy}
-      initialMessages={mappedMessages}
-    />
+    <div className='h-full border-t'>
+      <AssistantChat
+        assistant={assistant}
+        threadId={thread.id}
+        createdBy={createdBy}
+        initialMessages={mappedMessages}
+      />
+    </div>
   )
 }
 
