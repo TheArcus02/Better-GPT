@@ -22,7 +22,7 @@ import { useRouter } from 'next/navigation'
 import { Dialog } from '../ui/dialog'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import NewChatDialog from './new-chat-dialog'
-import CustomAlertDialog from './custom-alert-dialog'
+import CustomAlertDialog from '../custom-alert-dialog'
 
 interface ChatFolderProps {
   name: string

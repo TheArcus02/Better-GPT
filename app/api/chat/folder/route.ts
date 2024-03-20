@@ -1,6 +1,7 @@
 import prismadb from '@/lib/prismadb'
 import { checkCreatedFolders } from '@/lib/restrictions'
 import { checkSubscription } from '@/lib/subscription'
+import { isInvalidUsername } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs'
 import { NextResponse } from 'next/server'
 
@@ -9,16 +10,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const user = await currentUser()
     const { name } = body
-    if (
-      !user ||
-      !user.id ||
-      !(
-        user.firstName ||
-        user.lastName ||
-        user.username ||
-        user.emailAddresses[0].emailAddress
-      )
-    ) {
+    if (!user || isInvalidUsername(user)) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

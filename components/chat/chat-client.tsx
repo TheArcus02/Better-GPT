@@ -175,7 +175,6 @@ const ChatClient: React.FC<ChatClientProps> = ({
           onSubmit={handleSubmit}
           isLoading={isLoading}
           btnDisabled={btnDisabled}
-          isPremium={isPremium}
           chatModel={chat.model as ChatModel}
         />
       </div>

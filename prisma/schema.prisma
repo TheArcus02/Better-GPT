@@ -42,6 +42,7 @@ model Chat {
 enum Role {
   user
   system
+  assistant
 }
 
 model Message {
@@ -85,4 +86,53 @@ model UserSubscription{
   stripeSubscriptionId    String?      @unique @map(name: "stripe_subscription_id")
   stripePriceId           String?      @unique @map(name: "stripe_price_id")
   stripeCurrentPeriodEnd  DateTime?      @unique @map(name: "stripe_current_period_end")
+}
+
+model Assistant {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  openaiId       String      @unique
+  userId         String
+
+  name           String
+  description    String
+  model          String
+  instructions   String
+
+  imagePublicId  String
+  shared         Boolean     @default(false)
+  messages       AssistantMessage[]
+  fileIds        String[]
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model AssistantMessage {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  openaiId       String      @unique
+  role           Role
+  content        String
+  
+  userId         String
+  assistantId    String      @db.ObjectId
+  threadId       String      @db.ObjectId
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  assistant      Assistant   @relation(fields: [assistantId], references: [id], onDelete: Cascade)
+  thread         AssistantThread      @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([assistantId])
+}
+
+model AssistantThread {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  openaiId       String      @unique
+  userId         String
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  messages       AssistantMessage[]
 }

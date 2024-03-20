@@ -1,5 +1,7 @@
+'use client'
+
 import { cn } from '@/lib/utils'
-import { Button } from '../ui/button'
+import { Button, buttonVariants } from '../ui/button'
 import { Copy, Save } from 'lucide-react'
 import { Avatar, AvatarImage } from '../ui/avatar'
 import { toast } from '../ui/use-toast'
@@ -24,6 +26,7 @@ export interface ChatMessageProps {
   createdAt?: Date
   updatedAt?: Date
   model: ChatModel
+  avatarSrc?: string
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -36,6 +39,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   createdAt,
   updatedAt,
   model,
+  avatarSrc,
 }) => {
   const { theme } = useTheme()
 
@@ -70,7 +74,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     >
       {role !== 'user' && (
         <Avatar className='hidden sm:block'>
-          <AvatarImage src={getImagePath(model)} />
+          <AvatarImage src={avatarSrc || getImagePath(model)} />
         </Avatar>
       )}
       <div
@@ -165,15 +169,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       </div>
       {role !== 'user' && (
         <Tooltip>
-          <TooltipTrigger>
-            <Button
-              onClick={() => onCopy(content)}
-              className='hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition '
-              size='icon'
-              variant='ghost'
-            >
-              <Copy className='w-4 h-4' />
-            </Button>
+          <TooltipTrigger
+            className={buttonVariants({
+              variant: 'ghost',
+              size: 'icon',
+              className:
+                'hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition',
+            })}
+            onClick={() => onCopy(content)}
+          >
+            <Copy className='w-4 h-4' />
           </TooltipTrigger>
           <TooltipContent>Copy to clipboard</TooltipContent>
         </Tooltip>

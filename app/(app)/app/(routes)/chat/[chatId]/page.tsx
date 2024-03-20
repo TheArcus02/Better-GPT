@@ -1,5 +1,4 @@
 import ChatClient from '@/components/chat/chat-client'
-import { toast } from '@/components/ui/use-toast'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { auth, redirectToSignIn } from '@clerk/nextjs'
@@ -32,11 +31,6 @@ const getChatData = async (chatId: string, userId: string) => {
     })
     return chat
   } catch (error) {
-    toast({
-      variant: 'destructive',
-      description: 'Chat not found',
-      duration: 3000,
-    })
     console.error(error)
     return null
   }
@@ -88,20 +82,10 @@ const ChatPage: React.FC<ChatPageProps> = async ({
   const chat = await getChatData(chatId, userId)
 
   if (!chat) {
-    toast({
-      variant: 'destructive',
-      description: 'Chat not found',
-      duration: 3000,
-    })
     return redirect('/app/chat')
   }
 
   if (chat.userId !== userId) {
-    toast({
-      variant: 'destructive',
-      description: 'Chat not found',
-      duration: 3000,
-    })
     return redirect('/app/chat')
   }
 

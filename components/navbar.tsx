@@ -13,6 +13,7 @@ import {
   Languages,
   Settings,
   Sparkles,
+  Bot,
 } from 'lucide-react'
 import { Poppins } from 'next/font/google'
 import Link from 'next/link'
@@ -82,6 +83,40 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
       icon: MessagesSquare,
       href: '/app/chat',
       label: 'Chat',
+    },
+    {
+      icon: Bot,
+      href: '/app/assistants',
+      label: 'Assistants',
+      subRoutes: [
+        {
+          titleRoute: true,
+          icon: Bot,
+          href: '/app/assistants',
+          label: 'Assistants',
+          description:
+            'Browse and use AI assistants created by the community.',
+        },
+        {
+          icon: null,
+          href: '/app/assistants',
+          label: 'Assistants Market',
+          description:
+            'Browse and use AI assistants created by the community.',
+        },
+        {
+          icon: null,
+          href: `/app/assistants/user/${user?.id}`,
+          label: 'Your Assistants',
+          description: 'View and manage your AI assistants.',
+        },
+        {
+          icon: null,
+          href: '/app/assistants/create',
+          label: 'Create Assistant',
+          description: 'Create a new AI assistant.',
+        },
+      ],
     },
     {
       icon: Image,
@@ -189,46 +224,43 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
                       {route.label}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent className='bg-secondary'>
-                      {
-                        <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
-                          {route.subRoutes.map((subRoute) =>
-                            subRoute.titleRoute ? (
-                              <li
-                                className='row-span-3'
-                                key={
-                                  subRoute.label +
-                                  subRoute.description
-                                }
-                              >
-                                <NavigationMenuLink asChild>
-                                  <a
-                                    className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/50 to-primary p-6 no-underline outline-none focus:shadow-md'
-                                    href='/'
-                                  >
-                                    {subRoute.icon && (
-                                      <subRoute.icon className='h-6 w-6' />
-                                    )}
-                                    <div className='mb-2 mt-4 text-lg font-medium'>
-                                      {subRoute.label}
-                                    </div>
-                                    <p className='text-sm leading-tight text-primary-foreground/70'>
-                                      {subRoute.description}
-                                    </p>
-                                  </a>
-                                </NavigationMenuLink>
-                              </li>
-                            ) : (
-                              <ListItem
-                                key={subRoute.label}
-                                title={subRoute.label}
-                                href={subRoute.href}
-                              >
-                                {subRoute.description}
-                              </ListItem>
-                            ),
-                          )}
-                        </ul>
-                      }
+                      <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+                        {route.subRoutes.map((subRoute) =>
+                          subRoute.titleRoute ? (
+                            <li
+                              className='row-span-3'
+                              key={
+                                subRoute.label + subRoute.description
+                              }
+                            >
+                              <NavigationMenuLink asChild>
+                                <a
+                                  className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/50 to-primary p-6 no-underline outline-none focus:shadow-md'
+                                  href={subRoute.href}
+                                >
+                                  {subRoute.icon && (
+                                    <subRoute.icon className='h-6 w-6' />
+                                  )}
+                                  <div className='mb-2 mt-4 text-lg font-medium'>
+                                    {subRoute.label}
+                                  </div>
+                                  <p className='text-sm leading-tight text-primary-foreground/70'>
+                                    {subRoute.description}
+                                  </p>
+                                </a>
+                              </NavigationMenuLink>
+                            </li>
+                          ) : (
+                            <ListItem
+                              key={subRoute.label}
+                              title={subRoute.label}
+                              href={subRoute.href}
+                            >
+                              {subRoute.description}
+                            </ListItem>
+                          ),
+                        )}
+                      </ul>
                     </NavigationMenuContent>
                   </>
                 ) : (

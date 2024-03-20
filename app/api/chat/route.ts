@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedChats } from '@/lib/restrictions'
+import { isInvalidUsername } from '@/lib/utils'
 
 export async function POST(req: Request) {
   try {
@@ -14,16 +15,7 @@ export async function POST(req: Request) {
       model: ChatModel
     }
 
-    if (
-      !user ||
-      !user.id ||
-      !(
-        user.firstName ||
-        user.lastName ||
-        user.username ||
-        user.emailAddresses[0].emailAddress
-      )
-    ) {
+    if (!user || isInvalidUsername(user)) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 

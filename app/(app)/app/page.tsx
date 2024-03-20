@@ -63,15 +63,15 @@ const AppPage = () => {
           features that are available to you.
         </p>
       </div>
-      <div className='mt-6 grid grid-cols-1 md:grid-cols-3 gap-3'>
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 pb-10 md:pb-0'>
         {routes.map((route, idx) => (
           <Link
             key={route.href}
             href={route.href}
             className={cn(
               'block',
-              idx === 0 && 'col-span-2',
-              idx === 1 && 'row-span-2',
+              idx === 0 && 'md:col-span-2',
+              idx === 1 && 'md:row-span-2',
             )}
           >
             <Card className='bg-secondary w-full h-full transition-colors ease-in-out duration-500 hover:border-accent'>

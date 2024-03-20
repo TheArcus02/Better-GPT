@@ -77,3 +77,25 @@ export const checkCreatedImages = async (req?: NextRequest) => {
 
   return !(createdImages >= 10)
 }
+
+export const checkCreatedAssistantMessages = async (
+  req?: NextRequest,
+) => {
+  let userId
+
+  if (req) {
+    const { userId: userIdFromReq } = getAuth(req)
+    userId = userIdFromReq
+  } else {
+    userId = auth().userId
+  }
+
+  if (!userId) return false
+
+  const createdAssistantMessages =
+    await prismadb.assistantMessage.count({
+      where: { userId },
+    })
+
+  return !(createdAssistantMessages >= 20)
+}
