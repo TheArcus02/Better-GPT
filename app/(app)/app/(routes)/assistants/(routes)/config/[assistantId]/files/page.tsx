@@ -1,6 +1,5 @@
 import AssistantFilesLayout from '@/components/assistants/assistant-files-layout'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/use-toast'
 import {
   getAssistantFiles,
   getFilesDetailsList,
@@ -19,11 +18,6 @@ const AssistantFilesPage = async ({
   try {
     assistantFiles = await getAssistantFiles(assistantId)
   } catch (error: any) {
-    toast({
-      title: 'Error',
-      description: error,
-      variant: 'destructive',
-    })
     redirect('/app/assistants')
   }
 

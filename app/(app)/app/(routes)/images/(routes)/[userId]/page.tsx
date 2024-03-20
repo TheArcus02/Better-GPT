@@ -1,5 +1,4 @@
 import Galery from '@/components/images/galery'
-import { toast } from '@/components/ui/use-toast'
 import prismadb from '@/lib/prismadb'
 import { getUsername } from '@/lib/utils'
 import { auth, clerkClient } from '@clerk/nextjs'
@@ -31,11 +30,6 @@ const getUserData = async (userId: string) => {
       username,
     }
   } catch (error) {
-    toast({
-      variant: 'destructive',
-      description: 'User not found',
-      duration: 3000,
-    })
     console.error(error)
     return null
   }

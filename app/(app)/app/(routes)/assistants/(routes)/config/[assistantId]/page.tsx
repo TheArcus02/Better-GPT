@@ -1,9 +1,7 @@
 import CldImage from '@/components/cloudinary-image-wrapper'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/use-toast'
 import { getAssistantById } from '@/lib/actions/assistant.action'
-import prisma from '@/lib/prismadb'
 import {
   Bot,
   Braces,
@@ -25,11 +23,6 @@ const AssistantConfigInfoPage = async ({
   try {
     assistant = await getAssistantById(assistantId)
   } catch (error: any) {
-    toast({
-      title: 'Error',
-      description: error,
-      variant: 'destructive',
-    })
     redirect('/app/assistants')
   }
 

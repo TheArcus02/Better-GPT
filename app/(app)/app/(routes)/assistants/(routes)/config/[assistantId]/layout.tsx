@@ -1,8 +1,6 @@
 import SidebarNav from '@/components/sidebar-nav'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/components/ui/use-toast'
 import { getAssistantById } from '@/lib/actions/assistant.action'
-import prisma from '@/lib/prismadb'
 import { auth } from '@clerk/nextjs'
 import { notFound, redirect } from 'next/navigation'
 
@@ -24,11 +22,6 @@ const AssistantConfigLayout = async ({
   try {
     assistant = await getAssistantById(assistantId)
   } catch (error: any) {
-    toast({
-      title: 'Error',
-      description: error,
-      variant: 'destructive',
-    })
     redirect('/app/assistants')
   }
 
@@ -37,11 +30,6 @@ const AssistantConfigLayout = async ({
   }
 
   if (assistant.userId !== userId) {
-    toast({
-      variant: 'destructive',
-      description: 'Only the owner can access this page',
-      duration: 3000,
-    })
     redirect('/app/assistants')
   }
 

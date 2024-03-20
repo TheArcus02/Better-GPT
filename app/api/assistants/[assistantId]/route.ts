@@ -12,13 +12,16 @@ const openai = new OpenAI({
 
 const model = 'gpt-3.5-turbo-0125'
 
-export async function GET({
-  params: { assistantId },
-}: {
-  params: {
-    assistantId: string
-  }
-}) {
+export async function GET(
+  req: NextRequest,
+  {
+    params: { assistantId },
+  }: {
+    params: {
+      assistantId: string
+    }
+  },
+) {
   try {
     const user = await currentUser()
 
