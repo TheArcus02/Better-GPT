@@ -38,7 +38,7 @@ const AssistantChatPage = async ({
     thread.id,
   )
 
-  if (initialMessages === undefined) {
+  if (!initialMessages) {
     return notFound()
   }
 
