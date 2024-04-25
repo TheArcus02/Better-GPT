@@ -1,11 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
+import {
+  Message as VercelChatMessage,
+  OpenAIStream,
+  StreamingTextResponse,
+} from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedMessages } from '@/lib/restrictions'
 import { getAuth } from '@clerk/nextjs/server'
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
+import { ChatOpenAI } from '@langchain/openai'
+import {
+  AIMessage,
+  ChatMessage,
+  HumanMessage,
+} from '@langchain/core/messages'
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from '@langchain/core/prompts'
+import { SerpAPI } from '@langchain/community/tools/serpapi'
+import { Calculator } from '@langchain/community/tools/calculator'
+import {
+  AgentExecutor,
+  createToolCallingAgent,
+} from 'langchain/agents'
 
 export const runtime = 'edge'
 
@@ -17,6 +36,20 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+const convertVercelMessageToLangChainMessage = (
+  message: VercelChatMessage,
+) => {
+  if (message.role === 'user') {
+    return new HumanMessage(message.content)
+  } else if (message.role === 'assistant') {
+    return new AIMessage(message.content)
+  } else {
+    return new ChatMessage(message.content, message.role)
+  }
+}
+
+const promptTemplate = `You are general purpose assistant. answer questions, provide information, and help with tasks`
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { chatId: string } },
@@ -26,7 +59,7 @@ export async function POST(
 
     const body = await req.json()
     const { messages, model } = body as {
-      messages: ChatCompletionMessageParam[]
+      messages: VercelChatMessage[]
       model: ChatModel
     }
 
@@ -55,14 +88,16 @@ export async function POST(
       }
     }
 
-    const lastUserMessage = messages
-      .slice()
-      .reverse()
-      .find((message) => message.role === 'user')?.content
+    const filteredMessages = messages.filter(
+      (message: VercelChatMessage) =>
+        message.role === 'user' || message.role === 'assistant',
+    )
+    const prevMessages = filteredMessages
+      .slice(0, -1)
+      .map(convertVercelMessageToLangChainMessage)
 
-    if (!lastUserMessage) {
-      return new NextResponse('Missing message', { status: 400 })
-    }
+    const currentMessageContent =
+      filteredMessages[filteredMessages.length - 1].content
     const chat = await prismadb.chat.update({
       where: {
         id: params.chatId,
@@ -70,7 +105,7 @@ export async function POST(
       data: {
         messages: {
           create: {
-            content: lastUserMessage as string,
+            content: currentMessageContent,
             role: 'user',
             userId: userId,
           },
@@ -82,32 +117,81 @@ export async function POST(
       return new NextResponse('Chat not found', { status: 404 })
     }
 
-    const response = await openai.chat.completions.create({
+    const tools = [new Calculator(), new SerpAPI()]
+
+    const llm = new ChatOpenAI({
       model: model,
-      messages,
-      stream: true,
+      temperature: 0,
+      streaming: true,
     })
 
-    const stream = OpenAIStream(response, {
-      onCompletion: async (data) => {
-        await prismadb.chat.update({
-          where: {
-            id: params.chatId,
-          },
-          data: {
-            messages: {
-              create: {
-                content: data,
-                role: 'system',
-                userId: userId,
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', promptTemplate],
+      new MessagesPlaceholder('chat_history'),
+      ['human', '{input}'],
+      new MessagesPlaceholder('agent_scratchpad'),
+    ])
+
+    const agent = await createToolCallingAgent({
+      llm,
+      tools,
+      prompt,
+    })
+
+    const agentExecutor = new AgentExecutor({
+      agent,
+      tools,
+      returnIntermediateSteps: false,
+    })
+
+    const logStream = await agentExecutor.streamLog({
+      input: currentMessageContent,
+      chat_history: prevMessages,
+    })
+
+    const textEncoder = new TextEncoder()
+
+    let resData = ''
+
+    const transformStream = new ReadableStream({
+      async start(controller) {
+        for await (const chunk of logStream) {
+          if (chunk.ops?.length > 0 && chunk.ops[0].op === 'add') {
+            const addOp = chunk.ops[0]
+            if (
+              addOp.path.startsWith('/logs/ChatOpenAI') &&
+              typeof addOp.value === 'string' &&
+              addOp.value.length
+            ) {
+              controller.enqueue(textEncoder.encode(addOp.value))
+              resData += addOp.value
+            }
+          }
+        }
+        controller.close()
+
+        if (controller.desiredSize === 0) {
+          // The stream has been consumed
+          // Save the response to the database
+          await prismadb.chat.update({
+            where: {
+              id: params.chatId,
+            },
+            data: {
+              messages: {
+                create: {
+                  content: resData,
+                  role: 'assistant',
+                  userId: userId,
+                },
               },
             },
-          },
-        })
+          })
+        }
       },
     })
 
-    return new StreamingTextResponse(stream)
+    return new StreamingTextResponse(transformStream)
   } catch (error) {
     console.log('[CHAT_ERROR/[CHAT_ID]]', error)
     if (error instanceof OpenAI.APIError) {
