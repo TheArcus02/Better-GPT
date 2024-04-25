@@ -1,20 +1,16 @@
 'use client'
 
-import { cn } from '@/lib/utils'
-import { Button, buttonVariants } from '../ui/button'
-import { Copy, Save } from 'lucide-react'
+import { cn, copyToClipboard } from '@/lib/utils'
+import { buttonVariants } from '../ui/button'
+import { Copy } from 'lucide-react'
 import { Avatar, AvatarImage } from '../ui/avatar'
-import { toast } from '../ui/use-toast'
 import { BeatLoader } from 'react-spinners'
 import { useTheme } from 'next-themes'
-import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import {
-  atomDark,
-  oneLight,
-} from 'react-syntax-highlighter/dist/esm/styles/prism'
+
 import { Tooltip, TooltipContent } from '../ui/tooltip'
 import { TooltipTrigger } from '@radix-ui/react-tooltip'
+import MessageWrapper from '../message-wrapper'
+import { memo } from 'react'
 
 export interface ChatMessageProps {
   content: string
@@ -53,18 +49,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     }
   }
 
-  const onCopy = (content: string) => {
-    if (!content) {
-      return
-    }
-
-    navigator.clipboard.writeText(content)
-    toast({
-      description: 'Copied to clipboard',
-      duration: 3000,
-    })
-  }
-
   return (
     <div
       className={cn(
@@ -91,80 +75,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             size={5}
           />
         ) : (
-          <ReactMarkdown
-            components={{
-              pre: ({ node, ...props }) => (
-                <div className=' w-full my-2 '>
-                  <pre
-                    {...props}
-                    className='whitespace-pre-wrap rounded-md'
-                  />
-                </div>
-              ),
-              code: ({
-                node,
-                inline,
-                className,
-                children,
-                ...props
-              }) => {
-                const match = /language-(\w+)/.exec(className || '')
-                return !inline && match ? (
-                  <>
-                    <div className='py-2 rounded-t-md w-full bg-secondary flex items-center justify-between'>
-                      <span className='ml-3 text-muted-foreground text-sm'>
-                        {className?.split('-')[1]}
-                      </span>
-                      <button
-                        className='flex items-center text-sm text-muted-foreground mr-3 hover:text-primary-foreground transition'
-                        onClick={() =>
-                          onCopy(String(children).replace(/\n$/, ''))
-                        }
-                      >
-                        <Save className='w-4 h-4 mr-1' />
-                        Copy code
-                      </button>
-                    </div>
-
-                    <SyntaxHighlighter
-                      {...props}
-                      // eslint-disable-next-line react/no-children-prop
-                      children={String(children).replace(/\n$/, '')}
-                      style={theme === 'light' ? oneLight : atomDark}
-                      language={match[1]}
-                      PreTag='div'
-                      customStyle={{
-                        margin: '0',
-                        borderRadius: '0',
-                        borderBottomLeftRadius:
-                          'calc(var(--radius) - 2px)',
-                        borderBottomRightRadius:
-                          'calc(var(--radius) - 2px)',
-                      }}
-                    />
-                  </>
-                ) : (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                )
-              },
-              ul: ({ node, ordered, className, ...props }) => (
-                <ul className='list-disc space-y-2 py-2' {...props} />
-              ),
-              ol: ({ node, ordered, className, ...props }) => (
-                <ol
-                  className='list-decimal space-y-2 py-2'
-                  {...props}
-                />
-              ),
-              li: ({ node, className, ...props }) => (
-                <li className='ml-4' {...props} />
-              ),
-            }}
-          >
-            {content}
-          </ReactMarkdown>
+          <MessageWrapper content={content} />
         )}
       </div>
       {role !== 'user' && (
@@ -176,7 +87,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               className:
                 'hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition',
             })}
-            onClick={() => onCopy(content)}
+            onClick={() => copyToClipboard(content)}
           >
             <Copy className='w-4 h-4' />
           </TooltipTrigger>
@@ -187,4 +98,4 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   )
 }
 
-export default ChatMessage
+export default memo(ChatMessage)

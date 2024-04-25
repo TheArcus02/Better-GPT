@@ -1,3 +1,4 @@
+import { toast } from '@/components/ui/use-toast'
 import { clerkClient } from '@clerk/nextjs'
 import { User } from '@clerk/nextjs/server'
 import { type ClassValue, clsx } from 'clsx'
@@ -69,5 +70,14 @@ export function convertUnixTimestamp(timestamp: number) {
   return new Date(timestamp * 1000).toLocaleString(undefined, {
     dateStyle: 'short',
     timeStyle: 'short',
+  })
+}
+
+export function copyToClipboard(content: string) {
+  if (!content) return
+  navigator.clipboard.writeText(content)
+  toast({
+    description: 'Copied to clipboard',
+    duration: 3000,
   })
 }

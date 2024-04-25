@@ -8,8 +8,6 @@ import {
 } from '../ui/context-menu'
 import ChatFolder from './chat-folder'
 import { Chat, Folder } from '@prisma/client'
-import { Dialog } from '../ui/dialog'
-import { DialogTrigger } from '@radix-ui/react-dialog'
 import NewChatDialog from './new-chat-dialog'
 import { useState } from 'react'
 import NewFolderDialog from './new-folder-dialog'

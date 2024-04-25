@@ -19,7 +19,6 @@ import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
-import { Dialog } from '../ui/dialog'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import NewChatDialog from './new-chat-dialog'
 import CustomAlertDialog from '../custom-alert-dialog'
@@ -93,15 +92,11 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 
   useEffect(() => {
     if (isEditMode) {
-      const UpdateFolderName = async (newName: string) => {
+      const updateFolderName = async (newName: string) => {
         try {
           setFolderName(newName)
           await axios.patch(`/api/chat/folder/${id}`, {
             name: newName,
-          })
-          toast({
-            description: 'Folder name updated',
-            duration: 3000,
           })
         } catch (error) {
           setFolderName(name)
@@ -121,7 +116,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
           setFolderName(name)
           setIsEditMode(false)
         } else if (e.key === 'Enter') {
-          UpdateFolderName(folderName)
+          updateFolderName(folderName)
           setIsEditMode(false)
         }
       }
@@ -132,7 +127,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
           !cilckableRef.current.contains(e.target as Node)
         ) {
           if (folderName !== name) {
-            UpdateFolderName(folderName)
+            updateFolderName(folderName)
           }
           setIsEditMode(false)
         }
