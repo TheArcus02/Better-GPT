@@ -1,4 +1,5 @@
 import {
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -22,6 +23,7 @@ import { toast } from '../ui/use-toast'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
 
 const NewFolderFormValidator = z.object({
   name: z
@@ -33,7 +35,15 @@ export type NewFolderFormValidatorType = z.infer<
   typeof NewFolderFormValidator
 >
 
-const NewFolderDialog = () => {
+interface NewFolderDialogProps extends DialogPrimitive.DialogProps {}
+
+const NewFolderDialog = ({
+  open,
+  onOpenChange,
+  defaultOpen,
+  modal,
+  children,
+}: NewFolderDialogProps) => {
   const [isAdding, setIsAdding] = useState(false)
 
   const router = useRouter()
@@ -52,6 +62,9 @@ const NewFolderDialog = () => {
         description: 'Folder created successfully',
         duration: 3000,
       })
+      if (onOpenChange) {
+        onOpenChange(false)
+      }
     } catch (error) {
       console.error(error)
       if (error instanceof AxiosError) {
@@ -76,36 +89,44 @@ const NewFolderDialog = () => {
   }
 
   return (
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>New Folder</DialogTitle>
-        <DialogDescription>Create new folder</DialogDescription>
-      </DialogHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='grid gap-4 py-4'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-4'>
-                  <FormLabel className='text-right'>Name</FormLabel>
-                  <FormControl className='col-span-3'>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage className='col-span-4 text-center' />
-                </FormItem>
-              )}
-            />
-          </div>
-          <DialogFooter>
-            <Button type='submit' disabled={isAdding}>
-              Create
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </DialogContent>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      defaultOpen={defaultOpen}
+      modal={modal}
+    >
+      {children}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New Folder</DialogTitle>
+          <DialogDescription>Create new folder</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='grid gap-4 py-4'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-4 items-center gap-4'>
+                    <FormLabel className='text-right'>Name</FormLabel>
+                    <FormControl className='col-span-3'>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage className='col-span-4 text-center' />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter>
+              <Button type='submit' disabled={isAdding}>
+                Create
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -13,7 +13,6 @@ import NewChatDialog from './new-chat-dialog'
 import NewFolderDialog from './new-folder-dialog'
 import { Chat, Folder } from '@prisma/client'
 import { DialogTrigger } from '@radix-ui/react-dialog'
-import { Dialog } from '../ui/dialog'
 import {
   Tooltip,
   TooltipContent,
@@ -43,7 +42,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   folders,
   isPremium,
 }) => {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isPanelOpen, setIsPanelOpen] = useState(true)
+  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false)
+  const [isChatDialogOpen, setIsChatDialogOpen] = useState(false)
+
   const tabsState = useStore(useTabsStore, (state) => state)
 
   const router = useRouter()
@@ -56,8 +58,16 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleOpen = () => {
-    setIsOpen((prev) => !prev)
+  const handlePanelChange = () => {
+    setIsPanelOpen((prev) => !prev)
+  }
+
+  const handleFolderDialogChange = (open: boolean) => {
+    setIsFolderDialogOpen(open)
+  }
+
+  const handleChatDialogChange = (open: boolean) => {
+    setIsChatDialogOpen(open)
   }
 
   return (
@@ -66,33 +76,38 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         <Button
           variant='ghost'
           size='icon'
-          onClick={handleOpen}
+          onClick={handlePanelChange}
           className='hidden md:flex'
         >
-          {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
+          {isPanelOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
         </Button>
-        {isOpen && <h1 className='text-2xl font-bold'>Chats</h1>}
+        {isPanelOpen && <h1 className='text-2xl font-bold'>Chats</h1>}
       </div>
-      {isOpen && (
+      {isPanelOpen && (
         <>
           <div className='flex gap-3 min-w-max px-4'>
             {folders.length !== 0 && (
-              <Dialog>
+              <NewChatDialog
+                folders={folders}
+                isPremium={isPremium}
+                open={isChatDialogOpen}
+                onOpenChange={handleChatDialogChange}
+              >
                 <DialogTrigger>
                   <Button>
                     <MessageSquarePlus size={24} className='mr-2' />
                     New Chat
                   </Button>
                 </DialogTrigger>
-                <NewChatDialog
-                  folders={folders}
-                  isPremium={isPremium}
-                />
-              </Dialog>
+              </NewChatDialog>
             )}
 
             <Tooltip>
-              <Dialog>
+              <NewFolderDialog
+                open={isFolderDialogOpen}
+                onOpenChange={handleFolderDialogChange}
+                defaultOpen={folders.length === 0}
+              >
                 <TooltipTrigger>
                   <DialogTrigger>
                     <Button variant='outline' className='w-full'>
@@ -105,8 +120,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>New folder</TooltipContent>
-                <NewFolderDialog />
-              </Dialog>
+              </NewFolderDialog>
             </Tooltip>
           </div>
 

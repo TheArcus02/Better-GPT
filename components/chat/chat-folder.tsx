@@ -19,7 +19,6 @@ import { AlertDialog, AlertDialogTrigger } from '../ui/alert-dialog'
 import axios from 'axios'
 import { toast } from '../ui/use-toast'
 import { useRouter } from 'next/navigation'
-import { Dialog } from '../ui/dialog'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import NewChatDialog from './new-chat-dialog'
 import CustomAlertDialog from '../custom-alert-dialog'
@@ -43,25 +42,29 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
   id,
   isPremium,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isFolderOpen, setIsFolderOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
-  const cilckableRef = useRef<HTMLDivElement>(null)
   const [folderName, setFolderName] = useState(name)
+  const [isChatDialogOpen, setIsChatDialogOpen] = useState(false)
 
+  const cilckableRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  const handleOpen = () => {
+  const handleOpenFolder = () => {
     if (isEditMode) return
-    setIsOpen((prev) => !prev)
+    setIsFolderOpen((prev) => !prev)
   }
 
-  const handleChangeEditMode = () => {
+  const handleEditModeChange = () => {
     setIsEditMode((prev) => !prev)
   }
 
   const handleAddNewChat = () => {
-    setIsOpen(true)
-    // TODO: add new chat with api
+    setIsFolderOpen(true)
+  }
+
+  const handleChatDialogChange = (open: boolean) => {
+    setIsChatDialogOpen(open)
   }
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -89,15 +92,11 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 
   useEffect(() => {
     if (isEditMode) {
-      const UpdateFolderName = async (newName: string) => {
+      const updateFolderName = async (newName: string) => {
         try {
           setFolderName(newName)
           await axios.patch(`/api/chat/folder/${id}`, {
             name: newName,
-          })
-          toast({
-            description: 'Folder name updated',
-            duration: 3000,
           })
         } catch (error) {
           setFolderName(name)
@@ -117,7 +116,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
           setFolderName(name)
           setIsEditMode(false)
         } else if (e.key === 'Enter') {
-          UpdateFolderName(folderName)
+          updateFolderName(folderName)
           setIsEditMode(false)
         }
       }
@@ -128,7 +127,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
           !cilckableRef.current.contains(e.target as Node)
         ) {
           if (folderName !== name) {
-            UpdateFolderName(folderName)
+            updateFolderName(folderName)
           }
           setIsEditMode(false)
         }
@@ -146,16 +145,21 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      <Dialog>
+      <NewChatDialog
+        folders={[{ id, name }]}
+        isPremium={isPremium}
+        open={isChatDialogOpen}
+        onOpenChange={handleChatDialogChange}
+      >
         <AlertDialog>
           <ContextMenu>
             <ContextMenuTrigger>
               <div
                 className='flex gap-2 items-center hover:bg-muted-foreground/20 transition-colors cursor-pointer px-3 py-1'
-                onClick={handleOpen}
+                onClick={handleOpenFolder}
                 ref={cilckableRef}
               >
-                {isOpen ? (
+                {isFolderOpen ? (
                   <ChevronDown size={24} />
                 ) : (
                   <ChevronRight size={24} />
@@ -188,7 +192,7 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
                   <MessageSquarePlus className='mr-2' /> New Chat
                 </ContextMenuItem>
               </DialogTrigger>
-              <ContextMenuItem onClick={handleChangeEditMode}>
+              <ContextMenuItem onClick={handleEditModeChange}>
                 <FolderEdit className='mr-2' />
                 Rename
               </ContextMenuItem>
@@ -206,16 +210,12 @@ const ChatFolder: React.FC<ChatFolderProps> = ({
 folder and all chats inside from our server.'
             handleDelete={handleDelete}
           />
-          <NewChatDialog
-            folders={[{ id, name }]}
-            isPremium={isPremium}
-          />
         </AlertDialog>
-      </Dialog>
+      </NewChatDialog>
 
       {/* Chats */}
       {chats.length !== 0 &&
-        isOpen &&
+        isFolderOpen &&
         chats.map((chat) => (
           <ChatFile
             key={chat.id}

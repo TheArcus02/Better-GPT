@@ -8,8 +8,6 @@ import {
 } from '../ui/context-menu'
 import ChatFolder from './chat-folder'
 import { Chat, Folder } from '@prisma/client'
-import { Dialog } from '../ui/dialog'
-import { DialogTrigger } from '@radix-ui/react-dialog'
 import NewChatDialog from './new-chat-dialog'
 import { useState } from 'react'
 import NewFolderDialog from './new-folder-dialog'
@@ -32,60 +30,66 @@ const ChatFolders: React.FC<ChatFoldersProps> = ({
   folders,
   isPremium,
 }) => {
-  const [dialogType, setDialogType] = useState<
-    null | 'chat' | 'folder'
-  >(null)
+  const [isChatDialogOpen, setIsChatDialogOpen] = useState(false)
+  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false)
 
-  const handleOpenDialog = (type: 'chat' | 'folder') => {
-    setDialogType(type)
+  const handleChatDialogChange = (open: boolean) => {
+    setIsChatDialogOpen(open)
+  }
+
+  const handleFolderDialogChange = (open: boolean) => {
+    setIsFolderDialogOpen(open)
   }
 
   return (
-    <Dialog>
-      <ContextMenu>
-        <ContextMenuTrigger>
-          <ScrollArea>
-            <div className='flex flex-col gap-3 py-4 '>
-              {folders.length ? (
-                folders.map((folder) => (
-                  <ChatFolder
-                    key={folder.id}
-                    id={folder.id}
-                    name={folder.name}
-                    chatsCount={folder._count.chats}
-                    chats={folder.chats}
-                    isPremium={isPremium}
-                  />
-                ))
-              ) : (
-                <p className='text-secondary-foreground/60 text-center'>
-                  No folders created.
-                </p>
-              )}
-            </div>
-          </ScrollArea>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <DialogTrigger className='block w-full'>
-            <ContextMenuItem onClick={() => handleOpenDialog('chat')}>
+    <NewChatDialog
+      folders={folders}
+      isPremium={isPremium}
+      open={isChatDialogOpen}
+      onOpenChange={handleChatDialogChange}
+    >
+      <NewFolderDialog
+        open={isFolderDialogOpen}
+        onOpenChange={handleFolderDialogChange}
+      >
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <ScrollArea>
+              <div className='flex flex-col gap-3 py-4 '>
+                {folders.length ? (
+                  folders.map((folder) => (
+                    <ChatFolder
+                      key={folder.id}
+                      id={folder.id}
+                      name={folder.name}
+                      chatsCount={folder._count.chats}
+                      chats={folder.chats}
+                      isPremium={isPremium}
+                    />
+                  ))
+                ) : (
+                  <p className='text-secondary-foreground/60 text-center'>
+                    No folders created.
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem
+              onClick={() => handleChatDialogChange(true)}
+            >
               <MessageSquarePlus className='mr-2' /> New Chat
             </ContextMenuItem>
-          </DialogTrigger>
-          <DialogTrigger className='block w-full'>
             <ContextMenuItem
-              onClick={() => handleOpenDialog('folder')}
+              onClick={() => handleFolderDialogChange(true)}
             >
               <FolderPlus className='mr-2' /> New Folder
             </ContextMenuItem>
-          </DialogTrigger>
-        </ContextMenuContent>
-      </ContextMenu>
-      {dialogType === 'chat' ? (
-        <NewChatDialog folders={folders} isPremium={isPremium} />
-      ) : (
-        <NewFolderDialog />
-      )}
-    </Dialog>
+          </ContextMenuContent>
+        </ContextMenu>
+      </NewFolderDialog>
+    </NewChatDialog>
   )
 }
 

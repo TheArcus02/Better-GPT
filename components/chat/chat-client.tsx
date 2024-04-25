@@ -6,7 +6,7 @@ import ChatForm from './chat-form'
 import { useChat } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
 import { ScrollArea } from '../ui/scroll-area'
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import {
   Popover,
   PopoverContent,
@@ -48,7 +48,6 @@ const ChatClient: React.FC<ChatClientProps> = ({
     Array<Command>
   >([])
   const [usedCommand, setUsedCommand] = useState<Command | null>(null)
-
   const {
     input,
     handleInputChange: handleChatInputChange,

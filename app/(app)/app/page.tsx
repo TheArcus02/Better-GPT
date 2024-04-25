@@ -6,6 +6,7 @@ import {
   Settings,
   ImageIcon,
   LucideIcon,
+  Bot,
 } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
@@ -36,6 +37,12 @@ const routes: Array<Route> = [
     href: '/app/translation',
     label: 'Translator',
     description: 'Translate text to and from different languages.',
+  },
+  {
+    icon: Bot,
+    href: '/app/assistants',
+    label: 'Assistants',
+    description: 'Explore AI assistants to enhance your efficiency.',
   },
   {
     icon: Settings,
@@ -72,6 +79,7 @@ const AppPage = () => {
               'block',
               idx === 0 && 'md:col-span-2',
               idx === 1 && 'md:row-span-2',
+              idx === 4 && 'md:col-span-3',
             )}
           >
             <Card className='bg-secondary w-full h-full transition-colors ease-in-out duration-500 hover:border-accent'>
