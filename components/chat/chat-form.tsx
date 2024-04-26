@@ -19,7 +19,6 @@ interface ChatFormProps {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => void
   isLoading: boolean
-  btnDisabled: boolean
   chatModel: ChatModel
   showModel?: boolean
 }
@@ -29,7 +28,6 @@ const ChatForm: React.FC<ChatFormProps> = ({
   handleInputChange,
   onSubmit,
   isLoading,
-  btnDisabled,
   chatModel,
   showModel = true,
 }) => {
@@ -98,7 +96,7 @@ const ChatForm: React.FC<ChatFormProps> = ({
       <Button
         variant='ghost'
         type='submit'
-        disabled={btnDisabled || (!input && !isLoading)}
+        disabled={!input && !isLoading}
       >
         {isLoading ? (
           <>

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
   Message as VercelChatMessage,
-  OpenAIStream,
   StreamingTextResponse,
 } from 'ai'
 import OpenAI from 'openai'
@@ -21,6 +20,7 @@ import {
 } from '@langchain/core/prompts'
 import { SerpAPI } from '@langchain/community/tools/serpapi'
 import { Calculator } from '@langchain/community/tools/calculator'
+import { WolframAlphaTool } from '@langchain/community/tools/wolframalpha'
 import {
   AgentExecutor,
   createToolCallingAgent,
@@ -117,7 +117,13 @@ export async function POST(
       return new NextResponse('Chat not found', { status: 404 })
     }
 
-    const tools = [new Calculator(), new SerpAPI()]
+    const tools = [
+      new SerpAPI(),
+      new WolframAlphaTool({
+        appid: process.env.WOLFRAM_ALPHA_APPID || '',
+      }),
+      new Calculator(),
+    ]
 
     const llm = new ChatOpenAI({
       model: model,
@@ -141,53 +147,85 @@ export async function POST(
     const agentExecutor = new AgentExecutor({
       agent,
       tools,
-      returnIntermediateSteps: false,
+      returnIntermediateSteps: true,
     })
 
-    const logStream = await agentExecutor.streamLog({
-      input: currentMessageContent,
-      chat_history: prevMessages,
-    })
+    const eventStream = await agentExecutor.streamEvents(
+      {
+        input: currentMessageContent,
+        chat_history: prevMessages,
+      },
+      {
+        version: 'v1',
+      },
+    )
 
     const textEncoder = new TextEncoder()
 
+    interface ToolCall {
+      name: string
+      input: string
+      output: string
+    }
+
     let resData = ''
+    let toolCalls: ToolCall[] = []
 
     const transformStream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of logStream) {
-          if (chunk.ops?.length > 0 && chunk.ops[0].op === 'add') {
-            const addOp = chunk.ops[0]
-            if (
-              addOp.path.startsWith('/logs/ChatOpenAI') &&
-              typeof addOp.value === 'string' &&
-              addOp.value.length
-            ) {
-              controller.enqueue(textEncoder.encode(addOp.value))
-              resData += addOp.value
+        for await (const event of eventStream) {
+          const eventType = event.event
+          if (eventType === 'on_llm_stream') {
+            const content = event.data?.chunk?.message?.content
+            // Empty content in the context of OpenAI means
+            // that the model is asking for a tool to be invoked via function call.
+            // So we only print non-empty content
+            if (content !== undefined && content !== '') {
+              controller.enqueue(textEncoder.encode(content))
+              resData += content
+            }
+          } else if (eventType === 'on_tool_start') {
+            const toolName = event.name
+            if (toolName) {
+              const text = `\n\n>**I'm now using the ${toolName} tool...**\n`
+
+              controller.enqueue(textEncoder.encode(text))
+              resData += text
+            }
+          } else if (eventType === 'on_tool_end') {
+            const toolName = event.name
+            const toolInput = event.data?.input
+            const toolOutput = event.data?.output
+            if (toolName) {
+              const text = `\n\n>**I've finished using the ${toolName} tool.**\n\n`
+              controller.enqueue(textEncoder.encode(text))
+              toolCalls.push({
+                name: toolName,
+                input: toolInput,
+                output: toolOutput,
+              })
+              resData += text
+            }
+          } else if (eventType === 'on_chain_end') {
+            if (event.name === 'Agent') {
+              await prismadb.chat.update({
+                where: {
+                  id: params.chatId,
+                },
+                data: {
+                  messages: {
+                    create: {
+                      content: resData,
+                      role: 'system',
+                      userId: userId,
+                    },
+                  },
+                },
+              })
             }
           }
         }
         controller.close()
-
-        if (controller.desiredSize === 0) {
-          // The stream has been consumed
-          // Save the response to the database
-          await prismadb.chat.update({
-            where: {
-              id: params.chatId,
-            },
-            data: {
-              messages: {
-                create: {
-                  content: resData,
-                  role: 'assistant',
-                  userId: userId,
-                },
-              },
-            },
-          })
-        }
       },
     })
 
