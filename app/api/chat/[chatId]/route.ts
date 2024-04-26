@@ -48,7 +48,18 @@ const convertVercelMessageToLangChainMessage = (
   }
 }
 
-const promptTemplate = `You are general purpose assistant. answer questions, provide information, and help with tasks`
+const promptTemplate = `You are general purpose assistant. answer questions,
+                         provide information, and help with tasks.
+                         
+                         When presenting mathematical expressions, please adhere to the following guidelines:
+                         
+                         - Utilize KaTeX syntax for mathematical formulas.
+                         - Enclose math formulas in double dollar signs ($$) for display equations.
+                         - Use dollar signs ($) for inline math equations, even for single variables.
+                         - Good Formula Example: The Lift coefficient ($$C_L$$) can be determined by the formula:
+                           $$L = \frac{{1}}{{2}} \rho v^2 S C_L$$
+                         
+                         Please ensure that all math expressions follow these conventions for accurate interpretation and presentation.`
 
 export async function POST(
   req: NextRequest,
@@ -148,6 +159,8 @@ export async function POST(
       agent,
       tools,
       returnIntermediateSteps: true,
+    }).withConfig({
+      runName: 'ChatAgent',
     })
 
     const eventStream = await agentExecutor.streamEvents(
@@ -207,7 +220,7 @@ export async function POST(
               resData += text
             }
           } else if (eventType === 'on_chain_end') {
-            if (event.name === 'Agent') {
+            if (event.name === 'ChatAgent') {
               await prismadb.chat.update({
                 where: {
                   id: params.chatId,

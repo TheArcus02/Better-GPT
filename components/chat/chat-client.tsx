@@ -6,10 +6,9 @@ import ChatForm from './chat-form'
 import { useChat } from 'ai/react'
 import { Chat, Message } from '@prisma/client'
 import { ScrollArea } from '../ui/scroll-area'
-import { FormEvent, useState } from 'react'
+import { FormEvent } from 'react'
 import { ChatRequestOptions } from 'ai'
 import { toast } from '../ui/use-toast'
-import axios from 'axios'
 
 interface ChatClientProps {
   chat: Chat & {
@@ -17,22 +16,6 @@ interface ChatClientProps {
   }
   isPremium: boolean
 }
-
-interface Command {
-  name: string
-  description: string
-}
-
-const commands: Array<Command> = [
-  {
-    name: '/generate_image',
-    description: 'Generate an image',
-  },
-  {
-    name: '/generate_text',
-    description: 'Generate text',
-  },
-]
 
 const ChatClient: React.FC<ChatClientProps> = ({
   chat,
