@@ -102,8 +102,8 @@ export async function POST(
         let runResult = await forwardStream(runStream)
 
         while (
-          runResult.status === 'requires_action' &&
-          runResult.required_action?.type === 'submit_tool_outputs'
+          runResult?.status === 'requires_action' &&
+          runResult?.required_action?.type === 'submit_tool_outputs'
         ) {
           const tool_outputs =
             runResult.required_action.submit_tool_outputs.tool_calls.map(
