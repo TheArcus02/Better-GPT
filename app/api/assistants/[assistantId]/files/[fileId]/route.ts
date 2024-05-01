@@ -45,24 +45,23 @@ export async function DELETE(
       return new NextResponse('Assistant not found', { status: 404 })
     }
 
+    if (!assistant.vectorStoreId) {
+      return new NextResponse(
+        'Assistant does not have a vector store',
+        { status: 400 },
+      )
+    }
+
     if (assistant.userId !== user.id) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    await openai.beta.assistants.files.del(assistant.openaiId, fileId)
+    await openai.beta.vectorStores.files.del(
+      assistant.vectorStoreId,
+      fileId,
+    )
 
     const res = await openai.files.del(fileId)
-
-    await prisma.assistant.update({
-      where: {
-        id: assistantId,
-      },
-      data: {
-        fileIds: {
-          set: assistant.fileIds.filter((id) => id !== fileId),
-        },
-      },
-    })
 
     return NextResponse.json(res, { status: 200 })
   } catch (error) {

@@ -6,6 +6,7 @@ import {
 } from '@/lib/actions/assistant.action'
 import { FileBarChart } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
+import { VectorStoreFile } from 'openai/resources/beta/vector-stores/files.mjs'
 
 const AssistantFilesPage = async ({
   params: { assistantId },
@@ -16,7 +17,9 @@ const AssistantFilesPage = async ({
 }) => {
   let assistantFiles
   try {
-    assistantFiles = await getAssistantFiles(assistantId)
+    assistantFiles = (await getAssistantFiles(
+      assistantId,
+    )) as VectorStoreFile[]
   } catch (error: any) {
     redirect('/app/assistants')
   }
@@ -26,7 +29,7 @@ const AssistantFilesPage = async ({
   }
 
   const files = await getFilesDetailsList(
-    assistantFiles.data.map((file) => file.id),
+    assistantFiles.map((file) => file.id),
   )
 
   if (!files) {
