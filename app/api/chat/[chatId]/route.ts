@@ -1,11 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
+import {
+  Message as VercelChatMessage,
+  StreamingTextResponse,
+} from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { checkCreatedMessages } from '@/lib/restrictions'
 import { getAuth } from '@clerk/nextjs/server'
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs'
+import { ChatOpenAI } from '@langchain/openai'
+import {
+  AIMessage,
+  ChatMessage,
+  HumanMessage,
+} from '@langchain/core/messages'
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from '@langchain/core/prompts'
+import { SerpAPI } from '@langchain/community/tools/serpapi'
+import { Calculator } from '@langchain/community/tools/calculator'
+import { WolframAlphaTool } from '@langchain/community/tools/wolframalpha'
+import {
+  AgentExecutor,
+  createToolCallingAgent,
+} from 'langchain/agents'
 
 export const runtime = 'edge'
 
@@ -17,6 +36,31 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+const convertVercelMessageToLangChainMessage = (
+  message: VercelChatMessage,
+) => {
+  if (message.role === 'user') {
+    return new HumanMessage(message.content)
+  } else if (message.role === 'assistant') {
+    return new AIMessage(message.content)
+  } else {
+    return new ChatMessage(message.content, message.role)
+  }
+}
+
+const promptTemplate = `You are general purpose assistant. answer questions,
+                         provide information, and help with tasks.
+                         
+                         When presenting mathematical expressions, please adhere to the following guidelines:
+                         
+                         - Utilize KaTeX syntax for mathematical formulas.
+                         - Enclose math formulas in double dollar signs ($$) for display equations.
+                         - Use dollar signs ($) for inline math equations, even for single variables.
+                         - Good Formula Example: The Lift coefficient ($$C_L$$) can be determined by the formula:
+                           $$L = \frac{{1}}{{2}} \rho v^2 S C_L$$
+                         
+                         Please ensure that all math expressions follow these conventions for accurate interpretation and presentation.`
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { chatId: string } },
@@ -26,7 +70,7 @@ export async function POST(
 
     const body = await req.json()
     const { messages, model } = body as {
-      messages: ChatCompletionMessageParam[]
+      messages: VercelChatMessage[]
       model: ChatModel
     }
 
@@ -55,14 +99,16 @@ export async function POST(
       }
     }
 
-    const lastUserMessage = messages
-      .slice()
-      .reverse()
-      .find((message) => message.role === 'user')?.content
+    const filteredMessages = messages.filter(
+      (message: VercelChatMessage) =>
+        message.role === 'user' || message.role === 'assistant',
+    )
+    const prevMessages = filteredMessages
+      .slice(0, -1)
+      .map(convertVercelMessageToLangChainMessage)
 
-    if (!lastUserMessage) {
-      return new NextResponse('Missing message', { status: 400 })
-    }
+    const currentMessageContent =
+      filteredMessages[filteredMessages.length - 1].content
     const chat = await prismadb.chat.update({
       where: {
         id: params.chatId,
@@ -70,7 +116,7 @@ export async function POST(
       data: {
         messages: {
           create: {
-            content: lastUserMessage as string,
+            content: currentMessageContent,
             role: 'user',
             userId: userId,
           },
@@ -82,32 +128,121 @@ export async function POST(
       return new NextResponse('Chat not found', { status: 404 })
     }
 
-    const response = await openai.chat.completions.create({
+    const tools = [
+      new SerpAPI(),
+      new WolframAlphaTool({
+        appid: process.env.WOLFRAM_ALPHA_APPID || '',
+      }),
+      new Calculator(),
+    ]
+
+    const llm = new ChatOpenAI({
       model: model,
-      messages,
-      stream: true,
+      temperature: 0,
+      streaming: true,
     })
 
-    const stream = OpenAIStream(response, {
-      onCompletion: async (data) => {
-        await prismadb.chat.update({
-          where: {
-            id: params.chatId,
-          },
-          data: {
-            messages: {
-              create: {
-                content: data,
-                role: 'system',
-                userId: userId,
-              },
-            },
-          },
-        })
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', promptTemplate],
+      new MessagesPlaceholder('chat_history'),
+      ['human', '{input}'],
+      new MessagesPlaceholder('agent_scratchpad'),
+    ])
+
+    const agent = await createToolCallingAgent({
+      llm,
+      tools,
+      prompt,
+    })
+
+    const agentExecutor = new AgentExecutor({
+      agent,
+      tools,
+      returnIntermediateSteps: true,
+    }).withConfig({
+      runName: 'ChatAgent',
+    })
+
+    const eventStream = await agentExecutor.streamEvents(
+      {
+        input: currentMessageContent,
+        chat_history: prevMessages,
+      },
+      {
+        version: 'v1',
+      },
+    )
+
+    const textEncoder = new TextEncoder()
+
+    interface ToolCall {
+      name: string
+      input: string
+      output: string
+    }
+
+    let resData = ''
+    let toolCalls: ToolCall[] = []
+
+    const transformStream = new ReadableStream({
+      async start(controller) {
+        for await (const event of eventStream) {
+          const eventType = event.event
+          if (eventType === 'on_llm_stream') {
+            const content = event.data?.chunk?.message?.content
+            // Empty content in the context of OpenAI means
+            // that the model is asking for a tool to be invoked via function call.
+            // So we only print non-empty content
+            if (content !== undefined && content !== '') {
+              controller.enqueue(textEncoder.encode(content))
+              resData += content
+            }
+          } else if (eventType === 'on_tool_start') {
+            const toolName = event.name
+            if (toolName) {
+              const text = `\n\n>**I'm now using the ${toolName} tool...**\n`
+
+              controller.enqueue(textEncoder.encode(text))
+              resData += text
+            }
+          } else if (eventType === 'on_tool_end') {
+            const toolName = event.name
+            const toolInput = event.data?.input
+            const toolOutput = event.data?.output
+            if (toolName) {
+              const text = `\n\n>**I've finished using the ${toolName} tool.**\n\n`
+              controller.enqueue(textEncoder.encode(text))
+              toolCalls.push({
+                name: toolName,
+                input: toolInput,
+                output: toolOutput,
+              })
+              resData += text
+            }
+          } else if (eventType === 'on_chain_end') {
+            if (event.name === 'ChatAgent') {
+              await prismadb.chat.update({
+                where: {
+                  id: params.chatId,
+                },
+                data: {
+                  messages: {
+                    create: {
+                      content: resData,
+                      role: 'system',
+                      userId: userId,
+                    },
+                  },
+                },
+              })
+            }
+          }
+        }
+        controller.close()
       },
     })
 
-    return new StreamingTextResponse(stream)
+    return new StreamingTextResponse(transformStream)
   } catch (error) {
     console.log('[CHAT_ERROR/[CHAT_ID]]', error)
     if (error instanceof OpenAI.APIError) {

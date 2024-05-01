@@ -118,7 +118,6 @@ const AssistantChat = ({
             handleInputChange={handleInputChange}
             onSubmit={submitMessage}
             isLoading={status !== 'awaiting_message'}
-            btnDisabled={false}
             chatModel='gpt-4'
             showModel={false}
           />

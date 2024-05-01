@@ -1,7 +1,6 @@
 # [BetterGPT](https://github.com/TheArcus02/Better-GPT)
 
-This is an open source SaaS application developed in Next.js 13. BetterGPT enhances AI tools with a
-good-looking UI and additional functionalities. 
+BetterGPT is an open source SaaS application developed in Next.js. BetterGPT interconnects various AI tools such as LLM's or stable-diffiusion models in one app enchancing those tools with user-friendly UI and additional features.
 
 [![BetterGPT](./public/screenshot/landing-page.png)](https://better-gpt-demo.vercel.app)
 
@@ -18,6 +17,9 @@ good-looking UI and additional functionalities.
 - **Streaming responses:** [Vercel AI SDK](https://sdk.vercel.ai/)
 - **Image Uploads:** [Cloudinary](https://cloudinary.com)
 - **Payments infrastructure:** [Stripe](https://stripe.com)
+- **AI SDK:** [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- **LLM Framework:** [Langchain](https://js.langchain.com/docs/get_started/introduction)
+- **AI API:** [OpenAI](https://platform.openai.com/docs/introduction)
 
 ## Features to be implemented
 
@@ -29,8 +31,10 @@ good-looking UI and additional functionalities.
 - [x] Image generation with **OpenAI API** and upload to **Cloudinary**  
 - [x] User subscriptions with **Stripe**
 - [x] State management with **Zustand**
-- [ ] Generating images within chat (something like midjourney on discord)
-
+- [x] Assistnats API from **OpenAI**
+- [x] External tools integration with **Langchain**
+- [ ] Youtube videos summarization tool
+- [ ] Chat with provided files tool
 
 ## Running Locally
 
