@@ -43,11 +43,10 @@ export async function POST(req: Request) {
       model,
       description,
       name,
-      tools: [{ type: 'retrieval' }],
       metadata: {
         imagePublicId: imagePublicId || placeholderImagePublicId,
         userId: user.id,
-        shared,
+        shared: String(shared),
       },
     })
 

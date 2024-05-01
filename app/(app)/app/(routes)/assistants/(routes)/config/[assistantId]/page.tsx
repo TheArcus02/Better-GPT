@@ -1,7 +1,11 @@
 import CldImage from '@/components/cloudinary-image-wrapper'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { getAssistantById } from '@/lib/actions/assistant.action'
+import {
+  getAssistantById,
+  getAssistantFiles,
+  getFilesDetailsList,
+} from '@/lib/actions/assistant.action'
 import {
   Bot,
   Braces,
@@ -11,6 +15,7 @@ import {
   Scroll,
 } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
+import { FileObject } from 'openai/resources/files.mjs'
 
 const AssistantConfigInfoPage = async ({
   params: { assistantId },
@@ -20,8 +25,13 @@ const AssistantConfigInfoPage = async ({
   }
 }) => {
   let assistant: AssistantWithAdditionalData | null | undefined
+  let files: FileObject[] | null | undefined
   try {
     assistant = await getAssistantById(assistantId)
+    const vectorFiles = await getAssistantFiles(assistantId)
+    files = await getFilesDetailsList(
+      vectorFiles?.map((file) => file.id) || [],
+    )
   } catch (error: any) {
     redirect('/app/assistants')
   }
@@ -87,9 +97,9 @@ const AssistantConfigInfoPage = async ({
             Files
           </h2>
           <p>
-            {assistant.openAiObj.file_ids.length
-              ? assistant.openAiObj.file_ids.map((file, i) => (
-                  <Badge key={file}>{file}</Badge>
+            {files && files.length
+              ? files.map((file, i) => (
+                  <Badge key={file.id}>{file.filename}</Badge>
                 ))
               : 'No assigned files...'}
           </p>

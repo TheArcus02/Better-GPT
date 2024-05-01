@@ -197,9 +197,19 @@ export async function DELETE(
       )
     }
 
-    await Promise.all(
-      assistant.fileIds.map((file) => openai.files.del(file)),
-    )
+    if (assistant.vectorStoreId) {
+      const vectorStoreFiles =
+        await openai.beta.vectorStores.files.list(
+          assistant.vectorStoreId,
+        )
+      await openai.beta.vectorStores.del(assistant.vectorStoreId)
+
+      await Promise.all(
+        vectorStoreFiles.data.map((file) =>
+          openai.files.del(file.id),
+        ),
+      )
+    }
 
     const res = await openai.beta.assistants.del(assistant.openaiId)
 

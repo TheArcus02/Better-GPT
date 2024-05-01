@@ -101,7 +101,7 @@ model Assistant {
   imagePublicId  String
   shared         Boolean     @default(false)
   messages       AssistantMessage[]
-  fileIds        String[]
+  vectorStoreId  String?     @unique
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt

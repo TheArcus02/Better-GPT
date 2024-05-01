@@ -6,7 +6,6 @@ import { useCallback, useState } from 'react'
 import AssistantFilesList from './assistant-files-list'
 import { toast } from '../ui/use-toast'
 import axios from 'axios'
-import { FileDeleteResponse } from 'openai/resources/beta/assistants/files.mjs'
 
 interface AssistantFilesLayoutProps {
   initialFiles: FileObject[]
@@ -24,7 +23,7 @@ const AssistantFilesLayout = ({
     async (fileId: string) => {
       setIsDeleting(true)
       try {
-        await axios.delete<FileDeleteResponse>(
+        await axios.delete(
           `/api/assistants/${assistantId}/files/${fileId}`,
         )
 
