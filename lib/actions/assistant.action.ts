@@ -6,6 +6,10 @@ import OpenAI, { NotFoundError as OpenAiNotFoundError } from 'openai'
 import prisma from '../prismadb'
 import { AssistantMessage } from '@prisma/client'
 import { NotFoundError, UnauthorizedError } from '../exceptions'
+import {
+  VectorStoreFile,
+  VectorStoreFilesPage,
+} from 'openai/resources/beta/vector-stores/files.mjs'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -153,11 +157,15 @@ export async function getAssistantFiles(assistantId: string) {
       throw new NotFoundError('Assistant not found')
     }
 
-    const files = await openai.beta.assistants.files.list(
-      dbAssistant.openaiId,
+    if (!dbAssistant.vectorStoreId) {
+      return []
+    }
+
+    const files = await openai.beta.vectorStores.files.list(
+      dbAssistant.vectorStoreId,
     )
 
-    return files
+    return files.data
   } catch (error) {
     if (
       error instanceof OpenAiNotFoundError ||

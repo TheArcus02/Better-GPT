@@ -1,5 +1,4 @@
 import { ExternalLink, File, XCircle } from 'lucide-react'
-import { FileObject } from 'openai/resources/files.mjs'
 import { cn, convertUnixTimestamp, formatFileSize } from '@/lib/utils'
 import { Button } from '../ui/button'
 import {
@@ -7,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../ui/tooltip'
+import { FileObject } from 'openai/resources/files.mjs'
 
 interface AssistantFilesListProps
   extends React.HTMLAttributes<HTMLUListElement> {

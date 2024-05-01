@@ -61,27 +61,45 @@ export async function POST(
       return new NextResponse('File is too large', { status: 400 })
     }
 
-    const openAiFile = await openai.files.create({
+    let vectorStoreId
+    if (!assistant.vectorStoreId) {
+      const vectorStore = await openai.beta.vectorStores.create({
+        name: `${assistant.name} - ${assistant.id}`,
+        expires_after: {
+          anchor: 'last_active_at',
+          days: 7,
+        },
+      })
+
+      await prisma.assistant.update({
+        where: {
+          id: assistant.id,
+        },
+        data: {
+          vectorStoreId: vectorStore.id,
+        },
+      })
+
+      vectorStoreId = vectorStore.id
+    } else {
+      vectorStoreId = assistant.vectorStoreId
+    }
+
+    const vectorFile = await openai.beta.vectorStores.files.upload(
+      vectorStoreId,
       file,
-      purpose: 'assistants',
-    })
+    )
 
-    await openai.beta.assistants.files.create(assistant.openaiId, {
-      file_id: openAiFile.id,
-    })
-
-    await prisma.assistant.update({
-      where: {
-        id: assistant.id,
-      },
-      data: {
-        fileIds: {
-          push: openAiFile.id,
+    await openai.beta.assistants.update(assistant.openaiId, {
+      tool_resources: {
+        file_search: {
+          vector_store_ids: [vectorStoreId],
         },
       },
+      tools: [{ type: 'file_search' }],
     })
 
-    return NextResponse.json(openAiFile, { status: 201 })
+    return NextResponse.json(vectorFile, { status: 201 })
   } catch (error) {
     console.log('[ASSISTANT_ERROR]', error)
     return new NextResponse('Internal error', { status: 500 })
