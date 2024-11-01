@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     if (!isPremium) {
       const validSizes = ['256x256', '512x512']
-      if (validSizes.includes(size)) {
+      if (!validSizes.includes(size)) {
         return new NextResponse(
           'This size is not available in the free tier. Please upgrade to premium.',
           { status: 403 },
