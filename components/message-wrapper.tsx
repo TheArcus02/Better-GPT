@@ -1,5 +1,5 @@
 'use client'
-import { copyToClipboard } from '@/lib/utils'
+import { cn, copyToClipboard } from '@/lib/utils'
 import { Save } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Markdown from 'react-markdown'
@@ -93,6 +93,45 @@ const MessageWrapper = ({ content }: MessageWrapperProps) => {
         ),
         li: ({ node, className, ...props }) => (
           <li className='ml-4' {...props} />
+        ),
+        a: ({ node, className, ...props }) => (
+          <a
+            className={cn('underline text-accent', className)}
+            {...props}
+          />
+        ),
+        table: ({ node, className, ...props }) => (
+          <table
+            className={cn(
+              'min-w-full text-sm text-left my-4',
+              className,
+            )}
+            {...props}
+          />
+        ),
+        thead: ({ node, className, ...props }) => (
+          <thead
+            className={cn(
+              'bg-background/70 text-xs uppercase text-foreground',
+              className,
+            )}
+            {...props}
+          />
+        ),
+        th: ({ node, className, ...props }) => (
+          <th className={cn('px-2 py-2', className)} {...props} />
+        ),
+        tr: ({ node, className, ...props }) => (
+          <tr
+            className={cn(
+              'border-b border-muted-foreground/70 hover:bg-background/70 transition-colors ease-in',
+              className,
+            )}
+            {...props}
+          />
+        ),
+        td: ({ node, className, ...props }) => (
+          <td className={cn('px-2 py-2', className)} {...props} />
         ),
       }}
     >
