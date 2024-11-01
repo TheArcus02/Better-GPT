@@ -20,14 +20,13 @@ export async function POST(req: Request) {
 
     const options = {
       method: 'POST',
-      url: 'https://microsoft-translator-text.p.rapidapi.com/Detect',
-      params: {
-        'api-version': '3.0',
-      },
+      url: 'https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage',
       headers: {
-        'content-type': 'application/json',
-        'X-RapidAPI-Key': process.env.RAPID_API_KEY,
-        'X-RapidAPI-Host': 'microsoft-translator-text.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPID_API_KEY,
+        'x-rapidapi-host':
+          'microsoft-translator-text-api3.p.rapidapi.com',
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
       data: [
         {
