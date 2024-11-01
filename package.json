@@ -35,7 +35,7 @@
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
-    "ai": "^3.0.12",
+    "ai": "^3.4.31",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "class-variance-authority": "^0.7.0",
