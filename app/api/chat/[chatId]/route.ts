@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   Message as VercelChatMessage,
   StreamingTextResponse,
+  LangChainAdapter,
 } from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
@@ -149,7 +150,7 @@ export async function POST(
       new MessagesPlaceholder('agent_scratchpad'),
     ])
 
-    const agent = await createToolCallingAgent({
+    const agent = createToolCallingAgent({
       llm,
       tools,
       prompt,
@@ -241,7 +242,6 @@ export async function POST(
         controller.close()
       },
     })
-
     return new StreamingTextResponse(transformStream)
   } catch (error) {
     console.log('[CHAT_ERROR/[CHAT_ID]]', error)

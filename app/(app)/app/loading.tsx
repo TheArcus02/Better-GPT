@@ -1,9 +1,9 @@
-import { PulseLoader } from 'react-spinners'
+import Loader from '@/components/loader'
 
 const Loading = () => {
   return (
     <div className='min-h-[90vh] flex items-center justify-center'>
-      <PulseLoader color='#FFFFFF' size={20} />
+      <Loader />
     </div>
   )
 }

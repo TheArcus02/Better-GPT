@@ -3,7 +3,7 @@ import prisma from '@/lib/prismadb'
 import { checkCreatedAssistantMessages } from '@/lib/restrictions'
 import { checkSubscription } from '@/lib/subscription'
 import { getAuth } from '@clerk/nextjs/server'
-import { experimental_AssistantResponse } from 'ai'
+import { AssistantResponse } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -80,7 +80,7 @@ export async function POST(
       userId,
     })
 
-    return experimental_AssistantResponse(
+    return AssistantResponse(
       { threadId, messageId: createdMessage.id },
       async ({ forwardStream, sendDataMessage }) => {
         // Run assistant on the thread

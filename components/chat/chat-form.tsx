@@ -14,10 +14,7 @@ interface ChatFormProps {
       | React.ChangeEvent<HTMLInputElement>
       | ChangeEvent<HTMLTextAreaElement>,
   ) => void
-  onSubmit: (
-    e: FormEvent<HTMLFormElement>,
-    chatRequestOptions?: ChatRequestOptions | undefined,
-  ) => void
+  onSubmit: (e: any) => void
   isLoading: boolean
   chatModel: ChatModel
   showModel?: boolean

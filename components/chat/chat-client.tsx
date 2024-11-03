@@ -36,6 +36,7 @@ const ChatClient: React.FC<ChatClientProps> = ({
       content: message.content,
       createdAt: message.createdAt,
     })),
+    streamProtocol: 'text',
     onError: (err) => {
       console.error(err)
       toast({
