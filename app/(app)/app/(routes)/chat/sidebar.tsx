@@ -2,10 +2,10 @@ import ChatSidebar from '@/components/chat/chat-sidebar'
 import MobileChatSidebar from '@/components/chat/mobile-chat-sidebar'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
-import { auth, redirectToSignIn } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 
 const Sidebar = async () => {
-  const { userId } = auth()
+  const { userId, redirectToSignIn } = await auth()
 
   if (!userId) return redirectToSignIn()
 

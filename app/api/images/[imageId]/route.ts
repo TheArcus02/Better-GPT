@@ -1,12 +1,13 @@
 import prismadb from '@/lib/prismadb'
 import { isInvalidUsername } from '@/lib/utils'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { imageId: string } },
+  props: { params: Promise<{ imageId: string }> },
 ) {
+  const params = await props.params
   try {
     const body = await req.json()
     const user = await currentUser()

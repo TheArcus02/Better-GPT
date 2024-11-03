@@ -8,13 +8,19 @@ import { FileBarChart } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { VectorStoreFile } from 'openai/resources/beta/vector-stores/files.mjs'
 
-const AssistantFilesPage = async ({
-  params: { assistantId },
-}: {
-  params: {
-    assistantId: string
+const AssistantFilesPage = async (
+  props: {
+    params: Promise<{
+      assistantId: string
+    }>
   }
-}) => {
+) => {
+  const params = await props.params;
+
+  const {
+    assistantId
+  } = params;
+
   let assistantFiles
   try {
     assistantFiles = (await getAssistantFiles(

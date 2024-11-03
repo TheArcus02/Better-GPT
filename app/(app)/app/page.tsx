@@ -54,8 +54,9 @@ const routes: Array<Route> = [
 
 export const metadata: Metadata = {
   title: 'App',
+
   description:
-    'Welcome to your dashboard! Explore advanced AI features including chat, image generation, translation, and settings customization. BetterGPT empowers your creativity and communication.',
+    'Welcome to your dashboard! Explore advanced AI features including chat, image generation, translation, and settings customization. BetterGPT empowers your creativity and communication.'
 }
 
 const AppPage = () => {

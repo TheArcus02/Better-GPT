@@ -1,21 +1,26 @@
 import SidebarNav from '@/components/sidebar-nav'
 import { Separator } from '@/components/ui/separator'
 import { getAssistantById } from '@/lib/actions/assistant.action'
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { notFound, redirect } from 'next/navigation'
 
 interface AssistantConfigLayoutProps {
   children: React.ReactNode
-  params: {
+  params: Promise<{
     assistantId: string
-  }
+  }>
 }
 
-const AssistantConfigLayout = async ({
-  children,
-  params: { assistantId },
-}: AssistantConfigLayoutProps) => {
-  const { userId } = auth()
+const AssistantConfigLayout = async (
+  props: AssistantConfigLayoutProps,
+) => {
+  const params = await props.params
+
+  const { assistantId } = params
+
+  const { children } = props
+
+  const { userId } = await auth()
 
   let assistant
 

@@ -20,7 +20,7 @@ interface MessageWrapperProps {
 const MessageWrapper = ({ content }: MessageWrapperProps) => {
   const { theme } = useTheme()
   return (
-    <Markdown
+    (<Markdown
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex]}
       components={{
@@ -83,7 +83,7 @@ const MessageWrapper = ({ content }: MessageWrapperProps) => {
             <code className={className} {...props}>
               {children}
             </code>
-          )
+          );
         },
         ul: ({ node, className, ...props }) => (
           <ul className='list-disc space-y-2 py-2' {...props} />
@@ -136,8 +136,8 @@ const MessageWrapper = ({ content }: MessageWrapperProps) => {
       }}
     >
       {content}
-    </Markdown>
-  )
+    </Markdown>)
+  );
 }
 
 export default MessageWrapper

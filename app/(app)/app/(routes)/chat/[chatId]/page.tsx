@@ -1,15 +1,15 @@
 import ChatClient from '@/components/chat/chat-client'
 import prismadb from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
-import { auth, redirectToSignIn } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     chatId: string
-  }
+  }>
 }
 
 const getChatData = async (chatId: string, userId: string) => {
@@ -36,11 +36,12 @@ const getChatData = async (chatId: string, userId: string) => {
   }
 }
 
-export async function generateMetadata({
-  params,
-}: ChatPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: ChatPageProps,
+): Promise<Metadata> {
+  const params = await props.params
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
 
     if (!userId)
       return {
@@ -73,10 +74,12 @@ export async function generateMetadata({
   }
 }
 
-const ChatPage: React.FC<ChatPageProps> = async ({
-  params: { chatId },
-}) => {
-  const { userId } = auth()
+const ChatPage: React.FC<ChatPageProps> = async (props) => {
+  const params = await props.params
+
+  const { chatId } = params
+
+  const { userId, redirectToSignIn } = await auth()
 
   if (!userId) return redirectToSignIn()
   const chat = await getChatData(chatId, userId)

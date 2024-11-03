@@ -1,7 +1,7 @@
 import { AssistantsFormType } from '@/components/assistants/assistant-form'
 import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
-import { clerkClient, currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -14,6 +14,8 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
+    const client = await clerkClient()
+
     const body = await req.json()
     const user = await currentUser()
     const { name, description, instructions, imagePublicId, shared } =
@@ -63,7 +65,7 @@ export async function POST(req: Request) {
       },
     })
 
-    await clerkClient.users.updateUserMetadata(user.id, {
+    await client.users.updateUserMetadata(user.id, {
       privateMetadata: {
         assistants: [
           ...((user.privateMetadata?.assistants as String[]) || []),

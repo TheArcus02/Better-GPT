@@ -4,8 +4,9 @@ import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Chats',
+
   description:
-    'Engage in intelligent conversations with BetterGPT Chat. Experience advanced AI interactions, get instant responses to your queries, and enjoy meaningful discussions. Chat effortlessly, revolutionize your communication with BetterGPT.',
+    'Engage in intelligent conversations with BetterGPT Chat. Experience advanced AI interactions, get instant responses to your queries, and enjoy meaningful discussions. Chat effortlessly, revolutionize your communication with BetterGPT.'
 }
 
 const ChatsPage = async () => {

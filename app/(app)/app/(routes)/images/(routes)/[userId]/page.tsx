@@ -1,26 +1,27 @@
 import Galery from '@/components/images/galery'
 import prismadb from '@/lib/prismadb'
 import { getUsername } from '@/lib/utils'
-import { auth, clerkClient } from '@clerk/nextjs'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 interface UserGaleryProps {
-  params: {
+  params: Promise<{
     userId: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     query: string
     sizeFilter: string
     modelFilter: string
-  }
+  }>
 }
 
 const getUserData = async (userId: string) => {
   try {
-    const { userId: loggedUserId } = auth()
+    const { userId: loggedUserId } = await auth()
     const isOwner = loggedUserId === userId
-    const user = await clerkClient.users.getUser(userId)
+    const client = await clerkClient()
+    const user = await client.users.getUser(userId)
 
     const username = getUsername(user)
 
@@ -35,9 +36,10 @@ const getUserData = async (userId: string) => {
   }
 }
 
-export async function generateMetadata({
-  params,
-}: UserGaleryProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: UserGaleryProps,
+): Promise<Metadata> {
+  const params = await props.params
   try {
     const userInfo = await getUserData(params.userId)
     if (!userInfo)
@@ -62,10 +64,15 @@ export async function generateMetadata({
   }
 }
 
-const UserGaleryPage: React.FC<UserGaleryProps> = async ({
-  params: { userId },
-  searchParams: { query, sizeFilter, modelFilter },
-}) => {
+const UserGaleryPage: React.FC<UserGaleryProps> = async (props) => {
+  const searchParams = await props.searchParams
+
+  const { query, sizeFilter, modelFilter } = searchParams
+
+  const params = await props.params
+
+  const { userId } = params
+
   const userData = await getUserData(userId)
 
   if (!userData) return redirect('/app/images')

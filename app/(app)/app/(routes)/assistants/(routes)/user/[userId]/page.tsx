@@ -2,20 +2,22 @@ import AssistantList from '@/components/assistants/assistant-list'
 import AssistantPagination from '@/components/assistants/assistant-pagination'
 import { getAssistants } from '@/lib/actions/assistant.action'
 import { getUsername } from '@/lib/utils'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 import { notFound } from 'next/navigation'
 
-const UserAssistantsPage = async ({
-  params: { userId },
-  searchParams,
-}: {
-  params: {
+const UserAssistantsPage = async (props: {
+  params: Promise<{
     userId: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     [key: string]: string | string[] | undefined
-  }
+  }>
 }) => {
+  const searchParams = await props.searchParams
+  const params = await props.params
+
+  const { userId } = params
+
   const user = await currentUser()
 
   if (!user) {

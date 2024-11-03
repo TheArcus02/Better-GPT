@@ -6,6 +6,7 @@ import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 import { useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import React from 'react'
 
 interface PricingCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -60,7 +61,7 @@ const PricingCard = ({
       <div>
         <ul className='mt-8 space-y-3'>
           {features.map((feature, idx) => (
-            <>
+            <React.Fragment key={feature}>
               <li
                 key={feature}
                 className='flex items-center text-foreground'
@@ -74,7 +75,7 @@ const PricingCard = ({
               {idx !== features.length - 1 && (
                 <Separator className='bg-accent/30' />
               )}
-            </>
+            </React.Fragment>
           ))}
         </ul>
       </div>

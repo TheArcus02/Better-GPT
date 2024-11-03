@@ -1,13 +1,13 @@
 import Navbar from '@/components/navbar'
 import { checkSubscription } from '@/lib/subscription'
-import { auth, redirectToSignIn } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 
 const AppLayout = async ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const { userId } = auth()
+  const { userId, redirectToSignIn } = await auth()
 
   if (!userId) {
     return redirectToSignIn()

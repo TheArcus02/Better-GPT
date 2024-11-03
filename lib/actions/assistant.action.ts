@@ -1,15 +1,11 @@
 'use server'
 
-import { clerkClient, currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { getUsernameById, handleError } from '../utils'
 import OpenAI, { NotFoundError as OpenAiNotFoundError } from 'openai'
 import prisma from '../prismadb'
 import { AssistantMessage } from '@prisma/client'
 import { NotFoundError, UnauthorizedError } from '../exceptions'
-import {
-  VectorStoreFile,
-  VectorStoreFilesPage,
-} from 'openai/resources/beta/vector-stores/files.mjs'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -200,6 +196,7 @@ export async function getFilesDetailsList(fileIds: string[]) {
 
 export async function getOrCreateThread() {
   try {
+    const client = await clerkClient()
     const user = await currentUser()
 
     if (!user) {
@@ -237,7 +234,7 @@ export async function getOrCreateThread() {
       },
     })
 
-    await clerkClient.users.updateUser(user.id, {
+    await client.users.updateUser(user.id, {
       privateMetadata: {
         ...user.privateMetadata,
         threadId: thread.id,

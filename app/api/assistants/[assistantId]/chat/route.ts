@@ -4,7 +4,7 @@ import { checkCreatedAssistantMessages } from '@/lib/restrictions'
 import { checkSubscription } from '@/lib/subscription'
 import { getAuth } from '@clerk/nextjs/server'
 import { AssistantResponse } from 'ai'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
@@ -15,14 +15,18 @@ export const runtime = 'edge'
 
 export async function POST(
   req: NextRequest,
-  {
-    params: { assistantId },
-  }: {
-    params: {
+  props: {
+    params: Promise<{
       assistantId: string
-    }
-  },
+    }>
+  }
 ) {
+  const params = await props.params;
+
+  const {
+    assistantId
+  } = params;
+
   try {
     const body = await req.json()
     const { userId } = getAuth(req)

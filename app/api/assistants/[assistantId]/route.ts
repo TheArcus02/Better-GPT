@@ -2,7 +2,7 @@ import { AssistantsFormType } from '@/components/assistants/assistant-form'
 import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
 import { isInvalidUsername } from '@/lib/utils'
-import { clerkClient, currentUser } from '@clerk/nextjs'
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -14,14 +14,16 @@ const model = 'gpt-3.5-turbo-0125'
 
 export async function GET(
   req: NextRequest,
-  {
-    params: { assistantId },
-  }: {
-    params: {
+  props: {
+    params: Promise<{
       assistantId: string
-    }
+    }>
   },
 ) {
+  const params = await props.params
+
+  const { assistantId } = params
+
   try {
     const user = await currentUser()
 
@@ -56,14 +58,13 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  {
-    params,
-  }: {
-    params: {
+  props: {
+    params: Promise<{
       assistantId: string
-    }
+    }>
   },
 ) {
+  const params = await props.params
   try {
     const body = await req.json()
     const user = await currentUser()
@@ -148,15 +149,15 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  {
-    params,
-  }: {
-    params: {
+  props: {
+    params: Promise<{
       assistantId: string
-    }
+    }>
   },
 ) {
+  const params = await props.params
   try {
+    const client = await clerkClient()
     const user = await currentUser()
 
     const { assistantId } = params
@@ -219,7 +220,7 @@ export async function DELETE(
       },
     })
 
-    await clerkClient.users.updateUserMetadata(user.id, {
+    await client.users.updateUserMetadata(user.id, {
       privateMetadata: {
         assistants: (
           user.privateMetadata as UserMetadata

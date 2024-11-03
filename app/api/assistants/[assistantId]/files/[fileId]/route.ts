@@ -1,6 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { checkSubscription } from '@/lib/subscription'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
@@ -10,15 +10,17 @@ const openai = new OpenAI({
 
 export async function DELETE(
   req: NextRequest,
-  {
-    params: { assistantId, fileId },
-  }: {
-    params: {
+  props: {
+    params: Promise<{
       assistantId: string
       fileId: string
-    }
+    }>
   },
 ) {
+  const params = await props.params
+
+  const { assistantId, fileId } = params
+
   try {
     const user = await currentUser()
 
