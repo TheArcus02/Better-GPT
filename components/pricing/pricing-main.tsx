@@ -4,7 +4,6 @@ import PricingCard from './pricing-card'
 import { Switch } from '../ui/switch'
 
 interface PricingMainProps {
-  isPremium: boolean
   prices: {
     [key: string]: {
       monthly: number
@@ -13,7 +12,7 @@ interface PricingMainProps {
   }
 }
 
-const PricingMain = ({ isPremium, prices }: PricingMainProps) => {
+const PricingMain = ({ prices }: PricingMainProps) => {
   const [isYearly, setIsYearly] = useState(true)
 
   return (
@@ -41,7 +40,6 @@ const PricingMain = ({ isPremium, prices }: PricingMainProps) => {
             'Limited sizes for image generation.',
             '20 Messages limit.',
           ]}
-          isPremium={isPremium}
           isYearly={isYearly}
           className='md:mt-8'
         />
@@ -58,7 +56,6 @@ const PricingMain = ({ isPremium, prices }: PricingMainProps) => {
             'No Chats limit.',
             'Unlimited image generation size.',
           ]}
-          isPremium={isPremium}
           isYearly={isYearly}
         />
         <PricingCard
@@ -75,7 +72,6 @@ const PricingMain = ({ isPremium, prices }: PricingMainProps) => {
             'Unlimited image generation size.',
             'Dedicated support.',
           ]}
-          isPremium={isPremium}
           isYearly={isYearly}
           className='md:mt-8'
         />

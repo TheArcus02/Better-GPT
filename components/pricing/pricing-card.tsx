@@ -14,7 +14,6 @@ interface PricingCardProps
   description: string
   price: string
   features: string[]
-  isPremium: boolean
   isYearly?: boolean
 }
 
@@ -23,7 +22,6 @@ const PricingCard = ({
   features,
   price,
   title,
-  isPremium,
   isYearly,
   className,
   ...props
@@ -85,11 +83,7 @@ const PricingCard = ({
           className='mt-6 w-full'
           onClick={handleOnClick}
         >
-          {isPremium
-            ? 'Manage subscription'
-            : isSignedIn
-            ? 'Upgrade'
-            : 'Get started'}
+          {isSignedIn ? 'Upgrade' : 'Get started'}
         </Button>
       </div>
     </div>
