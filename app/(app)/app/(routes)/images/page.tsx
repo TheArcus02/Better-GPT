@@ -6,11 +6,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 interface ImagePageProps {
-  searchParams: {
+  searchParams: Promise<{
     query: string
     sizeFilter: string
     modelFilter: string
-  }
+  }>
 }
 
 export const metadata: Metadata = {
