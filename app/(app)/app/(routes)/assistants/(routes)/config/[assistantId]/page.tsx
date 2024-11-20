@@ -17,13 +17,19 @@ import {
 import { notFound, redirect } from 'next/navigation'
 import { FileObject } from 'openai/resources/files.mjs'
 
-const AssistantConfigInfoPage = async ({
-  params: { assistantId },
-}: {
-  params: {
-    assistantId: string
+const AssistantConfigInfoPage = async (
+  props: {
+    params: Promise<{
+      assistantId: string
+    }>
   }
-}) => {
+) => {
+  const params = await props.params;
+
+  const {
+    assistantId
+  } = params;
+
   let assistant: AssistantWithAdditionalData | null | undefined
   let files: FileObject[] | null | undefined
   try {

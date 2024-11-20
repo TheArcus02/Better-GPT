@@ -6,7 +6,7 @@ import React from 'react'
 
 export const metadata: Metadata = {
   title: 'Settings',
-  description: 'Manage your account settings and preferences.',
+  description: 'Manage your account settings and preferences.'
 }
 
 const settingsPage = async () => {

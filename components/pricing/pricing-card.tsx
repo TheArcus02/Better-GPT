@@ -6,6 +6,7 @@ import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 import { useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import React from 'react'
 
 interface PricingCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -13,7 +14,6 @@ interface PricingCardProps
   description: string
   price: string
   features: string[]
-  isPremium: boolean
   isYearly?: boolean
 }
 
@@ -22,7 +22,6 @@ const PricingCard = ({
   features,
   price,
   title,
-  isPremium,
   isYearly,
   className,
   ...props
@@ -60,7 +59,7 @@ const PricingCard = ({
       <div>
         <ul className='mt-8 space-y-3'>
           {features.map((feature, idx) => (
-            <>
+            <React.Fragment key={feature}>
               <li
                 key={feature}
                 className='flex items-center text-foreground'
@@ -74,7 +73,7 @@ const PricingCard = ({
               {idx !== features.length - 1 && (
                 <Separator className='bg-accent/30' />
               )}
-            </>
+            </React.Fragment>
           ))}
         </ul>
       </div>
@@ -84,11 +83,7 @@ const PricingCard = ({
           className='mt-6 w-full'
           onClick={handleOnClick}
         >
-          {isPremium
-            ? 'Manage subscription'
-            : isSignedIn
-            ? 'Upgrade'
-            : 'Get started'}
+          {isSignedIn ? 'Upgrade' : 'Get started'}
         </Button>
       </div>
     </div>

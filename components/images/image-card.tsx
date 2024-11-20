@@ -76,14 +76,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
             </Link>
             <div className={isOwner ? 'flex gap-2' : ''}>
               <Tooltip>
-                <TooltipTrigger>
-                  <button
-                    type='button'
-                    onClick={() => downloadImage(image.id, image.url)}
-                    className='outline-none bg-transparent border-none'
-                  >
-                    <Download className='w-6 h-6' size={24} />
-                  </button>
+                <TooltipTrigger
+                  onClick={() => downloadImage(image.id, image.url)}
+                  className='outline-none bg-transparent border-none'
+                >
+                  <Download className='w-6 h-6' size={24} />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className='text-foreground text-sm'>Download</p>
@@ -91,70 +88,58 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
               </Tooltip>
 
               {isOwner && (
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Popover>
-                      <PopoverTrigger>
-                        <button
-                          type='button'
-                          className='outline-none bg-transparent border-none'
-                        >
-                          <MoreVertical
-                            className='w-6 h-6'
-                            size={24}
-                          />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-52 px-1 z-10'>
-                        <Command>
-                          <CommandList>
-                            <CommandGroup>
-                              <DialogTrigger className='w-full'>
-                                <CommandItem className='cursor-pointer'>
-                                  <Expand className='mr-2 h-4 w-4' />
-                                  <span>Enlarge</span>
-                                </CommandItem>
-                              </DialogTrigger>
-                              <DialogContent className='max-w-[90vw] max-h-[90vh] md:w-max'>
-                                <CldImage
-                                  src={image.publicId}
-                                  alt={image.prompt}
-                                  height={imageHeight}
-                                  width={imageWidth}
-                                  className='object-scale-down max-h-[80vh]'
-                                />
-                              </DialogContent>
+                <Popover>
+                  <PopoverTrigger
+                    type='button'
+                    className='outline-none bg-transparent border-none'
+                  >
+                    <MoreVertical className='w-6 h-6' size={24} />
+                  </PopoverTrigger>
+                  <PopoverContent className='w-52 px-1 z-10'>
+                    <Command>
+                      <CommandList>
+                        <CommandGroup>
+                          <DialogTrigger className='w-full'>
+                            <CommandItem className='cursor-pointer'>
+                              <Expand className='mr-2 h-4 w-4' />
+                              <span>Enlarge</span>
+                            </CommandItem>
+                          </DialogTrigger>
+                          <DialogContent className='max-w-[90vw] max-h-[90vh] md:w-max'>
+                            <CldImage
+                              src={image.publicId}
+                              alt={image.prompt}
+                              height={imageHeight}
+                              width={imageWidth}
+                              className='object-scale-down max-h-[80vh]'
+                            />
+                          </DialogContent>
 
-                              {image.shared ? (
-                                <CommandItem className='cursor-pointer'>
-                                  <Lock className='mr-2 h-4 w-4' />
-                                  <span>Make Private</span>
-                                </CommandItem>
-                              ) : (
-                                <CommandItem className='cursor-pointer'>
-                                  <Share2 className='mr-2 h-4 w-4' />
-                                  <span>Share</span>
-                                </CommandItem>
-                              )}
-                              <CommandItem
-                                className='cursor-pointer'
-                                onClick={() =>
-                                  downloadImage(image.id, image.url)
-                                }
-                              >
-                                <Download className='mr-2 w-4 h-4' />
-                                <span>Download</span>
-                              </CommandItem>
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className='text-foreground text-sm'>Actions</p>
-                  </TooltipContent>
-                </Tooltip>
+                          {image.shared ? (
+                            <CommandItem className='cursor-pointer'>
+                              <Lock className='mr-2 h-4 w-4' />
+                              <span>Make Private</span>
+                            </CommandItem>
+                          ) : (
+                            <CommandItem className='cursor-pointer'>
+                              <Share2 className='mr-2 h-4 w-4' />
+                              <span>Share</span>
+                            </CommandItem>
+                          )}
+                          <CommandItem
+                            className='cursor-pointer'
+                            onClick={() =>
+                              downloadImage(image.id, image.url)
+                            }
+                          >
+                            <Download className='mr-2 w-4 h-4' />
+                            <span>Download</span>
+                          </CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               )}
             </div>
           </div>

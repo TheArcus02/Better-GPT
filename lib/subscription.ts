@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import prismadb from '@/lib/prismadb'
 import { NextRequest } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
@@ -12,7 +12,7 @@ export const checkSubscription = async (req?: NextRequest) => {
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    userId = await (await auth()).userId
   }
 
   if (!userId) return false

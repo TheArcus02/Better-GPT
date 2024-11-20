@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
 import prismadb from '@/lib/prismadb'

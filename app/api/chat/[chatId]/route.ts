@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   Message as VercelChatMessage,
   StreamingTextResponse,
-  LangChainAdapter,
 } from 'ai'
 import OpenAI from 'openai'
 import prismadb from '@/lib/prismadb'
@@ -64,8 +63,9 @@ const promptTemplate = `You are general purpose assistant. answer questions,
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { chatId: string } },
+  props: { params: Promise<{ chatId: string }> },
 ) {
+  const params = await props.params
   try {
     const { userId } = getAuth(req)
 
@@ -258,8 +258,9 @@ export async function POST(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { chatId: string } },
+  props: { params: Promise<{ chatId: string }> },
 ) {
+  const params = await props.params
   try {
     const { userId } = getAuth(req)
 
@@ -307,8 +308,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { chatId: string } },
+  props: { params: Promise<{ chatId: string }> },
 ) {
+  const params = await props.params
   try {
     const { userId } = getAuth(req)
 

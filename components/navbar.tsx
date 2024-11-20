@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { UserButton, useUser } from '@clerk/nextjs'
+// import { UserButton, useUser } from '@clerk/nextjs'
 import {
   AreaChart,
   CreditCard,
@@ -33,6 +33,7 @@ import { ListItem } from './ui/list-item'
 import useStore from '@/hooks/use-store'
 import { usePremiumModal } from '@/hooks/use-premium-modal'
 import { useEffect, useState } from 'react'
+import { UserButton, useUser } from '@clerk/nextjs'
 
 const font = Poppins({
   weight: '400',
@@ -323,7 +324,7 @@ const Navbar = ({ isApp, isPremium }: NavbarProps) => {
 
           <ModeToggle />
           {isSignedIn ? (
-            <UserButton afterSignOutUrl='/' />
+            <UserButton />
           ) : (
             <Button
               variant='outline'

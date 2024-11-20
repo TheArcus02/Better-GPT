@@ -6,13 +6,14 @@ import { Sliders } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import React from 'react'
 
-const AssistantSettingsPage = async ({
-  params,
-}: {
-  params: {
-    assistantId: string
+const AssistantSettingsPage = async (
+  props: {
+    params: Promise<{
+      assistantId: string
+    }>
   }
-}) => {
+) => {
+  const params = await props.params;
   const assistant = await prisma.assistant.findUnique({
     where: {
       id: params.assistantId,

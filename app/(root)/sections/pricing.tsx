@@ -7,18 +7,16 @@ const prices = {
     yearly: 0,
   },
   premium: {
-    monthly: 9.99,
-    yearly: 9.99 * 12 * 0.7,
+    monthly: 19.99,
+    yearly: 79.99,
   },
   enterprise: {
-    monthly: 20.5,
-    yearly: 20.5 * 12 * 0.7,
+    monthly: 99.99,
+    yearly: 169.99,
   },
 }
 
 const Pricing = async () => {
-  const isPremium = await checkSubscription()
-
   return (
     <div className='w-full flex flex-col items-center'>
       <div className='text-center'>
@@ -30,7 +28,7 @@ const Pricing = async () => {
           Choose the plan that works for you.
         </p>
       </div>
-      <PricingMain isPremium={isPremium} prices={prices} />
+      <PricingMain prices={prices} />
     </div>
   )
 }

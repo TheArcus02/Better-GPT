@@ -2,7 +2,7 @@ import { GenerateImageFormType } from '@/components/images/generate-form'
 import { checkCreatedImages } from '@/lib/restrictions'
 import { checkSubscription } from '@/lib/subscription'
 import { isInvalidUsername } from '@/lib/utils'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 

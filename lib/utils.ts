@@ -1,5 +1,4 @@
 import { toast } from '@/components/ui/use-toast'
-import { clerkClient } from '@clerk/nextjs'
 import { User } from '@clerk/nextjs/server'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -31,15 +30,6 @@ export function getUsername(user: User) {
     return `${user.firstName} ${user.lastName}`
   } else {
     return user.emailAddresses[0].emailAddress
-  }
-}
-
-export async function getUsernameById(userId: string) {
-  try {
-    const user = await clerkClient.users.getUser(userId)
-    return getUsername(user)
-  } catch (error) {
-    handleError('[GET_USERNAME_BY_ID_ERROR]', error)
   }
 }
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 import { getAuth } from '@clerk/nextjs/server'

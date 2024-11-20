@@ -28,9 +28,9 @@ export default function GlobalError({
               <CardTitle>An unexpected error occurred.</CardTitle>
               <CardDescription>
                 {error.digest ? (
-                  <p>
+                  <span>
                     Error ID: <strong>{error.digest}</strong>
-                  </p>
+                  </span>
                 ) : null}
               </CardDescription>
             </CardHeader>

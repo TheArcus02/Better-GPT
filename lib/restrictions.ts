@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import prismadb from './prismadb'
 import { NextRequest } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
@@ -10,7 +10,8 @@ export const checkCreatedChats = async (req?: NextRequest) => {
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    const authObj = await auth()
+    userId = authObj.userId
   }
 
   if (!userId) return false
@@ -29,7 +30,8 @@ export const checkCreatedFolders = async (req?: NextRequest) => {
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    const authObj = await auth()
+    userId = authObj.userId
   }
 
   if (!userId) return false
@@ -48,7 +50,8 @@ export const checkCreatedMessages = async (req?: NextRequest) => {
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    const authObj = await auth()
+    userId = authObj.userId
   }
   if (!userId) return false
 
@@ -66,7 +69,8 @@ export const checkCreatedImages = async (req?: NextRequest) => {
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    const authObj = await auth()
+    userId = authObj.userId
   }
 
   if (!userId) return false
@@ -87,7 +91,8 @@ export const checkCreatedAssistantMessages = async (
     const { userId: userIdFromReq } = getAuth(req)
     userId = userIdFromReq
   } else {
-    userId = auth().userId
+    const authObj = await auth()
+    userId = authObj.userId
   }
 
   if (!userId) return false

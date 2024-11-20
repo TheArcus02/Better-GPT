@@ -7,7 +7,7 @@ import {
   PanelRightOpen,
 } from 'lucide-react'
 import ChatFolders from './chat-folders'
-import { Button } from '../ui/button'
+import { Button, buttonVariants } from '../ui/button'
 import { useEffect, useState } from 'react'
 import NewChatDialog from './new-chat-dialog'
 import NewFolderDialog from './new-folder-dialog'
@@ -93,7 +93,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 open={isChatDialogOpen}
                 onOpenChange={handleChatDialogChange}
               >
-                <DialogTrigger>
+                <DialogTrigger asChild>
                   <Button>
                     <MessageSquarePlus size={24} className='mr-2' />
                     New Chat
@@ -108,15 +108,17 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 onOpenChange={handleFolderDialogChange}
                 defaultOpen={folders.length === 0}
               >
-                <TooltipTrigger>
-                  <DialogTrigger>
-                    <Button variant='outline' className='w-full'>
-                      <FolderPlus
-                        size={24}
-                        className={folders.length === 0 ? 'mr-2' : ''}
-                      />
-                      {folders.length === 0 && 'New folder'}
-                    </Button>
+                <TooltipTrigger asChild>
+                  <DialogTrigger
+                    className={buttonVariants({
+                      variant: 'outline',
+                    })}
+                  >
+                    <FolderPlus
+                      size={24}
+                      className={folders.length === 0 ? 'mr-2' : ''}
+                    />
+                    {folders.length === 0 && 'New folder'}
                   </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>New folder</TooltipContent>

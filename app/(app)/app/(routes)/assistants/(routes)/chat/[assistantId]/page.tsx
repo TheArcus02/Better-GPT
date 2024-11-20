@@ -4,17 +4,19 @@ import {
   getAssistantMessages,
   getOrCreateThread,
 } from '@/lib/actions/assistant.action'
-import { getUsernameById } from '@/lib/utils'
+import { getUsernameById } from '@/lib/actions/clerk.actions'
 import { Message } from 'ai'
 import { notFound } from 'next/navigation'
 
-const AssistantChatPage = async ({
-  params: { assistantId },
-}: {
-  params: {
+const AssistantChatPage = async (props: {
+  params: Promise<{
     assistantId: string
-  }
+  }>
 }) => {
+  const params = await props.params
+
+  const { assistantId } = params
+
   const thread = await getOrCreateThread()
 
   if (!thread) {

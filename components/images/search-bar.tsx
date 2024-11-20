@@ -9,7 +9,9 @@ import qs from 'query-string'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
@@ -70,12 +72,14 @@ const SearchBar = () => {
             <SelectValue placeholder='Size' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=''>Size</SelectItem>
-            <SelectItem value='256x256'>256x256</SelectItem>
-            <SelectItem value='512x512'>512x512</SelectItem>
-            <SelectItem value='1024x1024'>1024x1024</SelectItem>
-            <SelectItem value='1024x1792'>1024x1792</SelectItem>
-            <SelectItem value='1792x1024'>1792x1024</SelectItem>
+            <SelectGroup>
+              <SelectLabel>Size</SelectLabel>
+              <SelectItem value='256x256'>256x256</SelectItem>
+              <SelectItem value='512x512'>512x512</SelectItem>
+              <SelectItem value='1024x1024'>1024x1024</SelectItem>
+              <SelectItem value='1024x1792'>1024x1792</SelectItem>
+              <SelectItem value='1792x1024'>1792x1024</SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
@@ -85,9 +89,11 @@ const SearchBar = () => {
             <SelectValue placeholder='Model' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=''>Model</SelectItem>
-            <SelectItem value='dall-e-2'>DALL-E 2</SelectItem>
-            <SelectItem value='dall-e-3'>DALL-E 3</SelectItem>
+            <SelectGroup>
+              <SelectLabel>Model</SelectLabel>
+              <SelectItem value='dall-e-2'>DALL-E 2</SelectItem>
+              <SelectItem value='dall-e-3'>DALL-E 3</SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
