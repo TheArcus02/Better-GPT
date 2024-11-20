@@ -3,7 +3,6 @@ import { getUsername, handleError } from '../utils'
 
 export async function getUsernameById(userId: string) {
   try {
-    return 'mike'
     const client = await clerkClient()
     const user = await client.users.getUser(userId)
     return getUsername(user)
