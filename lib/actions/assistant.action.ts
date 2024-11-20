@@ -1,11 +1,12 @@
 'use server'
 
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
-import { getUsernameById, handleError } from '../utils'
+import { handleError } from '../utils'
 import OpenAI, { NotFoundError as OpenAiNotFoundError } from 'openai'
 import prisma from '../prismadb'
 import { AssistantMessage } from '@prisma/client'
 import { NotFoundError, UnauthorizedError } from '../exceptions'
+import { getUsernameById } from './clerk.actions'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
